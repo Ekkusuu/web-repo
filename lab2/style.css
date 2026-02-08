@@ -424,3 +424,49 @@ img { max-width: 100%; height: auto; }
   .testimonials-grid { grid-template-columns: 1fr; }
   .trust-bar { gap: 32px; }
 }
+
+/* ===== TEAM ===== */
+.team { padding: 100px 0; }
+
+.team-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+}
+.team-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 32px;
+  text-align: center;
+  transition: transform 0.25s, border-color 0.25s;
+}
+.team-card:hover {
+  transform: translateY(-4px); border-color: var(--accent);
+}
+.team-avatar {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: var(--accent); margin: 0 auto 16px;
+  display: flex; align-items: center; justify-content: center;
+}
+.team-avatar.accent-orange { background: var(--orange); }
+.team-avatar.accent-green { background: var(--success); }
+.team-avatar.accent-pink { background: #ec4899; }
+.team-initials {
+  font-size: 1.3rem; font-weight: 800; color: #000;
+}
+.team-name {
+  font-size: 1.1rem; font-weight: 700; margin-bottom: 4px;
+  color: var(--text-primary);
+}
+.team-role {
+  font-size: 0.82rem; color: var(--accent);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+.team-bio {
+  font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+  .team-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .team-grid { grid-template-columns: 1fr; }
+}
