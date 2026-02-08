@@ -431,6 +431,9 @@ img { max-width: 100%; height: auto; }
 .team-grid {
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
 }
+.team-grid.solo {
+  grid-template-columns: 1fr; max-width: 480px; margin: 0 auto;
+}
 .team-card {
   background: var(--bg-card); border: 1px solid var(--border);
   border-radius: var(--radius-lg); padding: 32px;
