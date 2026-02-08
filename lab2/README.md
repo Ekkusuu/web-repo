@@ -1,24 +1,38 @@
-# Lab 2 - Landing page
+# Endfield Factory Planner — Landing Page
 
-Create a web page for your/friends/relatives business (example: car-rent, cookies-shop, crypto-scam)
+A landing page for **Endfield Factory Planner**, a schematic calculator tool for **Arknights: Endfield**. The factory mechanic in Endfield is similar to Factorio — players build production chains with different building types to craft items.
 
-> For a maximal grade, the website should be for a real client (your/friends/relatives business), otherwise -1-2 points
+## What it does
 
-## Customer requirements
+The planner helps players:
 
-- Some form of navigation to sections (links, buttons)
-- Call to action
-- At least 4 sections ([see examples](https://webflow.com/blog/high-converting-landing-page))
-- Pleasant to the eyes
+- View **recipe trees** showing full production chains for any item
+- Calculate the **exact number of buildings** (Greenhouse, Grinder, Smelter, Workshop, Mixer, Assembler, Chemical Lab) needed for max-efficiency production
+- Generate a **connection schema** showing how buildings should be linked together
 
-## Dev requirements
+## Sections
 
-- Use vanilla CSS and HTML (no frameworks)
-- Have a decent git history (no one commit)
-- The page should be deployed on a free hosting service (example: GitHub Pages, Vercel, Netlify)
-- Project repo should have a README with a short description of the landing page topic, screenshots, and a link to the live demo
+1. **Hero** — Headline, value proposition, and CTA
+2. **Features** — Six key capabilities of the tool
+3. **Calculator Showcase** — Static demo of a recipe tree, building summary, and connection schema for HC Valley Battery, plus the full recipe database (60+ items)
+4. **Testimonials** — Community social proof with trust metrics
+5. **Team** — The people behind the project
+6. **Pricing** — Free / Pro / Team tiers
+7. **FAQ** — Common questions answered with native HTML accordions
+8. **Contact** — Contact form and support channels
+9. **Footer** — Navigation links and legal
 
-## Other requirements:
+## Tech Stack
 
-- For potential maximal mark, a WIP version should be submitted during the class
-- Use index.html, reset.css
+- Vanilla **HTML** and **CSS** only — no frameworks, no JavaScript
+- CSS custom properties for theming
+- Fully responsive (mobile-first breakpoints)
+- Native `<details>` / `<summary>` for FAQ accordion (no JS needed)
+
+## Live Demo
+
+> _Link to deployed site will be added here_
+
+## Screenshots
+
+> _Screenshots will be added here_
