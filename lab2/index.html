@@ -107,5 +107,248 @@
       </div>
     </section>
 
+    <!-- ===== CALCULATOR SHOWCASE ===== -->
+    <section class="calculator" id="calculator">
+      <div class="container">
+        <h2 class="section-title">Factory Schematic Calculator</h2>
+        <p class="section-subtitle">
+          Select an item, set your desired production rate, and let the planner
+          do the rest. Here's an example for HC Valley Battery.
+        </p>
+
+        <!-- Example: static calculator demo -->
+        <div class="calc-demo">
+          <div class="calc-panel">
+            <h3 class="calc-panel-title">📋 Recipe Tree — HC Valley Battery</h3>
+            <div class="tree">
+              <div class="tree-node root">
+                <span class="tree-label">HC Valley Battery</span>
+                <span class="tree-badge assembler">🏭 Assembler</span>
+              </div>
+              <div class="tree-children">
+                <div class="tree-branch">
+                  <div class="tree-node">
+                    <span class="tree-label">LC Valley Battery</span>
+                    <span class="tree-badge assembler">🏭 Assembler</span>
+                  </div>
+                  <div class="tree-children">
+                    <div class="tree-branch">
+                      <div class="tree-node">
+                        <span class="tree-label">SC Valley Battery</span>
+                        <span class="tree-badge assembler">🏭 Assembler</span>
+                      </div>
+                      <div class="tree-children">
+                        <div class="tree-branch">
+                          <div class="tree-node">
+                            <span class="tree-label">Ferrium Component</span>
+                            <span class="tree-badge assembler">🏭 Assembler</span>
+                          </div>
+                        </div>
+                        <div class="tree-branch">
+                          <div class="tree-node">
+                            <span class="tree-label">Dense Ferrium Powder</span>
+                            <span class="tree-badge mixer">🧪 Mixer</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="tree-branch">
+                      <div class="tree-node">
+                        <span class="tree-label">Cryston Component</span>
+                        <span class="tree-badge assembler">🏭 Assembler</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="tree-branch">
+                  <div class="tree-node">
+                    <span class="tree-label">Xiranite Component</span>
+                    <span class="tree-badge assembler">🏭 Assembler</span>
+                  </div>
+                </div>
+                <div class="tree-branch">
+                  <div class="tree-node">
+                    <span class="tree-label">Dense Originium Powder</span>
+                    <span class="tree-badge mixer">🧪 Mixer</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="calc-panel">
+            <h3 class="calc-panel-title">🏭 Required Buildings</h3>
+            <table class="summary-table">
+              <thead>
+                <tr><th>Building</th><th>Count</th><th>Items</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="bldg-badge assembler">🏭 Assembler</span></td>
+                  <td class="count-cell">5</td>
+                  <td>HC Valley Battery, LC Valley Battery, SC Valley Battery, Ferrium Component, Cryston Component, Xiranite Component</td>
+                </tr>
+                <tr>
+                  <td><span class="bldg-badge mixer">🧪 Mixer</span></td>
+                  <td class="count-cell">2</td>
+                  <td>Dense Ferrium Powder, Dense Originium Powder</td>
+                </tr>
+                <tr>
+                  <td><span class="bldg-badge workshop">🔧 Workshop</span></td>
+                  <td class="count-cell">5</td>
+                  <td>Ferrium Part, Ferrium Bottle, Cryston Part, Cryston Bottle, Cryston Fiber</td>
+                </tr>
+                <tr>
+                  <td><span class="bldg-badge grinder">⚙️ Grinder</span></td>
+                  <td class="count-cell">3</td>
+                  <td>Ferrium Powder, Originium Powder, Cryston Powder</td>
+                </tr>
+                <tr>
+                  <td><span class="bldg-badge smelter">🔥 Smelter</span></td>
+                  <td class="count-cell">1</td>
+                  <td>Liquid Xiranite</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr><td><strong>Total</strong></td><td class="count-cell"><strong>16</strong></td><td></td></tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <div class="calc-panel full-width">
+            <h3 class="calc-panel-title">🔗 Connection Schema</h3>
+            <div class="schema-flow">
+              <div class="schema-row">
+                <div class="schema-inputs">
+                  <div class="schema-item raw">Ferrium <span class="qty">×2</span></div>
+                  <div class="schema-item raw">Origocrust <span class="qty">×1</span></div>
+                </div>
+                <div class="schema-arrow">→</div>
+                <div class="schema-building grinder-bg">
+                  <span class="schema-icon">⚙️</span>
+                  <span>Grinder</span>
+                  <span class="schema-count">×3</span>
+                </div>
+                <div class="schema-arrow">→</div>
+                <div class="schema-outputs">
+                  <div class="schema-item">Ferrium Powder</div>
+                  <div class="schema-item">Originium Powder</div>
+                  <div class="schema-item">Cryston Powder</div>
+                </div>
+              </div>
+
+              <div class="schema-row">
+                <div class="schema-inputs">
+                  <div class="schema-item">Ferrium Powder</div>
+                  <div class="schema-item">Originium Powder</div>
+                </div>
+                <div class="schema-arrow">→</div>
+                <div class="schema-building mixer-bg">
+                  <span class="schema-icon">🧪</span>
+                  <span>Mixer</span>
+                  <span class="schema-count">×2</span>
+                </div>
+                <div class="schema-arrow">→</div>
+                <div class="schema-outputs">
+                  <div class="schema-item">Dense Ferrium Powder</div>
+                  <div class="schema-item">Dense Originium Powder</div>
+                </div>
+              </div>
+
+              <div class="schema-row">
+                <div class="schema-inputs">
+                  <div class="schema-item">Ferrium Part</div>
+                  <div class="schema-item">Ferrium Bottle</div>
+                  <div class="schema-item">Cryston Part</div>
+                  <div class="schema-item">Cryston Bottle</div>
+                  <div class="schema-item">Cryston Fiber</div>
+                </div>
+                <div class="schema-arrow">→</div>
+                <div class="schema-building assembler-bg">
+                  <span class="schema-icon">🏭</span>
+                  <span>Assembler</span>
+                  <span class="schema-count">×5</span>
+                </div>
+                <div class="schema-arrow">→</div>
+                <div class="schema-outputs">
+                  <div class="schema-item highlight-item">HC Valley Battery</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recipe database preview -->
+        <h3 class="recipe-db-title">Complete Recipe Database</h3>
+        <div class="recipe-grid">
+          <div class="recipe-category">
+            <h4>🌱 Greenhouse</h4>
+            <ul>
+              <li>Aketine</li><li>Buckflower</li><li>Citrome</li>
+              <li>Jincao</li><li>Sandleaf</li><li>Yazhen</li><li>Bumper-Rich</li>
+            </ul>
+          </div>
+          <div class="recipe-category">
+            <h4>⚙️ Grinder</h4>
+            <ul>
+              <li>Ferrium Powder</li><li>Originium Powder</li><li>Origocrust Powder</li>
+              <li>Carbon Powder</li><li>Aketine Powder</li><li>Buckflower Powder</li>
+              <li>Citrome Powder</li><li>Jincao Powder</li><li>Sandleaf Powder</li>
+              <li>Yazhen Powder</li><li>Amethyst Powder</li><li>Cryston Powder</li>
+              <li>Ground Buckflower Powder</li><li>Ground Citrome Powder</li>
+            </ul>
+          </div>
+          <div class="recipe-category">
+            <h4>🔥 Smelter</h4>
+            <ul>
+              <li>Steel</li><li>Liquid Xiranite</li><li>Stabilized Carbon</li>
+            </ul>
+          </div>
+          <div class="recipe-category">
+            <h4>🧪 Mixer</h4>
+            <ul>
+              <li>Dense Ferrium Powder</li><li>Dense Originium Powder</li>
+              <li>Dense Carbon Powder</li><li>Dense Origocrust Powder</li>
+              <li>Jincao Solution</li><li>Yazhen Solution</li>
+            </ul>
+          </div>
+          <div class="recipe-category">
+            <h4>🔧 Workshop</h4>
+            <ul>
+              <li>Ferrium Part</li><li>Steel Part</li><li>Amethyst Part</li><li>Cryston Part</li>
+              <li>Ferrium Bottle</li><li>Steel Bottle</li><li>Amethyst Bottle</li><li>Cryston Bottle</li>
+              <li>Amethyst Fiber</li><li>Cryston Fiber</li><li>Packed Origocrust</li>
+            </ul>
+          </div>
+          <div class="recipe-category">
+            <h4>🏭 Assembler</h4>
+            <ul>
+              <li>Ferrium Component</li><li>Amethyst Component</li><li>Cryston Component</li>
+              <li>Xiranite Component</li><li>SC Valley Battery</li><li>LC Valley Battery</li>
+              <li>LC Wuling Battery</li><li>HC Valley Battery</li>
+            </ul>
+          </div>
+          <div class="recipe-category">
+            <h4>⚗️ Chemical Lab</h4>
+            <ul>
+              <li>Buck Capsule [A]</li><li>Buck Capsule [B]</li><li>Buck Capsule [C]</li>
+              <li>Canned Citrome [A]</li><li>Canned Citrome [B]</li><li>Canned Citrome [C]</li>
+              <li>Jincao Drink</li><li>Yazhen Syringe [C]</li><li>Industrial Explosive</li>
+            </ul>
+          </div>
+          <div class="recipe-category">
+            <h4>🪨 Raw Materials</h4>
+            <ul>
+              <li>Ferrium</li><li>Xiranite</li><li>Origocrust</li><li>Carbon</li>
+              <li>Aketine Seed</li><li>Amber Rice Seed</li><li>Buckflower Seed</li>
+              <li>Citrome Seed</li><li>Jincao Seed</li><li>Redjade Ginseng Seed</li>
+              <li>Reed Rye Seed</li><li>Sandleaf Seed</li><li>Tartpepper Seed</li>
+              <li>Yazhen Seed</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </body>
 </html>

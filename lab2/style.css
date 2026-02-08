@@ -212,3 +212,155 @@ img { max-width: 100%; height: auto; }
 @media (max-width: 600px) {
   .features-grid { grid-template-columns: 1fr; }
 }
+
+/* ===== CALCULATOR SHOWCASE ===== */
+.calculator { padding: 100px 0; }
+
+.calc-demo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 60px;
+}
+
+.calc-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  overflow-x: auto;
+}
+.calc-panel.full-width { grid-column: 1 / -1; }
+
+.calc-panel-title {
+  font-size: 1.15rem; font-weight: 700;
+  margin-bottom: 20px; color: var(--text-primary);
+}
+
+/* tree */
+.tree-node {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 14px; background: var(--bg-primary);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  margin-bottom: 4px;
+}
+.tree-node.root { border-color: var(--accent); }
+.tree-label { font-weight: 600; font-size: 0.9rem; }
+.tree-badge {
+  font-size: 0.72rem; padding: 2px 10px; border-radius: 4px;
+  font-weight: 600; white-space: nowrap;
+}
+.tree-badge.assembler { background: rgba(234,179,8,0.15); color: #eab308; }
+.tree-badge.mixer { background: rgba(6,182,212,0.15); color: #06b6d4; }
+.tree-badge.grinder { background: rgba(167,139,250,0.15); color: #a78bfa; }
+.tree-badge.workshop { background: rgba(59,130,246,0.15); color: #3b82f6; }
+.tree-badge.smelter { background: rgba(249,115,22,0.15); color: #f97316; }
+.tree-badge.lab { background: rgba(236,72,153,0.15); color: #ec4899; }
+.tree-badge.greenhouse { background: rgba(34,197,94,0.15); color: #22c55e; }
+
+.tree-children {
+  padding-left: 24px; border-left: 2px solid var(--border); margin-left: 14px;
+}
+.tree-branch { position: relative; padding: 3px 0; }
+.tree-branch::before {
+  content: ''; position: absolute; top: 16px; left: -24px;
+  width: 20px; height: 2px; background: var(--border);
+}
+
+/* summary table */
+.summary-table { width: 100%; border-collapse: collapse; }
+.summary-table th, .summary-table td {
+  padding: 10px 14px; text-align: left;
+  border-bottom: 1px solid var(--border); font-size: 0.88rem;
+}
+.summary-table th {
+  font-size: 0.75rem; text-transform: uppercase;
+  letter-spacing: 0.5px; color: var(--text-muted); background: var(--bg-primary);
+}
+.summary-table td { color: var(--text-secondary); }
+.summary-table tfoot td {
+  border-top: 2px solid var(--accent); background: var(--bg-primary);
+}
+.count-cell {
+  font-family: var(--mono); font-weight: 700;
+  font-size: 1.05rem; color: var(--orange);
+}
+.bldg-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 10px; border-radius: 6px;
+  font-size: 0.82rem; font-weight: 600; white-space: nowrap;
+}
+.bldg-badge.assembler { background: rgba(234,179,8,0.12); color: #eab308; }
+.bldg-badge.mixer { background: rgba(6,182,212,0.12); color: #06b6d4; }
+.bldg-badge.workshop { background: rgba(59,130,246,0.12); color: #3b82f6; }
+.bldg-badge.grinder { background: rgba(167,139,250,0.12); color: #a78bfa; }
+.bldg-badge.smelter { background: rgba(249,115,22,0.12); color: #f97316; }
+
+/* schema */
+.schema-flow { display: flex; flex-direction: column; gap: 16px; }
+.schema-row {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  padding: 16px; background: var(--bg-primary);
+  border: 1px solid var(--border); border-radius: var(--radius);
+}
+.schema-inputs, .schema-outputs {
+  display: flex; flex-direction: column; gap: 4px; min-width: 140px;
+}
+.schema-item {
+  font-size: 0.85rem; font-weight: 500; padding: 4px 10px;
+  background: var(--bg-card); border-radius: 4px;
+}
+.schema-item.raw { color: var(--text-muted); font-style: italic; }
+.schema-item .qty {
+  color: var(--accent); font-family: var(--mono);
+  font-weight: 700; font-size: 0.8rem;
+}
+.highlight-item { color: var(--orange) ; font-weight: 700; }
+.schema-arrow {
+  font-size: 1.4rem; color: var(--accent); font-weight: 700;
+}
+.schema-building {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 14px 22px; border: 2px solid var(--border);
+  border-radius: var(--radius-lg); min-width: 110px;
+  font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);
+}
+.schema-icon { font-size: 1.4rem; }
+.schema-count {
+  font-family: var(--mono); font-weight: 700; color: var(--orange);
+}
+.grinder-bg { border-color: #a78bfa; box-shadow: 0 0 12px rgba(167,139,250,0.2); }
+.mixer-bg { border-color: #06b6d4; box-shadow: 0 0 12px rgba(6,182,212,0.2); }
+.assembler-bg { border-color: #eab308; box-shadow: 0 0 12px rgba(234,179,8,0.2); }
+
+/* recipe db */
+.recipe-db-title {
+  font-size: 1.5rem; font-weight: 700;
+  text-align: center; margin-bottom: 32px;
+}
+.recipe-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+}
+.recipe-category {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px;
+}
+.recipe-category h4 {
+  font-size: 1rem; font-weight: 700; margin-bottom: 12px;
+  color: var(--text-primary);
+}
+.recipe-category ul { display: flex; flex-direction: column; gap: 4px; }
+.recipe-category li {
+  font-size: 0.82rem; color: var(--text-secondary);
+  padding: 3px 0; border-bottom: 1px solid rgba(30,41,59,0.5);
+}
+
+@media (max-width: 900px) {
+  .calc-demo { grid-template-columns: 1fr; }
+  .recipe-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .recipe-grid { grid-template-columns: 1fr; }
+  .schema-row { flex-direction: column; text-align: center; }
+  .schema-arrow { transform: rotate(90deg); }
+}
