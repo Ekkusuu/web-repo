@@ -35,4 +35,26 @@ The planner helps players:
 
 ## Screenshots
 
-> _Screenshots will be added here_
+### Hero
+![Hero section](screenshots/screenshot_1.png)
+
+### Features
+![Features section](screenshots/screenshot_2.png)
+
+### Calculator Showcase
+![Calculator section](screenshots/screenshot_3.png)
+
+### Testimonials
+![Testimonials section](screenshots/screenshot_4.png)
+
+### About Me
+![About Me section](screenshots/screenshot_5.png)
+
+### Pricing
+![Pricing section](screenshots/screenshot_6.png)
+
+### FAQ
+![FAQ section](screenshots/screenshot_7.png)
+
+### Contact & Footer
+![Contact and Footer](screenshots/screenshot_8.png)
