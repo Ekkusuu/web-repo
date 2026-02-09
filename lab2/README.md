@@ -31,7 +31,7 @@ The planner helps players:
 
 ## Live Demo
 
-> _Link to deployed site will be added here_
+> [Link to deployed site](https://ekkusuu.github.io/web-repo/lab2/)
 
 ## Screenshots
 
