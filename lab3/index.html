@@ -1,0 +1,1057 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Endfield Factory Planner — Schematic Calculator</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body class="bg-primary text-text-primary font-sans leading-relaxed overflow-x-hidden">
+
+    <!-- ===== NAVIGATION ===== -->
+    <nav class="fixed top-0 left-0 w-full z-[1000] bg-primary/[0.92] backdrop-blur-xl border-b border-border" id="navbar">
+      <div class="max-w-[1200px] mx-auto px-6 flex items-center justify-between h-16">
+        <a href="#" class="text-xl font-bold text-text-primary flex items-center gap-2 hover:text-accent transition-colors">
+          <span class="text-2xl text-accent">⚙</span> Endfield Planner
+        </a>
+        <button class="flex flex-col gap-[5px] bg-transparent border-none cursor-pointer p-1 md:hidden" id="navToggle" aria-label="Toggle menu">
+          <span class="w-6 h-0.5 bg-text-primary transition-all"></span>
+          <span class="w-6 h-0.5 bg-text-primary transition-all"></span>
+          <span class="w-6 h-0.5 bg-text-primary transition-all"></span>
+        </button>
+        <ul class="nav-links hidden md:flex gap-2 list-none" id="navLinks">
+          <li><a href="#hero" class="px-3.5 py-2 rounded-lg text-text-secondary text-sm font-medium hover:text-accent hover:bg-accent/[0.08] transition-all">Home</a></li>
+          <li><a href="#features" class="px-3.5 py-2 rounded-lg text-text-secondary text-sm font-medium hover:text-accent hover:bg-accent/[0.08] transition-all">Features</a></li>
+          <li><a href="#calculator" class="px-3.5 py-2 rounded-lg text-text-secondary text-sm font-medium hover:text-accent hover:bg-accent/[0.08] transition-all">Calculator</a></li>
+          <li><a href="#testimonials" class="px-3.5 py-2 rounded-lg text-text-secondary text-sm font-medium hover:text-accent hover:bg-accent/[0.08] transition-all">Community</a></li>
+          <li><a href="#team" class="px-3.5 py-2 rounded-lg text-text-secondary text-sm font-medium hover:text-accent hover:bg-accent/[0.08] transition-all">Team</a></li>
+          <li><a href="#pricing" class="px-3.5 py-2 rounded-lg text-text-secondary text-sm font-medium hover:text-accent hover:bg-accent/[0.08] transition-all">Pricing</a></li>
+          <li><a href="#faq" class="px-3.5 py-2 rounded-lg text-text-secondary text-sm font-medium hover:text-accent hover:bg-accent/[0.08] transition-all">FAQ</a></li>
+          <li><a href="#contact" class="px-3.5 py-2 rounded-lg text-text-secondary text-sm font-medium hover:text-accent hover:bg-accent/[0.08] transition-all">Contact</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- ===== HERO ===== -->
+    <section class="relative min-h-screen flex items-center justify-center text-center pt-[120px] pb-20 overflow-hidden" id="hero">
+      <div class="hero-bg-grid absolute inset-0"></div>
+      <div class="relative z-10 max-w-[1200px] mx-auto px-6">
+        <h1 class="text-[clamp(2.5rem,6vw,4.5rem)] font-extrabold leading-[1.1] mb-6 tracking-tight">
+          Master Your <span class="text-accent">Factory Lines</span>
+        </h1>
+        <p class="text-[clamp(1rem,2vw,1.25rem)] text-text-secondary max-w-[640px] mx-auto mb-10 leading-relaxed">
+          The ultimate schematic calculator for Arknights: Endfield.
+          Plan recipe trees, calculate optimal building counts, and visualize
+          production flows — all in one place.
+        </p>
+        <div class="flex gap-4 justify-center flex-wrap mb-16">
+          <a href="#calculator" class="inline-flex items-center gap-2 px-8 py-3.5 rounded-lg text-base font-semibold bg-accent text-black border-2 border-accent hover:bg-accent-dark hover:border-accent-dark hover:shadow-[0_0_20px_rgba(0,180,216,0.25)] transition-all">Open Calculator</a>
+          <a href="#features" class="inline-flex items-center gap-2 px-8 py-3.5 rounded-lg text-base font-semibold bg-transparent text-accent border-2 border-accent hover:bg-accent hover:text-black transition-all">Learn More</a>
+        </div>
+        <div class="flex gap-12 justify-center flex-wrap max-sm:gap-8">
+          <div class="flex flex-col items-center">
+            <span class="text-3xl font-extrabold text-accent">60+</span>
+            <span class="text-xs text-text-muted uppercase tracking-wider mt-1">Recipes</span>
+          </div>
+          <div class="flex flex-col items-center">
+            <span class="text-3xl font-extrabold text-accent">7</span>
+            <span class="text-xs text-text-muted uppercase tracking-wider mt-1">Building Types</span>
+          </div>
+          <div class="flex flex-col items-center">
+            <span class="text-3xl font-extrabold text-accent">100%</span>
+            <span class="text-xs text-text-muted uppercase tracking-wider mt-1">Free</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== MOBILE-ONLY: Quick Start Banner ===== -->
+    <section class="block md:hidden bg-accent/10 border-y border-accent/30 py-6 px-6 text-center" id="mobile-quickstart">
+      <div class="max-w-md mx-auto">
+        <h2 class="text-lg font-bold text-accent mb-2">📱 Quick Start Guide</h2>
+        <p class="text-sm text-text-secondary mb-4">New to Endfield factory planning? Tap below for a beginner-friendly walkthrough optimized for mobile.</p>
+        <a href="#calculator" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-semibold bg-accent text-black border-2 border-accent hover:bg-accent-dark transition-all">
+          🚀 Jump to Calculator
+        </a>
+      </div>
+    </section>
+
+    <!-- ===== FEATURES ===== -->
+    <section class="py-24 bg-secondary" id="features">
+      <div class="max-w-[1200px] mx-auto px-6">
+        <h2 class="text-[clamp(1.8rem,4vw,2.8rem)] font-extrabold text-center mb-4 tracking-tight">Why Endfield Planner?</h2>
+        <p class="text-center text-text-secondary max-w-[600px] mx-auto mb-12 text-base leading-relaxed">
+          Stop guessing. Start optimizing. Our calculator handles the complex
+          math so you can focus on building.
+        </p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div class="bg-card border border-border rounded-2xl p-9 transition-all duration-300 hover:-translate-y-1 hover:border-accent hover:shadow-[0_8px_32px_rgba(0,180,216,0.25)]">
+            <div class="text-4xl mb-4">🌲</div>
+            <h3 class="text-lg font-bold mb-3 text-text-primary">Recipe Tree Viewer</h3>
+            <p class="text-text-secondary text-[0.95rem] leading-relaxed">See the full production chain for any item — from raw seeds and ores to final products — displayed as an interactive tree.</p>
+          </div>
+          <div class="bg-card border border-border rounded-2xl p-9 transition-all duration-300 hover:-translate-y-1 hover:border-accent hover:shadow-[0_8px_32px_rgba(0,180,216,0.25)]">
+            <div class="text-4xl mb-4">🏭</div>
+            <h3 class="text-lg font-bold mb-3 text-text-primary">Building Calculator</h3>
+            <p class="text-text-secondary text-[0.95rem] leading-relaxed">Know exactly how many Greenhouses, Smelters, Grinders, Workshops, Mixers, Assemblers, and Labs you need.</p>
+          </div>
+          <div class="bg-card border border-border rounded-2xl p-9 transition-all duration-300 hover:-translate-y-1 hover:border-accent hover:shadow-[0_8px_32px_rgba(0,180,216,0.25)]">
+            <div class="text-4xl mb-4">🔗</div>
+            <h3 class="text-lg font-bold mb-3 text-text-primary">Connection Schema</h3>
+            <p class="text-text-secondary text-[0.95rem] leading-relaxed">Get a visual flow diagram showing how buildings should be connected for perfectly balanced production lines.</p>
+          </div>
+          <div class="bg-card border border-border rounded-2xl p-9 transition-all duration-300 hover:-translate-y-1 hover:border-accent hover:shadow-[0_8px_32px_rgba(0,180,216,0.25)]">
+            <div class="text-4xl mb-4">⚡</div>
+            <h3 class="text-lg font-bold mb-3 text-text-primary">Max Efficiency</h3>
+            <p class="text-text-secondary text-[0.95rem] leading-relaxed">Every calculation targets 100% uptime — no idle machines, no bottlenecks. Ratios keep every belt saturated.</p>
+          </div>
+          <div class="bg-card border border-border rounded-2xl p-9 transition-all duration-300 hover:-translate-y-1 hover:border-accent hover:shadow-[0_8px_32px_rgba(0,180,216,0.25)]">
+            <div class="text-4xl mb-4">📦</div>
+            <h3 class="text-lg font-bold mb-3 text-text-primary">60+ Recipes</h3>
+            <p class="text-text-secondary text-[0.95rem] leading-relaxed">Complete database covering all crafting chains: batteries, capsules, components, powders, solutions, and more.</p>
+          </div>
+          <div class="bg-card border border-border rounded-2xl p-9 transition-all duration-300 hover:-translate-y-1 hover:border-accent hover:shadow-[0_8px_32px_rgba(0,180,216,0.25)]">
+            <div class="text-4xl mb-4">🎯</div>
+            <h3 class="text-lg font-bold mb-3 text-text-primary">Zero Setup</h3>
+            <p class="text-text-secondary text-[0.95rem] leading-relaxed">Works right in your browser. No downloads, no accounts, no ads. Just pick an item and get your answer.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CALCULATOR SHOWCASE ===== -->
+    <section class="py-24" id="calculator">
+      <div class="max-w-[1200px] mx-auto px-6">
+        <h2 class="text-[clamp(1.8rem,4vw,2.8rem)] font-extrabold text-center mb-4 tracking-tight">Factory Schematic Calculator</h2>
+        <p class="text-center text-text-secondary max-w-[600px] mx-auto mb-12 text-base leading-relaxed">
+          Select an item, set your desired production rate, and let the planner
+          do the rest. Here's an example for HC Valley Battery.
+        </p>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-16">
+          <!-- Recipe Tree -->
+          <div class="bg-card border border-border rounded-2xl p-7 overflow-x-auto">
+            <h3 class="text-lg font-bold mb-5 text-text-primary">📋 Recipe Tree — HC Valley Battery</h3>
+            <div class="tree">
+              <div class="flex items-center gap-2.5 px-3.5 py-2 bg-primary border border-accent rounded-lg mb-1">
+                <span class="font-semibold text-sm">HC Valley Battery</span>
+                <span class="text-xs px-2.5 py-0.5 rounded bg-yellow-500/15 text-yellow-400 font-semibold whitespace-nowrap">🏭 Assembler</span>
+              </div>
+              <div class="pl-6 border-l-2 border-border ml-3.5">
+                <div class="relative py-0.5 tree-branch">
+                  <div class="flex items-center gap-2.5 px-3.5 py-2 bg-primary border border-border rounded-lg mb-1">
+                    <span class="font-semibold text-sm">LC Valley Battery</span>
+                    <span class="text-xs px-2.5 py-0.5 rounded bg-yellow-500/15 text-yellow-400 font-semibold whitespace-nowrap">🏭 Assembler</span>
+                  </div>
+                  <div class="pl-6 border-l-2 border-border ml-3.5">
+                    <div class="relative py-0.5 tree-branch">
+                      <div class="flex items-center gap-2.5 px-3.5 py-2 bg-primary border border-border rounded-lg mb-1">
+                        <span class="font-semibold text-sm">SC Valley Battery</span>
+                        <span class="text-xs px-2.5 py-0.5 rounded bg-yellow-500/15 text-yellow-400 font-semibold whitespace-nowrap">🏭 Assembler</span>
+                      </div>
+                      <div class="pl-6 border-l-2 border-border ml-3.5">
+                        <div class="relative py-0.5 tree-branch">
+                          <div class="flex items-center gap-2.5 px-3.5 py-2 bg-primary border border-border rounded-lg mb-1">
+                            <span class="font-semibold text-sm">Ferrium Component</span>
+                            <span class="text-xs px-2.5 py-0.5 rounded bg-yellow-500/15 text-yellow-400 font-semibold whitespace-nowrap">🏭 Assembler</span>
+                          </div>
+                        </div>
+                        <div class="relative py-0.5 tree-branch">
+                          <div class="flex items-center gap-2.5 px-3.5 py-2 bg-primary border border-border rounded-lg mb-1">
+                            <span class="font-semibold text-sm">Dense Ferrium Powder</span>
+                            <span class="text-xs px-2.5 py-0.5 rounded bg-cyan-500/15 text-cyan-400 font-semibold whitespace-nowrap">🧪 Mixer</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="relative py-0.5 tree-branch">
+                      <div class="flex items-center gap-2.5 px-3.5 py-2 bg-primary border border-border rounded-lg mb-1">
+                        <span class="font-semibold text-sm">Cryston Component</span>
+                        <span class="text-xs px-2.5 py-0.5 rounded bg-yellow-500/15 text-yellow-400 font-semibold whitespace-nowrap">🏭 Assembler</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="relative py-0.5 tree-branch">
+                  <div class="flex items-center gap-2.5 px-3.5 py-2 bg-primary border border-border rounded-lg mb-1">
+                    <span class="font-semibold text-sm">Xiranite Component</span>
+                    <span class="text-xs px-2.5 py-0.5 rounded bg-yellow-500/15 text-yellow-400 font-semibold whitespace-nowrap">🏭 Assembler</span>
+                  </div>
+                </div>
+                <div class="relative py-0.5 tree-branch">
+                  <div class="flex items-center gap-2.5 px-3.5 py-2 bg-primary border border-border rounded-lg mb-1">
+                    <span class="font-semibold text-sm">Dense Originium Powder</span>
+                    <span class="text-xs px-2.5 py-0.5 rounded bg-cyan-500/15 text-cyan-400 font-semibold whitespace-nowrap">🧪 Mixer</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Required Buildings -->
+          <div class="bg-card border border-border rounded-2xl p-7 overflow-x-auto">
+            <h3 class="text-lg font-bold mb-5 text-text-primary">🏭 Required Buildings</h3>
+            <table class="w-full border-collapse">
+              <thead>
+                <tr>
+                  <th class="px-3.5 py-2.5 text-left text-xs uppercase tracking-wider text-text-muted bg-primary border-b border-border">Building</th>
+                  <th class="px-3.5 py-2.5 text-left text-xs uppercase tracking-wider text-text-muted bg-primary border-b border-border">Count</th>
+                  <th class="px-3.5 py-2.5 text-left text-xs uppercase tracking-wider text-text-muted bg-primary border-b border-border hidden sm:table-cell">Items</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="px-3.5 py-2.5 text-sm text-text-secondary border-b border-border"><span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-yellow-500/10 text-yellow-400 text-xs font-semibold whitespace-nowrap">🏭 Assembler</span></td>
+                  <td class="px-3.5 py-2.5 font-mono font-bold text-base text-orange border-b border-border">5</td>
+                  <td class="px-3.5 py-2.5 text-sm text-text-secondary border-b border-border hidden sm:table-cell">HC Valley Battery, LC Valley Battery, SC Valley Battery, Ferrium Component, Cryston Component, Xiranite Component</td>
+                </tr>
+                <tr>
+                  <td class="px-3.5 py-2.5 text-sm text-text-secondary border-b border-border"><span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-cyan-500/10 text-cyan-400 text-xs font-semibold whitespace-nowrap">🧪 Mixer</span></td>
+                  <td class="px-3.5 py-2.5 font-mono font-bold text-base text-orange border-b border-border">2</td>
+                  <td class="px-3.5 py-2.5 text-sm text-text-secondary border-b border-border hidden sm:table-cell">Dense Ferrium Powder, Dense Originium Powder</td>
+                </tr>
+                <tr>
+                  <td class="px-3.5 py-2.5 text-sm text-text-secondary border-b border-border"><span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-blue-500/10 text-blue-400 text-xs font-semibold whitespace-nowrap">🔧 Workshop</span></td>
+                  <td class="px-3.5 py-2.5 font-mono font-bold text-base text-orange border-b border-border">5</td>
+                  <td class="px-3.5 py-2.5 text-sm text-text-secondary border-b border-border hidden sm:table-cell">Ferrium Part, Ferrium Bottle, Cryston Part, Cryston Bottle, Cryston Fiber</td>
+                </tr>
+                <tr>
+                  <td class="px-3.5 py-2.5 text-sm text-text-secondary border-b border-border"><span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-purple-500/10 text-purple-400 text-xs font-semibold whitespace-nowrap">⚙️ Grinder</span></td>
+                  <td class="px-3.5 py-2.5 font-mono font-bold text-base text-orange border-b border-border">3</td>
+                  <td class="px-3.5 py-2.5 text-sm text-text-secondary border-b border-border hidden sm:table-cell">Ferrium Powder, Originium Powder, Cryston Powder</td>
+                </tr>
+                <tr>
+                  <td class="px-3.5 py-2.5 text-sm text-text-secondary border-b border-border"><span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-orange-500/10 text-orange-400 text-xs font-semibold whitespace-nowrap">🔥 Smelter</span></td>
+                  <td class="px-3.5 py-2.5 font-mono font-bold text-base text-orange border-b border-border">1</td>
+                  <td class="px-3.5 py-2.5 text-sm text-text-secondary border-b border-border hidden sm:table-cell">Liquid Xiranite</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td class="px-3.5 py-2.5 border-t-2 border-accent bg-primary font-bold text-sm">Total</td>
+                  <td class="px-3.5 py-2.5 font-mono font-bold text-base text-orange border-t-2 border-accent bg-primary">16</td>
+                  <td class="px-3.5 py-2.5 border-t-2 border-accent bg-primary hidden sm:table-cell"></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <!-- Connection Schema -->
+          <div class="bg-card border border-border rounded-2xl p-7 overflow-x-auto lg:col-span-2">
+            <h3 class="text-lg font-bold mb-5 text-text-primary">🔗 Connection Schema</h3>
+            <div class="flex flex-col gap-4">
+              <div class="flex items-center gap-3.5 flex-wrap p-4 bg-primary border border-border rounded-lg max-sm:flex-col max-sm:text-center">
+                <div class="flex flex-col gap-1 min-w-[140px]">
+                  <div class="text-sm font-medium px-2.5 py-1 bg-card rounded text-text-muted italic">Ferrium <span class="text-accent font-mono font-bold text-xs">×2</span></div>
+                  <div class="text-sm font-medium px-2.5 py-1 bg-card rounded text-text-muted italic">Origocrust <span class="text-accent font-mono font-bold text-xs">×1</span></div>
+                </div>
+                <div class="text-xl text-accent font-bold max-sm:rotate-90">→</div>
+                <div class="flex flex-col items-center gap-1 px-5 py-3.5 border-2 border-purple-400 rounded-2xl min-w-[110px] text-sm font-semibold text-text-secondary shadow-[0_0_12px_rgba(167,139,250,0.2)]">
+                  <span class="text-xl">⚙️</span>
+                  <span>Grinder</span>
+                  <span class="font-mono font-bold text-orange">×3</span>
+                </div>
+                <div class="text-xl text-accent font-bold max-sm:rotate-90">→</div>
+                <div class="flex flex-col gap-1 min-w-[140px]">
+                  <div class="text-sm font-medium px-2.5 py-1 bg-card rounded">Ferrium Powder</div>
+                  <div class="text-sm font-medium px-2.5 py-1 bg-card rounded">Originium Powder</div>
+                  <div class="text-sm font-medium px-2.5 py-1 bg-card rounded">Cryston Powder</div>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3.5 flex-wrap p-4 bg-primary border border-border rounded-lg max-sm:flex-col max-sm:text-center">
+                <div class="flex flex-col gap-1 min-w-[140px]">
+                  <div class="text-sm font-medium px-2.5 py-1 bg-card rounded">Ferrium Powder</div>
+                  <div class="text-sm font-medium px-2.5 py-1 bg-card rounded">Originium Powder</div>
+                </div>
+                <div class="text-xl text-accent font-bold max-sm:rotate-90">→</div>
+                <div class="flex flex-col items-center gap-1 px-5 py-3.5 border-2 border-cyan-400 rounded-2xl min-w-[110px] text-sm font-semibold text-text-secondary shadow-[0_0_12px_rgba(6,182,212,0.2)]">
+                  <span class="text-xl">🧪</span>
+                  <span>Mixer</span>
+                  <span class="font-mono font-bold text-orange">×2</span>
+                </div>
+                <div class="text-xl text-accent font-bold max-sm:rotate-90">→</div>
+                <div class="flex flex-col gap-1 min-w-[140px]">
+                  <div class="text-sm font-medium px-2.5 py-1 bg-card rounded">Dense Ferrium Powder</div>
+                  <div class="text-sm font-medium px-2.5 py-1 bg-card rounded">Dense Originium Powder</div>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3.5 flex-wrap p-4 bg-primary border border-border rounded-lg max-sm:flex-col max-sm:text-center">
+                <div class="flex flex-col gap-1 min-w-[140px]">
+                  <div class="text-sm font-medium px-2.5 py-1 bg-card rounded">Ferrium Part</div>
+                  <div class="text-sm font-medium px-2.5 py-1 bg-card rounded">Ferrium Bottle</div>
+                  <div class="text-sm font-medium px-2.5 py-1 bg-card rounded">Cryston Part</div>
+                  <div class="text-sm font-medium px-2.5 py-1 bg-card rounded">Cryston Bottle</div>
+                  <div class="text-sm font-medium px-2.5 py-1 bg-card rounded">Cryston Fiber</div>
+                </div>
+                <div class="text-xl text-accent font-bold max-sm:rotate-90">→</div>
+                <div class="flex flex-col items-center gap-1 px-5 py-3.5 border-2 border-yellow-400 rounded-2xl min-w-[110px] text-sm font-semibold text-text-secondary shadow-[0_0_12px_rgba(234,179,8,0.2)]">
+                  <span class="text-xl">🏭</span>
+                  <span>Assembler</span>
+                  <span class="font-mono font-bold text-orange">×5</span>
+                </div>
+                <div class="text-xl text-accent font-bold max-sm:rotate-90">→</div>
+                <div class="flex flex-col gap-1 min-w-[140px]">
+                  <div class="text-sm font-medium px-2.5 py-1 bg-card rounded text-orange font-bold">HC Valley Battery</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recipe database preview -->
+        <h3 class="text-2xl font-bold text-center mb-8">Complete Recipe Database</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div class="bg-card border border-border rounded-lg p-5">
+            <h4 class="text-base font-bold mb-3 text-text-primary">🌱 Greenhouse</h4>
+            <ul class="flex flex-col gap-1">
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Aketine</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Buckflower</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Citrome</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Jincao</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Sandleaf</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Yazhen</li>
+              <li class="text-xs text-text-secondary py-0.5">Bumper-Rich</li>
+            </ul>
+          </div>
+          <div class="bg-card border border-border rounded-lg p-5">
+            <h4 class="text-base font-bold mb-3 text-text-primary">⚙️ Grinder</h4>
+            <ul class="flex flex-col gap-1">
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Ferrium Powder</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Originium Powder</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Origocrust Powder</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Carbon Powder</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Aketine Powder</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Buckflower Powder</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Citrome Powder</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Jincao Powder</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Sandleaf Powder</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Yazhen Powder</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Amethyst Powder</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Cryston Powder</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Ground Buckflower Powder</li>
+              <li class="text-xs text-text-secondary py-0.5">Ground Citrome Powder</li>
+            </ul>
+          </div>
+          <div class="bg-card border border-border rounded-lg p-5">
+            <h4 class="text-base font-bold mb-3 text-text-primary">🔥 Smelter</h4>
+            <ul class="flex flex-col gap-1">
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Steel</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Liquid Xiranite</li>
+              <li class="text-xs text-text-secondary py-0.5">Stabilized Carbon</li>
+            </ul>
+          </div>
+          <div class="bg-card border border-border rounded-lg p-5">
+            <h4 class="text-base font-bold mb-3 text-text-primary">🧪 Mixer</h4>
+            <ul class="flex flex-col gap-1">
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Dense Ferrium Powder</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Dense Originium Powder</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Dense Carbon Powder</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Dense Origocrust Powder</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Jincao Solution</li>
+              <li class="text-xs text-text-secondary py-0.5">Yazhen Solution</li>
+            </ul>
+          </div>
+          <div class="bg-card border border-border rounded-lg p-5">
+            <h4 class="text-base font-bold mb-3 text-text-primary">🔧 Workshop</h4>
+            <ul class="flex flex-col gap-1">
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Ferrium Part</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Steel Part</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Amethyst Part</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Cryston Part</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Ferrium Bottle</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Steel Bottle</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Amethyst Bottle</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Cryston Bottle</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Amethyst Fiber</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Cryston Fiber</li>
+              <li class="text-xs text-text-secondary py-0.5">Packed Origocrust</li>
+            </ul>
+          </div>
+          <div class="bg-card border border-border rounded-lg p-5">
+            <h4 class="text-base font-bold mb-3 text-text-primary">🏭 Assembler</h4>
+            <ul class="flex flex-col gap-1">
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Ferrium Component</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Amethyst Component</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Cryston Component</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Xiranite Component</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">SC Valley Battery</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">LC Valley Battery</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">LC Wuling Battery</li>
+              <li class="text-xs text-text-secondary py-0.5">HC Valley Battery</li>
+            </ul>
+          </div>
+          <div class="bg-card border border-border rounded-lg p-5">
+            <h4 class="text-base font-bold mb-3 text-text-primary">⚗️ Chemical Lab</h4>
+            <ul class="flex flex-col gap-1">
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Buck Capsule [A]</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Buck Capsule [B]</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Buck Capsule [C]</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Canned Citrome [A]</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Canned Citrome [B]</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Canned Citrome [C]</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Jincao Drink</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Yazhen Syringe [C]</li>
+              <li class="text-xs text-text-secondary py-0.5">Industrial Explosive</li>
+            </ul>
+          </div>
+          <div class="bg-card border border-border rounded-lg p-5">
+            <h4 class="text-base font-bold mb-3 text-text-primary">🪨 Raw Materials</h4>
+            <ul class="flex flex-col gap-1">
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Ferrium</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Xiranite</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Origocrust</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Carbon</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Aketine Seed</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Amber Rice Seed</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Buckflower Seed</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Citrome Seed</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Jincao Seed</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Redjade Ginseng Seed</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Reed Rye Seed</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Sandleaf Seed</li>
+              <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Tartpepper Seed</li>
+              <li class="text-xs text-text-secondary py-0.5">Yazhen Seed</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== TESTIMONIALS / SOCIAL PROOF ===== -->
+    <section class="py-24 bg-secondary" id="testimonials">
+      <div class="max-w-[1200px] mx-auto px-6">
+        <h2 class="text-[clamp(1.8rem,4vw,2.8rem)] font-extrabold text-center mb-4 tracking-tight">Trusted by the Community</h2>
+        <p class="text-center text-text-secondary max-w-[600px] mx-auto mb-12 text-base leading-relaxed">
+          Hear from Doctors who've optimized their factory lines with our planner.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+          <div class="bg-card border border-border rounded-2xl p-8 transition-all duration-300 hover:-translate-y-1 hover:border-accent">
+            <div class="text-orange text-lg mb-4 tracking-widest">★★★★★</div>
+            <p class="text-text-secondary text-[0.95rem] leading-relaxed mb-6 italic">
+              "I was spending hours trying to figure out ratios for HC Valley Batteries.
+              This tool calculated everything in seconds. My factory runs at 100% now."
+            </p>
+            <div class="flex items-center gap-3">
+              <div class="w-11 h-11 rounded-full bg-accent text-black flex items-center justify-center font-bold text-sm">DK</div>
+              <div>
+                <div class="font-semibold text-[0.95rem] text-text-primary">DoctorKnight</div>
+                <div class="text-xs text-text-muted">Endfield Beta Tester</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-card border border-border rounded-2xl p-8 transition-all duration-300 hover:-translate-y-1 hover:border-accent">
+            <div class="text-orange text-lg mb-4 tracking-widest">★★★★★</div>
+            <p class="text-text-secondary text-[0.95rem] leading-relaxed mb-6 italic">
+              "The connection schema feature is incredible. I just follow
+              the diagram and my production lines are perfectly balanced every time."
+            </p>
+            <div class="flex items-center gap-3">
+              <div class="w-11 h-11 rounded-full bg-accent text-black flex items-center justify-center font-bold text-sm">AL</div>
+              <div>
+                <div class="font-semibold text-[0.95rem] text-text-primary">AmiyaLover42</div>
+                <div class="text-xs text-text-muted">Factory Enthusiast</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-card border border-border rounded-2xl p-8 transition-all duration-300 hover:-translate-y-1 hover:border-accent">
+            <div class="text-orange text-lg mb-4 tracking-widest">★★★★★</div>
+            <p class="text-text-secondary text-[0.95rem] leading-relaxed mb-6 italic">
+              "Coming from Factorio, I needed a tool like this for Endfield.
+              The recipe tree view feels just like home. Absolutely essential."
+            </p>
+            <div class="flex items-center gap-3">
+              <div class="w-11 h-11 rounded-full bg-accent text-black flex items-center justify-center font-bold text-sm">FG</div>
+              <div>
+                <div class="font-semibold text-[0.95rem] text-text-primary">FactorioGuru</div>
+                <div class="text-xs text-text-muted">Automation Veteran</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-center gap-12 flex-wrap p-8 bg-card border border-border rounded-2xl max-sm:gap-8">
+          <div class="flex flex-col items-center gap-1">
+            <span class="text-3xl font-extrabold text-accent">2,400+</span>
+            <span class="text-xs text-text-muted uppercase tracking-wider">Active Users</span>
+          </div>
+          <div class="flex flex-col items-center gap-1">
+            <span class="text-3xl font-extrabold text-accent">15,000+</span>
+            <span class="text-xs text-text-muted uppercase tracking-wider">Calculations Made</span>
+          </div>
+          <div class="flex flex-col items-center gap-1">
+            <span class="text-3xl font-extrabold text-accent">4.9/5</span>
+            <span class="text-xs text-text-muted uppercase tracking-wider">User Rating</span>
+          </div>
+          <div class="flex flex-col items-center gap-1">
+            <span class="text-3xl font-extrabold text-accent">60+</span>
+            <span class="text-xs text-text-muted uppercase tracking-wider">Recipes Supported</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== TEAM ===== -->
+    <section class="py-24" id="team">
+      <div class="max-w-[1200px] mx-auto px-6">
+        <h2 class="text-[clamp(1.8rem,4vw,2.8rem)] font-extrabold text-center mb-4 tracking-tight">About Me</h2>
+        <p class="text-center text-text-secondary max-w-[600px] mx-auto mb-12 text-base leading-relaxed">
+          Built by an Endfield player, for Endfield players. Passionate about
+          factory optimization and automation.
+        </p>
+
+        <div class="max-w-[480px] mx-auto">
+          <div class="bg-card border border-border rounded-2xl p-8 text-center transition-all duration-300 hover:-translate-y-1 hover:border-accent">
+            <div class="w-[72px] h-[72px] rounded-full bg-accent mx-auto mb-4 flex items-center justify-center">
+              <span class="text-xl font-extrabold text-black">LS</span>
+            </div>
+            <h3 class="text-lg font-bold mb-1 text-text-primary">Luchian Sava</h3>
+            <p class="text-xs text-accent uppercase tracking-wider mb-3">Creator &amp; Developer</p>
+            <p class="text-sm text-text-secondary leading-relaxed">Designed, built, and maintains the entire Endfield Factory Planner — from the recipe database and calculation engine to the UI and deployment. Endfield and Factorio enthusiast.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== PRICING ===== -->
+    <section class="py-24 bg-secondary" id="pricing">
+      <div class="max-w-[1200px] mx-auto px-6">
+        <h2 class="text-[clamp(1.8rem,4vw,2.8rem)] font-extrabold text-center mb-4 tracking-tight">Simple Pricing</h2>
+        <p class="text-center text-text-secondary max-w-[600px] mx-auto mb-12 text-base leading-relaxed">
+          Start for free, upgrade when you need more. No hidden fees.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start max-md:max-w-[400px] max-md:mx-auto">
+          <!-- Free -->
+          <div class="bg-card border border-border rounded-2xl p-9 text-center transition-all duration-300 hover:-translate-y-1 hover:border-accent">
+            <h3 class="text-xl font-bold mb-4 text-text-primary">Free</h3>
+            <div class="mb-7">
+              <span class="text-5xl font-extrabold text-text-primary">$0</span>
+              <span class="text-[0.95rem] text-text-muted">/ forever</span>
+            </div>
+            <ul class="text-left mb-7 flex flex-col gap-2.5">
+              <li class="text-sm text-text-secondary">✓ All 60+ recipes</li>
+              <li class="text-sm text-text-secondary">✓ Recipe tree viewer</li>
+              <li class="text-sm text-text-secondary">✓ Building calculator</li>
+              <li class="text-sm text-text-secondary">✓ Connection schema</li>
+              <li class="text-sm text-text-muted opacity-50">✗ Save/load layouts</li>
+              <li class="text-sm text-text-muted opacity-50">✗ Export to image</li>
+              <li class="text-sm text-text-muted opacity-50">✗ Priority support</li>
+            </ul>
+            <a href="#calculator" class="w-full inline-flex justify-center items-center gap-2 px-8 py-3.5 rounded-lg text-base font-semibold bg-transparent text-accent border-2 border-accent hover:bg-accent hover:text-black transition-all">Get Started</a>
+          </div>
+
+          <!-- Pro -->
+          <div class="bg-card border-2 border-accent rounded-2xl p-9 text-center relative shadow-[0_0_40px_rgba(0,180,216,0.25)] md:scale-105 transition-all duration-300 hover:md:scale-[1.07] hover:-translate-y-1">
+            <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-accent text-black px-5 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Most Popular</div>
+            <h3 class="text-xl font-bold mb-4 text-text-primary">Pro</h3>
+            <div class="mb-7">
+              <span class="text-5xl font-extrabold text-text-primary">$5</span>
+              <span class="text-[0.95rem] text-text-muted">/ month</span>
+            </div>
+            <ul class="text-left mb-7 flex flex-col gap-2.5">
+              <li class="text-sm text-text-secondary">✓ Everything in Free</li>
+              <li class="text-sm text-text-secondary">✓ Save/load layouts</li>
+              <li class="text-sm text-text-secondary">✓ Export to PNG/SVG</li>
+              <li class="text-sm text-text-secondary">✓ Multi-product chains</li>
+              <li class="text-sm text-text-secondary">✓ Priority support</li>
+              <li class="text-sm text-text-muted opacity-50">✗ Team collaboration</li>
+              <li class="text-sm text-text-muted opacity-50">✗ API access</li>
+            </ul>
+            <a href="#contact" class="w-full inline-flex justify-center items-center gap-2 px-8 py-3.5 rounded-lg text-base font-semibold bg-accent text-black border-2 border-accent hover:bg-accent-dark hover:border-accent-dark hover:shadow-[0_0_20px_rgba(0,180,216,0.25)] transition-all">Upgrade to Pro</a>
+          </div>
+
+          <!-- Team -->
+          <div class="bg-card border border-border rounded-2xl p-9 text-center transition-all duration-300 hover:-translate-y-1 hover:border-accent">
+            <h3 class="text-xl font-bold mb-4 text-text-primary">Team</h3>
+            <div class="mb-7">
+              <span class="text-5xl font-extrabold text-text-primary">$12</span>
+              <span class="text-[0.95rem] text-text-muted">/ month</span>
+            </div>
+            <ul class="text-left mb-7 flex flex-col gap-2.5">
+              <li class="text-sm text-text-secondary">✓ Everything in Pro</li>
+              <li class="text-sm text-text-secondary">✓ Team collaboration</li>
+              <li class="text-sm text-text-secondary">✓ Shared layouts</li>
+              <li class="text-sm text-text-secondary">✓ API access</li>
+              <li class="text-sm text-text-secondary">✓ Custom branding</li>
+              <li class="text-sm text-text-secondary">✓ Dedicated support</li>
+              <li class="text-sm text-text-secondary">✓ Early access to features</li>
+            </ul>
+            <a href="#contact" class="w-full inline-flex justify-center items-center gap-2 px-8 py-3.5 rounded-lg text-base font-semibold bg-orange text-black border-2 border-orange hover:bg-orange-dark hover:border-orange-dark transition-all">Contact Sales</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== FAQ ===== -->
+    <section class="py-24" id="faq">
+      <div class="max-w-[1200px] mx-auto px-6">
+        <h2 class="text-[clamp(1.8rem,4vw,2.8rem)] font-extrabold text-center mb-4 tracking-tight">Frequently Asked Questions</h2>
+        <p class="text-center text-text-secondary max-w-[600px] mx-auto mb-12 text-base leading-relaxed">
+          Got questions? We've got answers. If you don't find what you're looking
+          for, reach out through our contact form.
+        </p>
+
+        <div class="max-w-3xl mx-auto flex flex-col gap-3">
+          <details class="bg-card border border-border rounded-lg overflow-hidden group open:border-accent transition-colors">
+            <summary class="px-6 py-5 cursor-pointer font-semibold text-base text-text-primary flex items-center justify-between hover:bg-card-hover transition-colors list-none [&::-webkit-details-marker]:hidden">
+              What is Endfield Factory Planner?
+              <span class="text-accent text-xl font-light group-open:hidden">+</span>
+              <span class="text-accent text-xl font-light hidden group-open:inline">−</span>
+            </summary>
+            <div class="px-6 pb-5">
+              <p class="text-text-secondary text-sm leading-relaxed">It's a free web-based tool that calculates optimal factory layouts for Arknights: Endfield. You select a target item, specify your desired production rate, and it shows you the complete recipe tree, required buildings, and how to connect them.</p>
+            </div>
+          </details>
+
+          <details class="bg-card border border-border rounded-lg overflow-hidden group open:border-accent transition-colors">
+            <summary class="px-6 py-5 cursor-pointer font-semibold text-base text-text-primary flex items-center justify-between hover:bg-card-hover transition-colors list-none [&::-webkit-details-marker]:hidden">
+              How accurate are the calculations?
+              <span class="text-accent text-xl font-light group-open:hidden">+</span>
+              <span class="text-accent text-xl font-light hidden group-open:inline">−</span>
+            </summary>
+            <div class="px-6 pb-5">
+              <p class="text-text-secondary text-sm leading-relaxed">All recipes and production times are sourced directly from the game data. The calculator computes exact ratios to ensure 100% efficiency with zero idle time. Building counts are rounded up to give you the minimum whole buildings needed.</p>
+            </div>
+          </details>
+
+          <details class="bg-card border border-border rounded-lg overflow-hidden group open:border-accent transition-colors">
+            <summary class="px-6 py-5 cursor-pointer font-semibold text-base text-text-primary flex items-center justify-between hover:bg-card-hover transition-colors list-none [&::-webkit-details-marker]:hidden">
+              Is this similar to Factorio's production planner?
+              <span class="text-accent text-xl font-light group-open:hidden">+</span>
+              <span class="text-accent text-xl font-light hidden group-open:inline">−</span>
+            </summary>
+            <div class="px-6 pb-5">
+              <p class="text-text-secondary text-sm leading-relaxed">Yes! Arknights: Endfield shares many factory mechanics with Factorio. If you've used tools like Factorio Calculator or Kirk McDonald's planner, you'll feel right at home. We've adapted the concept specifically for Endfield's recipe chains.</p>
+            </div>
+          </details>
+
+          <details class="bg-card border border-border rounded-lg overflow-hidden group open:border-accent transition-colors">
+            <summary class="px-6 py-5 cursor-pointer font-semibold text-base text-text-primary flex items-center justify-between hover:bg-card-hover transition-colors list-none [&::-webkit-details-marker]:hidden">
+              What buildings are supported?
+              <span class="text-accent text-xl font-light group-open:hidden">+</span>
+              <span class="text-accent text-xl font-light hidden group-open:inline">−</span>
+            </summary>
+            <div class="px-6 pb-5">
+              <p class="text-text-secondary text-sm leading-relaxed">We support all 7 production building types: Greenhouse, Grinder, Smelter, Workshop, Mixer, Assembler, and Chemical Lab. Each building has its own production speed and recipe set built into our database.</p>
+            </div>
+          </details>
+
+          <details class="bg-card border border-border rounded-lg overflow-hidden group open:border-accent transition-colors">
+            <summary class="px-6 py-5 cursor-pointer font-semibold text-base text-text-primary flex items-center justify-between hover:bg-card-hover transition-colors list-none [&::-webkit-details-marker]:hidden">
+              Will you update recipes for new game patches?
+              <span class="text-accent text-xl font-light group-open:hidden">+</span>
+              <span class="text-accent text-xl font-light hidden group-open:inline">−</span>
+            </summary>
+            <div class="px-6 pb-5">
+              <p class="text-text-secondary text-sm leading-relaxed">Absolutely. Our game data specialist monitors every patch and beta update. Recipe changes are typically reflected in our database within 24 hours of a new game version release.</p>
+            </div>
+          </details>
+
+          <details class="bg-card border border-border rounded-lg overflow-hidden group open:border-accent transition-colors">
+            <summary class="px-6 py-5 cursor-pointer font-semibold text-base text-text-primary flex items-center justify-between hover:bg-card-hover transition-colors list-none [&::-webkit-details-marker]:hidden">
+              Can I use this on mobile?
+              <span class="text-accent text-xl font-light group-open:hidden">+</span>
+              <span class="text-accent text-xl font-light hidden group-open:inline">−</span>
+            </summary>
+            <div class="px-6 pb-5">
+              <p class="text-text-secondary text-sm leading-relaxed">Yes! The entire site is fully responsive. The calculator, recipe trees, and connection schemas all adapt to smaller screens so you can plan on the go.</p>
+            </div>
+          </details>
+
+          <details class="bg-card border border-border rounded-lg overflow-hidden group open:border-accent transition-colors">
+            <summary class="px-6 py-5 cursor-pointer font-semibold text-base text-text-primary flex items-center justify-between hover:bg-card-hover transition-colors list-none [&::-webkit-details-marker]:hidden">
+              Is there a way to save my calculations?
+              <span class="text-accent text-xl font-light group-open:hidden">+</span>
+              <span class="text-accent text-xl font-light hidden group-open:inline">−</span>
+            </summary>
+            <div class="px-6 pb-5">
+              <p class="text-text-secondary text-sm leading-relaxed">The free tier shows calculations in real-time but doesn't persist them. With the Pro plan, you can save and load layouts, and even export your schemas as PNG or SVG images.</p>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CONTACT ===== -->
+    <section class="py-24 bg-secondary" id="contact">
+      <div class="max-w-[1200px] mx-auto px-6">
+        <h2 class="text-[clamp(1.8rem,4vw,2.8rem)] font-extrabold text-center mb-4 tracking-tight">Get in Touch</h2>
+        <p class="text-center text-text-secondary max-w-[600px] mx-auto mb-12 text-base leading-relaxed">
+          Have a question, feature request, or just want to say hi?
+          We'd love to hear from you.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-[1.2fr_0.8fr] gap-8">
+          <form class="flex flex-col gap-5" action="#" method="post">
+            <div class="flex gap-4 max-sm:flex-col max-sm:gap-5">
+              <div class="flex flex-col gap-1.5 flex-1">
+                <label for="name" class="text-xs font-semibold text-text-secondary uppercase tracking-wider">Name</label>
+                <input type="text" id="name" placeholder="Your name" class="px-4 py-3 bg-primary border border-border rounded-lg text-text-primary text-[0.95rem] font-sans focus:outline-none focus:border-accent focus:shadow-[0_0_0_3px_rgba(0,180,216,0.25)] transition-all" />
+              </div>
+              <div class="flex flex-col gap-1.5 flex-1">
+                <label for="email" class="text-xs font-semibold text-text-secondary uppercase tracking-wider">Email</label>
+                <input type="email" id="email" placeholder="you@example.com" class="px-4 py-3 bg-primary border border-border rounded-lg text-text-primary text-[0.95rem] font-sans focus:outline-none focus:border-accent focus:shadow-[0_0_0_3px_rgba(0,180,216,0.25)] transition-all" />
+              </div>
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label for="subject" class="text-xs font-semibold text-text-secondary uppercase tracking-wider">Subject</label>
+              <select id="subject" class="px-4 py-3 bg-primary border border-border rounded-lg text-text-primary text-[0.95rem] font-sans focus:outline-none focus:border-accent focus:shadow-[0_0_0_3px_rgba(0,180,216,0.25)] transition-all">
+                <option value="">Select a topic</option>
+                <option value="bug">Bug Report</option>
+                <option value="feature">Feature Request</option>
+                <option value="recipe">Missing Recipe</option>
+                <option value="pricing">Pricing Question</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label for="message" class="text-xs font-semibold text-text-secondary uppercase tracking-wider">Message</label>
+              <textarea id="message" rows="5" placeholder="Tell us what's on your mind..." class="px-4 py-3 bg-primary border border-border rounded-lg text-text-primary text-[0.95rem] font-sans resize-y focus:outline-none focus:border-accent focus:shadow-[0_0_0_3px_rgba(0,180,216,0.25)] transition-all"></textarea>
+            </div>
+            <button type="submit" class="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-lg text-base font-semibold bg-accent text-black border-2 border-accent hover:bg-accent-dark hover:border-accent-dark hover:shadow-[0_0_20px_rgba(0,180,216,0.25)] transition-all cursor-pointer">Send Message</button>
+          </form>
+
+          <div class="flex flex-col gap-4">
+            <div class="bg-card border border-border rounded-lg p-6">
+              <h4 class="text-base font-bold mb-2 text-text-primary">📧 Email</h4>
+              <p class="text-sm text-text-secondary leading-relaxed">support@endfieldplanner.com</p>
+            </div>
+            <div class="bg-card border border-border rounded-lg p-6">
+              <h4 class="text-base font-bold mb-2 text-text-primary">💬 Discord</h4>
+              <p class="text-sm text-text-secondary leading-relaxed mb-3">Join our community server for live help and discussions.</p>
+              <a href="#" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold bg-transparent text-accent border-2 border-accent hover:bg-accent hover:text-black transition-all">Join Discord</a>
+            </div>
+            <div class="bg-card border border-border rounded-lg p-6">
+              <h4 class="text-base font-bold mb-2 text-text-primary">🐛 Bug Reports</h4>
+              <p class="text-sm text-text-secondary leading-relaxed mb-3">Found something wrong? Open an issue on our GitHub repo.</p>
+              <a href="#" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold bg-transparent text-accent border-2 border-accent hover:bg-accent hover:text-black transition-all">GitHub Issues</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== MOBILE-ONLY: Floating CTA ===== -->
+    <div class="fixed bottom-4 left-4 right-4 z-[999] md:hidden" id="mobile-cta">
+      <a href="#calculator" class="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl text-sm font-bold bg-accent text-black shadow-[0_4px_24px_rgba(0,180,216,0.4)] hover:bg-accent-dark transition-all">
+        ⚙ Open Calculator
+      </a>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="pt-16 bg-primary border-t border-border">
+      <div class="max-w-[1200px] mx-auto px-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr] gap-10 mb-10">
+          <div>
+            <a href="#" class="text-xl font-bold text-text-primary inline-block mb-3">⚙ Endfield Planner</a>
+            <p class="text-sm text-text-secondary leading-relaxed">The ultimate factory schematic calculator for Arknights: Endfield. Plan, optimize, and build.</p>
+          </div>
+          <div>
+            <h4 class="text-xs font-bold text-text-primary uppercase tracking-wider mb-4">Navigate</h4>
+            <ul class="flex flex-col gap-2">
+              <li><a href="#hero" class="text-sm text-text-secondary hover:text-accent transition-colors">Home</a></li>
+              <li><a href="#features" class="text-sm text-text-secondary hover:text-accent transition-colors">Features</a></li>
+              <li><a href="#calculator" class="text-sm text-text-secondary hover:text-accent transition-colors">Calculator</a></li>
+              <li><a href="#pricing" class="text-sm text-text-secondary hover:text-accent transition-colors">Pricing</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="text-xs font-bold text-text-primary uppercase tracking-wider mb-4">Resources</h4>
+            <ul class="flex flex-col gap-2">
+              <li><a href="#faq" class="text-sm text-text-secondary hover:text-accent transition-colors">FAQ</a></li>
+              <li><a href="#testimonials" class="text-sm text-text-secondary hover:text-accent transition-colors">Community</a></li>
+              <li><a href="#team" class="text-sm text-text-secondary hover:text-accent transition-colors">Team</a></li>
+              <li><a href="#contact" class="text-sm text-text-secondary hover:text-accent transition-colors">Contact</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="text-xs font-bold text-text-primary uppercase tracking-wider mb-4">Legal</h4>
+            <ul class="flex flex-col gap-2">
+              <li><a href="#" class="text-sm text-text-secondary hover:text-accent transition-colors">Privacy Policy</a></li>
+              <li><a href="#" class="text-sm text-text-secondary hover:text-accent transition-colors">Terms of Service</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="py-6 border-t border-border text-center">
+          <p class="text-xs text-text-muted">&copy; 2026 Endfield Factory Planner. Not affiliated with Hypergryph.</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- ===== PERLICA MASCOT ===== -->
+    <div class="mascot-container" id="mascot">
+      <!-- Chat bubble -->
+      <div class="mascot-bubble" id="mascotBubble">
+        <div class="mascot-bubble-text" id="mascotBubbleText"></div>
+        <div class="mascot-bubble-arrow"></div>
+      </div>
+      <!-- Mascot image -->
+      <div class="mascot-sprite" id="mascotSprite">
+        <img src="mascot/teeth.png" alt="Perlica — Endfield Industries Supervisor" id="mascotImg" class="mascot-img" draggable="false" />
+      </div>
+    </div>
+
+    <script>
+      // ===== NAV TOGGLE (mobile) =====
+      const navToggle = document.getElementById('navToggle');
+      const navLinks = document.getElementById('navLinks');
+      navToggle.addEventListener('click', () => {
+        navLinks.classList.toggle('open');
+      });
+
+      // ===== NAVBAR SCROLL =====
+      const navbar = document.getElementById('navbar');
+      window.addEventListener('scroll', () => {
+        navbar.classList.toggle('scrolled', window.scrollY > 20);
+      });
+
+      // ===== SMOOTH SCROLL — close mobile nav on click =====
+      document.querySelectorAll('#navLinks a').forEach(link => {
+        link.addEventListener('click', () => {
+          navLinks.classList.remove('open');
+        });
+      });
+
+      // ===== PERLICA MASCOT SYSTEM =====
+      (function() {
+        const mascotContainer = document.getElementById('mascot');
+        const mascotBubble = document.getElementById('mascotBubble');
+        const bubbleText = document.getElementById('mascotBubbleText');
+        const mascotSprite = document.getElementById('mascotSprite');
+        const mascotImg = document.getElementById('mascotImg');
+
+        // Perlica's voicelines — curated from her in-game dialogue
+        const greetings = [
+          "How are you holding up, Endministrator?",
+          "Don't push yourself too hard, Endministrator. Keep yourself rested and well.",
+          "Operator Perlica standing by.",
+          "Prepped and ready to go.",
+          "Welcome back to Endfield Industries, Endministrator.",
+        ];
+
+        // Section-specific lines: each section has lines paired with expressions
+        const sectionDialogue = {
+          hero: [
+            { text: "Welcome to the Endfield Factory Planner! Let me show you around.", expr: 'smile' },
+            { text: "This tool helps you master your factory lines — scroll down to see everything it offers!", expr: 'smile' },
+            { text: "60+ recipes, 7 building types, and it's completely free. Not bad, right?", expr: 'thinking' },
+            { text: "Ready to optimize? Hit that Open Calculator button to get started!", expr: 'teeth' },
+          ],
+          features: [
+            { text: "The Recipe Tree Viewer lets you see the full production chain for any item — super useful!", expr: 'thinking' },
+            { text: "The Building Calculator tells you exactly how many of each building you need.", expr: 'smile' },
+            { text: "Connection Schema is my favorite — it shows how to wire everything together.", expr: 'teeth' },
+            { text: "Zero setup required. No downloads, no accounts. Just pick an item and go!", expr: 'smile' },
+            { text: "Max efficiency means 100% uptime — no idle machines, no bottlenecks.", expr: 'thinking' },
+          ],
+          calculator: [
+            { text: "Here's the calculator in action! This example shows the HC Valley Battery chain.", expr: 'thinking' },
+            { text: "Look at that recipe tree — HC Valley Battery needs 5 Assemblers, 2 Mixers, and more.", expr: 'teeth' },
+            { text: "The connection schema shows the exact flow: raw ores go to Grinders, then Mixers, then Assemblers.", expr: 'thinking' },
+            { text: "16 buildings total for one HC Valley Battery line. The planner figured that out instantly!", expr: 'smile' },
+            { text: "Check the recipe database below — every building type and all its craftable items listed.", expr: 'teeth' },
+            { text: "Time to come up with optimum tactics for this factory layout.", expr: 'thinking' },
+          ],
+          testimonials: [
+            { text: "Over 2,400 active users trust this planner. The community loves it!", expr: 'smile' },
+            { text: "4.9 out of 5 user rating — that's some serious approval from fellow Doctors.", expr: 'smile' },
+            { text: "15,000+ calculations made so far. That's a lot of optimized factories!", expr: 'thinking' },
+            { text: "DoctorKnight says their factory runs at 100% now. That's what we aim for!", expr: 'teeth' },
+          ],
+          team: [
+            { text: "This whole thing was built by one person — Luchian Sava. Impressive dedication!", expr: 'smile' },
+            { text: "A solo developer who's both an Endfield and Factorio enthusiast. My kind of person!", expr: 'thinking' },
+            { text: "From the recipe database to the UI — all designed, built, and maintained by one developer.", expr: 'teeth' },
+          ],
+          pricing: [
+            { text: "The Free tier includes all 60+ recipes, the tree viewer, building calculator, and connection schema!", expr: 'smile' },
+            { text: "Pro plan at $5/month adds save/load layouts and PNG/SVG export. Worth considering!", expr: 'thinking' },
+            { text: "The Team plan at $12/month includes collaboration, API access, and dedicated support.", expr: 'teeth' },
+            { text: "Start for free — all the core features are right there at no cost.", expr: 'smile' },
+          ],
+          faq: [
+            { text: "Got questions? This section has answers for the most common ones.", expr: 'thinking' },
+            { text: "Yes, all recipes are sourced directly from game data — 100% accurate!", expr: 'smile' },
+            { text: "It works on mobile too — fully responsive design.", expr: 'teeth' },
+            { text: "Recipe changes from new patches are reflected within 24 hours. Always up to date!", expr: 'thinking' },
+          ],
+          contact: [
+            { text: "Want to reach out? Fill in the form or join the Discord community!", expr: 'smile' },
+            { text: "Found a bug? You can open a GitHub issue — the team responds quickly.", expr: 'thinking' },
+            { text: "Feature requests are welcome too! Just select it from the subject dropdown.", expr: 'teeth' },
+            { text: "Have questions? Send a message — the team would love to hear from you.", expr: 'smile' },
+          ],
+        };
+
+        // Image sets for mouth animation
+        // Each array: [closed, half_open, open]
+        const expressions = {
+          teeth: ['mascot/teeth.png', 'mascot/teeth_half_open.png', 'mascot/teeth_open.png'],
+          smile: ['mascot/smile.png', 'mascot/smile_half_open.png', 'mascot/smile_open.png'],
+          thinking: ['mascot/thinking.png', 'mascot/thinking_half_open.png', 'mascot/thinking_open.png'],
+        };
+
+        let currentExpression = 'teeth';
+        let mouthInterval = null;
+        let isTalking = false;
+        let isBusy = false;
+        let onRightSide = true;
+        let currentSection = 'hero';
+        let sectionUsedIndexes = {}; // track used lines per section
+
+        // Always appear on the right side
+        function pickSide() {
+          onRightSide = true;
+          mascotContainer.classList.remove('left-side');
+          mascotContainer.classList.add('right-side');
+          updateFlip();
+        }
+
+        // Teeth faces left natively → flip on right.
+        // Smile and thinking face right natively → flip on left.
+        function updateFlip() {
+          if (currentExpression === 'teeth') {
+            mascotImg.style.transform = onRightSide ? 'scaleX(-1)' : '';
+          } else {
+            mascotImg.style.transform = onRightSide ? '' : 'scaleX(-1)';
+          }
+        }
+
+        function setExpression(name) {
+          currentExpression = name;
+          mascotImg.src = expressions[name][0];
+          updateFlip();
+        }
+
+        function startTalking() {
+          if (isTalking) return;
+          isTalking = true;
+          // 0=closed, 1=half_open, 2=open — varied pattern + varied timing for natural speech rhythm
+          const talkPattern = [
+            { frame: 0, delay: 60 },
+            { frame: 2, delay: 80 },
+            { frame: 1, delay: 55 },
+            { frame: 2, delay: 90 },
+            { frame: 0, delay: 70 },
+            { frame: 0, delay: 100 },
+            { frame: 1, delay: 65 },
+            { frame: 2, delay: 75 },
+            { frame: 1, delay: 55 },
+            { frame: 0, delay: 85 },
+            { frame: 0, delay: 110 },
+            { frame: 2, delay: 70 },
+          ];
+          let step = 0;
+          const frames = expressions[currentExpression];
+
+          function scheduleNext() {
+            if (!isTalking) return;
+            const { frame, delay } = talkPattern[step];
+            mascotImg.src = frames[frame];
+            updateFlip();
+            step = (step + 1) % talkPattern.length;
+            mouthInterval = setTimeout(scheduleNext, delay);
+          }
+          scheduleNext();
+        }
+
+        function stopTalking() {
+          isTalking = false;
+          clearTimeout(mouthInterval);
+          mascotImg.src = expressions[currentExpression][0];
+          updateFlip();
+        }
+
+        function showBubble(text, expression, duration) {
+          if (isBusy) return;
+          isBusy = true;
+          setExpression(expression);
+          bubbleText.textContent = text;
+          mascotBubble.classList.add('visible');
+          startTalking();
+
+          const wordCount = text.split(/\s+/).length;
+          const readTime = duration || (wordCount * 250 + 400);
+
+          setTimeout(() => { stopTalking(); }, readTime);
+          setTimeout(() => {
+            mascotBubble.classList.remove('visible');
+            isBusy = false;
+          }, readTime + 1500);
+        }
+
+        function getRandomLine(arr) {
+          return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        // Pick an unused line from a section, reset when all used
+        function pickSectionLine(section) {
+          const lines = sectionDialogue[section];
+          if (!lines || lines.length === 0) return null;
+          if (!sectionUsedIndexes[section]) sectionUsedIndexes[section] = [];
+          const used = sectionUsedIndexes[section];
+          if (used.length >= lines.length) used.length = 0; // reset
+          const available = lines.map((_, i) => i).filter(i => !used.includes(i));
+          const idx = available[Math.floor(Math.random() * available.length)];
+          used.push(idx);
+          return lines[idx];
+        }
+
+        // Speak about the current section
+        function speakAboutSection() {
+          if (isBusy) return;
+          const line = pickSectionLine(currentSection);
+          if (line) showBubble(line.text, line.expr);
+        }
+
+        // Section detection via cursor position
+        const sectionIds = ['hero', 'features', 'calculator', 'testimonials', 'team', 'pricing', 'faq', 'contact'];
+        const sectionElements = sectionIds.map(id => document.getElementById(id)).filter(Boolean);
+
+        function getSectionAtCursor(x, y) {
+          for (let i = sectionElements.length - 1; i >= 0; i--) {
+            const rect = sectionElements[i].getBoundingClientRect();
+            if (y >= rect.top && y <= rect.bottom) {
+              return sectionElements[i].id;
+            }
+          }
+          // Fallback: find closest section to cursor Y
+          let closest = 'hero';
+          let minDist = Infinity;
+          for (const el of sectionElements) {
+            const rect = el.getBoundingClientRect();
+            const mid = (rect.top + rect.bottom) / 2;
+            const dist = Math.abs(y - mid);
+            if (dist < minDist) { minDist = dist; closest = el.id; }
+          }
+          return closest;
+        }
+
+        // Track cursor and update current section
+        document.addEventListener('mousemove', (e) => {
+          const section = getSectionAtCursor(e.clientX, e.clientY);
+          if (section !== currentSection) {
+            currentSection = section;
+            setTimeout(() => speakAboutSection(), 800);
+          }
+        });
+
+        // Appear after delay (3 seconds) with greeting
+        pickSide();
+        setTimeout(() => {
+          mascotContainer.classList.add('visible');
+          setTimeout(() => {
+            showBubble(getRandomLine(greetings), 'smile');
+          }, 800);
+        }, 3000);
+
+      })();
+    </script>
+
+  </body>
+</html>
