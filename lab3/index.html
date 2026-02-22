@@ -792,7 +792,7 @@
       </div>
       <!-- Mascot image -->
       <div class="mascot-sprite" id="mascotSprite">
-        <img src="mascot/blank.png" alt="Perlica — Endfield Industries Supervisor" id="mascotImg" class="mascot-img" draggable="false" />
+        <img src="mascot/teeth.png" alt="Perlica — Endfield Industries Supervisor" id="mascotImg" class="mascot-img" draggable="false" />
       </div>
     </div>
 
@@ -834,89 +834,154 @@
           "Welcome back to Endfield Industries, Endministrator.",
         ];
 
-        const idleLines = [
-          "Since your awakening, Dijiang is becoming a livelier place with every passing day... And this makes me hopeful for the future.",
-          "You're looking much better, Endmin. Feel free to talk to me if there's anything you need.",
-          "Your needs are our top priority, Endmin. To see them met, I'll gladly set aside other tasks.",
-          "The Central Ring is always this busy. It is a symbol of our obligations to this world.",
-          "Mineral ores form the foundation of industry. We should gather more.",
-          "An efficient assignment. I shall do my best.",
-          "All variables within estimates.",
-          "Endfield Crisis Team ready for action.",
-        ];
-
-        const factoryLines = [
-          "The Automated Industry Complex is the future of production. Let me help you optimize these factory lines.",
-          "Time to come up with optimum tactics for this factory layout.",
-          "The fruit of the Automated Industry Complex — every building placed with purpose.",
-          "Originium is information. It is the crystallized manifestation of every ephemeral idea.",
-          "Endfield Industries spent our recent years focusing on the Automated Industry Complex.",
-          "Now I would just need to tune this... to maximize the spoils of our victories.",
-        ];
-
-        const hoverLines = [
-          "Your approval is much appreciated, Endministrator. I shall carry on with greater effort.",
-          "Though I am a little too young and untested, my mind is set. I shall fulfill my duties as Supervisor.",
-          "I really appreciate this, Endmin. I shall treasure it well.",
-          "We once fought on and never gave up... for it is our wish to witness your return.",
-          "Once again you've placed your faith in me, Endministrator... I shall live up to your expectations.",
-          "R&R complete. Team, make ready to continue our operations.",
-          "This is the power of Endfield.",
-          "Outstanding technique. Impressive.",
-          "A definitive outcome achieved through strong teamwork.",
-        ];
-
-        const allLines = [...greetings, ...idleLines, ...factoryLines, ...hoverLines];
+        // Section-specific lines: each section has lines paired with expressions
+        const sectionDialogue = {
+          hero: [
+            { text: "Welcome to the Endfield Factory Planner! Let me show you around.", expr: 'smile' },
+            { text: "This tool helps you master your factory lines — scroll down to see everything it offers!", expr: 'smile' },
+            { text: "60+ recipes, 7 building types, and it's completely free. Not bad, right?", expr: 'thinking' },
+            { text: "Ready to optimize? Hit that Open Calculator button to get started!", expr: 'teeth' },
+          ],
+          features: [
+            { text: "The Recipe Tree Viewer lets you see the full production chain for any item — super useful!", expr: 'thinking' },
+            { text: "The Building Calculator tells you exactly how many of each building you need.", expr: 'smile' },
+            { text: "Connection Schema is my favorite — it shows how to wire everything together.", expr: 'teeth' },
+            { text: "Zero setup required. No downloads, no accounts. Just pick an item and go!", expr: 'smile' },
+            { text: "Max efficiency means 100% uptime — no idle machines, no bottlenecks.", expr: 'thinking' },
+          ],
+          calculator: [
+            { text: "Here's the calculator in action! This example shows the HC Valley Battery chain.", expr: 'thinking' },
+            { text: "Look at that recipe tree — HC Valley Battery needs 5 Assemblers, 2 Mixers, and more.", expr: 'teeth' },
+            { text: "The connection schema shows the exact flow: raw ores go to Grinders, then Mixers, then Assemblers.", expr: 'thinking' },
+            { text: "16 buildings total for one HC Valley Battery line. The planner figured that out instantly!", expr: 'smile' },
+            { text: "Check the recipe database below — every building type and all its craftable items listed.", expr: 'teeth' },
+            { text: "Time to come up with optimum tactics for this factory layout.", expr: 'thinking' },
+          ],
+          testimonials: [
+            { text: "Over 2,400 active users trust this planner. The community loves it!", expr: 'smile' },
+            { text: "4.9 out of 5 user rating — that's some serious approval from fellow Doctors.", expr: 'smile' },
+            { text: "15,000+ calculations made so far. That's a lot of optimized factories!", expr: 'thinking' },
+            { text: "DoctorKnight says their factory runs at 100% now. That's what we aim for!", expr: 'teeth' },
+          ],
+          team: [
+            { text: "This whole thing was built by one person — Luchian Sava. Impressive dedication!", expr: 'smile' },
+            { text: "A solo developer who's both an Endfield and Factorio enthusiast. My kind of person!", expr: 'thinking' },
+            { text: "From the recipe database to the UI — all designed, built, and maintained by one developer.", expr: 'teeth' },
+          ],
+          pricing: [
+            { text: "The Free tier includes all 60+ recipes, the tree viewer, building calculator, and connection schema!", expr: 'smile' },
+            { text: "Pro plan at $5/month adds save/load layouts and PNG/SVG export. Worth considering!", expr: 'thinking' },
+            { text: "The Team plan at $12/month includes collaboration, API access, and dedicated support.", expr: 'teeth' },
+            { text: "Start for free — all the core features are right there at no cost.", expr: 'smile' },
+          ],
+          faq: [
+            { text: "Got questions? This section has answers for the most common ones.", expr: 'thinking' },
+            { text: "Yes, all recipes are sourced directly from game data — 100% accurate!", expr: 'smile' },
+            { text: "It works on mobile too — fully responsive design.", expr: 'teeth' },
+            { text: "Recipe changes from new patches are reflected within 24 hours. Always up to date!", expr: 'thinking' },
+          ],
+          contact: [
+            { text: "Want to reach out? Fill in the form or join the Discord community!", expr: 'smile' },
+            { text: "Found a bug? You can open a GitHub issue — the team responds quickly.", expr: 'thinking' },
+            { text: "Feature requests are welcome too! Just select it from the subject dropdown.", expr: 'teeth' },
+            { text: "Have questions? Send a message — the team would love to hear from you.", expr: 'smile' },
+          ],
+        };
 
         // Image sets for mouth animation
+        // Each array: [closed, half_open, open]
         const expressions = {
-          blank: ['mascot/blank.png', 'mascot/blank_half_open.png', 'mascot/blank_open.png'],
+          teeth: ['mascot/teeth.png', 'mascot/teeth_half_open.png', 'mascot/teeth_open.png'],
           smile: ['mascot/smile.png', 'mascot/smile_half_open.png', 'mascot/smile_open.png'],
           thinking: ['mascot/thinking.png', 'mascot/thinking_half_open.png', 'mascot/thinking_open.png'],
         };
 
-        let currentExpression = 'blank';
+        let currentExpression = 'teeth';
         let mouthInterval = null;
         let isTalking = false;
-        let isHovered = false;
-        let idleTimer = null;
+        let isBusy = false;
+        let onRightSide = true;
+        let currentSection = 'hero';
+        let sectionUsedIndexes = {}; // track used lines per section
+
+        // Always appear on the right side
+        function pickSide() {
+          onRightSide = true;
+          mascotContainer.classList.remove('left-side');
+          mascotContainer.classList.add('right-side');
+          updateFlip();
+        }
+
+        // Teeth faces left natively → flip on right.
+        // Smile and thinking face right natively → flip on left.
+        function updateFlip() {
+          if (currentExpression === 'teeth') {
+            mascotImg.style.transform = onRightSide ? 'scaleX(-1)' : '';
+          } else {
+            mascotImg.style.transform = onRightSide ? '' : 'scaleX(-1)';
+          }
+        }
 
         function setExpression(name) {
           currentExpression = name;
           mascotImg.src = expressions[name][0];
+          updateFlip();
         }
 
         function startTalking() {
           if (isTalking) return;
           isTalking = true;
-          let frame = 0;
+          // 0=closed, 1=half_open, 2=open — varied pattern + varied timing for natural speech rhythm
+          const talkPattern = [
+            { frame: 0, delay: 60 },
+            { frame: 2, delay: 80 },
+            { frame: 1, delay: 55 },
+            { frame: 2, delay: 90 },
+            { frame: 0, delay: 70 },
+            { frame: 0, delay: 100 },
+            { frame: 1, delay: 65 },
+            { frame: 2, delay: 75 },
+            { frame: 1, delay: 55 },
+            { frame: 0, delay: 85 },
+            { frame: 0, delay: 110 },
+            { frame: 2, delay: 70 },
+          ];
+          let step = 0;
           const frames = expressions[currentExpression];
-          mouthInterval = setInterval(() => {
-            frame = (frame + 1) % frames.length;
+
+          function scheduleNext() {
+            if (!isTalking) return;
+            const { frame, delay } = talkPattern[step];
             mascotImg.src = frames[frame];
-          }, 150);
+            updateFlip();
+            step = (step + 1) % talkPattern.length;
+            mouthInterval = setTimeout(scheduleNext, delay);
+          }
+          scheduleNext();
         }
 
         function stopTalking() {
           isTalking = false;
-          clearInterval(mouthInterval);
+          clearTimeout(mouthInterval);
           mascotImg.src = expressions[currentExpression][0];
+          updateFlip();
         }
 
-        function showBubble(text, duration) {
+        function showBubble(text, expression, duration) {
+          if (isBusy) return;
+          isBusy = true;
+          setExpression(expression);
           bubbleText.textContent = text;
           mascotBubble.classList.add('visible');
           startTalking();
 
-          const readTime = Math.min(duration || (text.length * 50 + 1500), 8000);
-          setTimeout(() => {
-            stopTalking();
-          }, readTime);
+          const wordCount = text.split(/\s+/).length;
+          const readTime = duration || (wordCount * 250 + 400);
 
+          setTimeout(() => { stopTalking(); }, readTime);
           setTimeout(() => {
-            if (!isHovered) {
-              mascotBubble.classList.remove('visible');
-            }
+            mascotBubble.classList.remove('visible');
+            isBusy = false;
           }, readTime + 1500);
         }
 
@@ -924,58 +989,65 @@
           return arr[Math.floor(Math.random() * arr.length)];
         }
 
-        function scheduleIdleLine() {
-          clearTimeout(idleTimer);
-          const delay = 20000 + Math.random() * 25000;
-          idleTimer = setTimeout(() => {
-            if (!isHovered) {
-              const expr = Math.random() > 0.5 ? 'thinking' : 'blank';
-              setExpression(expr);
-              showBubble(getRandomLine([...idleLines, ...factoryLines]));
-              setTimeout(() => {
-                if (!isHovered) setExpression('blank');
-              }, 10000);
-            }
-            scheduleIdleLine();
-          }, delay);
+        // Pick an unused line from a section, reset when all used
+        function pickSectionLine(section) {
+          const lines = sectionDialogue[section];
+          if (!lines || lines.length === 0) return null;
+          if (!sectionUsedIndexes[section]) sectionUsedIndexes[section] = [];
+          const used = sectionUsedIndexes[section];
+          if (used.length >= lines.length) used.length = 0; // reset
+          const available = lines.map((_, i) => i).filter(i => !used.includes(i));
+          const idx = available[Math.floor(Math.random() * available.length)];
+          used.push(idx);
+          return lines[idx];
         }
 
-        // Hover interaction
-        mascotSprite.addEventListener('mouseenter', () => {
-          isHovered = true;
-          setExpression('smile');
-          showBubble(getRandomLine(hoverLines));
-        });
+        // Speak about the current section
+        function speakAboutSection() {
+          if (isBusy) return;
+          const line = pickSectionLine(currentSection);
+          if (line) showBubble(line.text, line.expr);
+        }
 
-        mascotSprite.addEventListener('mouseleave', () => {
-          isHovered = false;
-          setTimeout(() => {
-            if (!isHovered) {
-              mascotBubble.classList.remove('visible');
-              stopTalking();
-              setExpression('blank');
+        // Section detection via cursor position
+        const sectionIds = ['hero', 'features', 'calculator', 'testimonials', 'team', 'pricing', 'faq', 'contact'];
+        const sectionElements = sectionIds.map(id => document.getElementById(id)).filter(Boolean);
+
+        function getSectionAtCursor(x, y) {
+          for (let i = sectionElements.length - 1; i >= 0; i--) {
+            const rect = sectionElements[i].getBoundingClientRect();
+            if (y >= rect.top && y <= rect.bottom) {
+              return sectionElements[i].id;
             }
-          }, 2000);
+          }
+          // Fallback: find closest section to cursor Y
+          let closest = 'hero';
+          let minDist = Infinity;
+          for (const el of sectionElements) {
+            const rect = el.getBoundingClientRect();
+            const mid = (rect.top + rect.bottom) / 2;
+            const dist = Math.abs(y - mid);
+            if (dist < minDist) { minDist = dist; closest = el.id; }
+          }
+          return closest;
+        }
+
+        // Track cursor and update current section
+        document.addEventListener('mousemove', (e) => {
+          const section = getSectionAtCursor(e.clientX, e.clientY);
+          if (section !== currentSection) {
+            currentSection = section;
+            setTimeout(() => speakAboutSection(), 800);
+          }
         });
 
-        // Click interaction
-        mascotSprite.addEventListener('click', () => {
-          const expr = ['smile', 'thinking', 'blank'][Math.floor(Math.random() * 3)];
-          setExpression(expr);
-          showBubble(getRandomLine(allLines));
-        });
-
-        // Appear after delay (3 seconds)
+        // Appear after delay (3 seconds) with greeting
+        pickSide();
         setTimeout(() => {
           mascotContainer.classList.add('visible');
           setTimeout(() => {
-            setExpression('smile');
-            showBubble(getRandomLine(greetings));
-            setTimeout(() => {
-              if (!isHovered) setExpression('blank');
-            }, 8000);
+            showBubble(getRandomLine(greetings), 'smile');
           }, 800);
-          scheduleIdleLine();
         }, 3000);
 
       })();
