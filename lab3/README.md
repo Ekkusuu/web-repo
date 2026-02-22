@@ -25,7 +25,7 @@ Perlica is the Endfield Industries Supervisor from *Arknights: Endfield*, making
 **Expressions:**
 - `smile` — greetings and positive feature highlights
 - `thinking` — calculator tips, factory logic, analytical observations
-- `teeth` — neutral informational lines
+- `teeth smile` — neutral informational lines
 
 ## Sections
 
@@ -57,8 +57,6 @@ Perlica is the Endfield Industries Supervisor from *Arknights: Endfield*, making
 ### Mascot — Greeting
 ![Perlica greeting the user](screenshots/text1.png)
 
-### Mascot — Talking
 ![Perlica talking with chat bubble](screenshots/text2.png)
 
-### Mascot — Expression
 ![Perlica expression variant](screenshots/text3.png)
