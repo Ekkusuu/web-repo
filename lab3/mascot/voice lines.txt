@@ -1,0 +1,245 @@
+Operation prep 1
+All Operators accounted for. The team is ready for the mission.
+To be added
+Operation prep 2
+Endfield Crisis Team ready for action.
+To be added
+Switching Weapon
+Time to come up with optimum tactics for wielding this weapon.
+To be added
+Switching Gear
+The fruit of the Automated Industry Complex.
+To be added
+Ability Matrix Activation
+Now I would just need to tune this ... to maximize the spoils of our victories.
+To be added
+Watching Combat Records
+We once fought on and never gave up ... for it is our wish to witness your return.
+To be added
+Operator Promotion 1
+Your approval is much appreciated, Endministrator. I shall carry on with greater effort.
+To be added
+Operator Promotion 2
+Though I am a little too young and untested, my mind is set. I shall fulfill my duties as Supervisor of Endfield Industries.
+To be added
+Operator Promotion 3
+Once again you've placed your faith in me, Endministrator... I shall live up to your expectations.
+To be added
+Operator Promotion 4
+I'm alright. Hearing your encouraging words just made me ... nostalgic about the past. It used to be the only reason I kept going. Now, I'm glad that I get to lead Endfield Industries, and stand by your side.
+To be added
+Operator Reporting for Duty
+I have always believed that you will lead us upon the right path once more. Welcome back to Endfield Industries, Endministrator.
+To be added
+Standing by 1
+Prepped and ready to go.
+To be added
+Standing by 2
+Operator Perlica standing by.
+To be added
+Assigning to Facility
+An efficient assignment. I shall do my best.
+To be added
+Greeting 1
+How are you holding up, Endministrator?
+To be added
+Greeting 2
+Don't push yourself too hard, Endministrator. Keep yourself rested and well.
+To be added
+Dijiang Idle Chatter 1
+Since your awakening, Dijiang is becoming a livelier place with every passing day... And this makes me hopeful for the future, Endministrator.
+To be added
+Dijiang Idle Chatter 2
+You're looking much better, Endmin. Feel free to talk to me if there's anything you need.
+To be added
+Dijiang Idle Chatter 3
+Your needs are our top priority, Endmin. To see them met, I'll gladly set aside other tasks ... or ask Fiona to handle them.
+To be added
+Dijiang Idle Chatter 4
+The Central Ring is always this busy. It is a symbol of our obligations to this world. For more than a century, generations of Endfielders have devoted themselves to reviving the Civilization Band. Perhaps a day will come when Dijiang can finally land, and take a well-deserved rest within the haven we've built.
+To be added
+Dijiang Idle Chatter 5
+Many operators wouldn't spend too much time aboard Dijiang, especially our elites. They are sorely needed by the Civilization Band where danger lurks, and not by this orbital refuge. No matter, you will meet them soon. I shall make the proper introductions when the time comes.
+To be added
+Dijiang Idle Chatter 6
+When I last had a conversation like this, I was a girl barely half my current height. Times have changed. Dijiang received plenty of modifications and I grew up... But you, Endministrator... You remain the same as before.
+To be added
+Offering Gifts
+I've requested for a set of supplies on your behalf, Endmin. I hope it can help. There are times when you overwork yourself. But do remember: it is alright to count on me and Endfield Industries.
+To be added
+Accepting Gifts
+I really appreciate this, Endmin. I shall treasure it well.
+To be added
+Trust Dialog 1
+Endmin, don't miss your physical exams, and please avoid overworking yourself. Most importantly, never abuse your Originium Arts — Should other operators request your assistance to fix a Delta Bot again ... just turn them down!
+To be added
+Trust Dialog 2
+When I was a little girl, I explored every corner of Dijiang and nicknamed every cabin. It was a time when I believed I would never see the surface again ... a time when I felt that Dijiang was my home. But to better support you, I left the ship and traveled across many places on Talos-II. Now, Dijiang looks more cramped than I remember ... but to me, it's still a vessel capable of holding the entirety of my memories.
+To be added
+Trust Dialog 3
+Chen is actually the first operator I personally recruited since becoming Supervisor of Endfield Industries. She is also my best friend. I ran into her unexpectedly during a joint project with HAS... Hehe. She kept saying I always wore a stiff face, and only decided to help because she got too worried about me. Perhaps it was the truth. I was an untested Supervisor and there were so many things I had to pick up. I barely had time to focus on the people and things around me. Her smile and candid personality probably kept me from taking many wrong turns.
+To be added
+Trust Dialog 4
+There's no need for concern, Endmin. Don't take Chen's teasing about me too seriously, of course I have off hours. What do I do for vacation? Hmm, mostly reading — literature and theoretical science, since they're relevant to upcoming work. It's not a break if I'm doing things for work? Well then ... I enjoy racing through frontier lands, alone on my bike. Endmin ... you're the only one who knows about this. The other operators will get worried if they learn about this secret. I know where they're coming from, but part of me yearns to hear the winds of this planet.
+To be added
+Trust Dialog 5
+Are you awake, Endmin? You should turn in early for today if you're feeling tired. I caught a glimpse of your sleepy face just now... I've actually been looking at that same sleepy face of yours for a decade. Back then, I visited the Sarcophagus with the other children, just to see you hibernating peacefully. But as time passed, I was the only one left. I'd come by often — after I passed the operator trials, after I became the Supervisor... Don't feel bad about this, Endmin. I actually have plans to tell you everything once we restore your memories.
+To be added
+Chat 1
+Endfield Industries is partnering with many organizations upon this land. The Accordatories, definitely. The TGCC is the best provider of modern logistics and supplies, and the UWST is a most reliable friend in the frontier. The HAS is always perched at the edge of the latest tech breakthrough, and we openly share our scientific findings with each other. Allies like these guarantee our ability to stand strong and firm in this cruel, new home.
+To be added
+Chat 2
+Never met Fiona in person? Ah... Fiona's condition is quite ... special. She told me that she enjoys being on air and connected with everyone via our combat comms. And Fiona is rather worried that if you ... met her in person, you might start treating her very differently.
+To be added
+Chat 3
+I look like a maestra in battle? I picked up the habit during combat training... They say Leithanians during the Age of Terra combined music with their innate gift for the Arts. My Arts instructor also happened to be a gifted musician. My aptitude for combat wasn't particularly outstanding, but I quickly mastered the techniques when I interpreted the flow of Arts as musical notations and tempos.
+To be added
+Chat 4
+The Aurora is also visible from Dijiang. It is the anomalous flower that bloomed upon Talos-II. The Northern Veil is enveloped in Æther, making the Aurora look like a wall that blocks our way. A utopia for countless souls once existed on the other side of this wall... Though naught is left but devastation... and enemies that occupy the ruins.
+To be added
+Chat 5
+What vendors should we add to Dijiang? Any ideas, Endmin? Oh, nothing special, just another regular survey from the Business Office. Dijiang doesn't have a large lounge area, and our resident crew isn't that big either... Auto-vendors work fine, but they do lack that human touch... What about a cozy café, Endmin? Would you grab a cup of coffee while you're on break?
+To be added
+Topic: Their First Encounter
+Apologies, Endministrator... I know it's selfish, but I'd rather not bring up our past right now. I just hope you can find those memories on your own. This isn't a request from the Supervisor of Endfield Industries — It's from me.
+To be added
+Topic: Dijiang
+Impressive, isn't she? Picture the Techno-Protocol as the Originium Network, and Dijiang would be the Protorig master server. She is also the embodiment of the Terran Civilization that traveled through the Cosmic Gate, as well as all the events that followed our crossing. Dijiang has endured war and chaos, and now she cruises in the sea of outer space. Perhaps a day will come when humanity frees itself from the shackles of gravity ... and walks amidst the stars as our ancestors have dreamed.
+To be added
+Topic: M3
+There was a time when I addressed M3 as my elder sister. But she put an end to that after I became an actual Endfield operator. Truth be told, she felt like a true sister of mine. Kind, gentle, optimistic, and skilled in everything. I don't see her on Dijiang much these days. I know she is carrying out a mission of her own... And if possible, I hope that Endfield can share her burden.
+To be added
+Topic: Talos-II and Terra
+Very few people know that this distant world of Talos-II is actually where we all came from. And despite this knowledge, almost none could give up their nostalgia for Terra. Leaving Terra for Talos-II is akin to a babe who left its soft, comfortable cradle for their mother's embrace... But I felt the opposite. It was on Talos-II where I joined Endfield and met the Endministrator. Terra is now little more than a symbol of my mission.
+To be added
+Topic: Zeroth Directive
+I wasn't the only participant of the Zeroth Directive. But none of us knew the missions of the others. In the past, you always had plenty of preparations in place, even before you became aware of your situation. For this awakening, I've rehearsed executing the Zeroth Directive countless times... But when I met you again in person, all those words flowed out of me naturally with great ease.
+To be added
+Topic: Automated Industry Complex
+Endfield Industries spent our recent years focusing on the Automated Industry Complex. The goals of the AIC are evident in its name, and I believe you have extensive first-hand experience with it. Needless to say, our obsession with the Techno-Protocol isn't just about this. Originium is information. It is the crystallized manifestation of every ephemeral idea. Its final embodiment ... will let us "manufacture" and "construct" more than just industrial products.
+To be added
+Topic: Endfield Crisis Team
+You founded the Crisis Team, Endmin. It is a special operations team that you've led in person. The Crisis Team was a team of elites famed throughout Talos-II. Team leadership was later transferred to the Founder and M3, but its purpose and function still remained the same. When I became Supervisor and took over the team's leadership, I sorely felt the pressure from commanding a team of heroes ... as well as their fiery passion as they threw themselves in battle for our selfless goal and ideal.
+To be added
+Topic: Supervisor of Endfield Industries
+I heard M3 say that Endfield did not have a Supervisor back then. The Endministrator led the entire company, while M3, the Founder, and our elite operators provided support. We called this decision-making organization the Provenance. The Provenance managed the three major nexuses and has kept Endfield running till this day... Endfield was forced to change while you slept, but these changes kept us going ... and this was how I could stand by your side.
+To be added
+Resource/Collectible Detected 1
+Something seems to warrant closer scrutiny...
+To be added
+Resource/Collectible Detected 2
+We seem to have high value supplies nearby. Keep an eye out for those.
+To be added
+Unexplored Area Detected
+Another area uncharted by humanity.
+To be added
+Powerful Enemy Discovered
+Stay alert. This hostile poses significant threat.
+To be added
+Mining 1
+Mineral ores form the foundation of industry. We should gather more.
+To be added
+Mining 2
+Let me help you.
+To be added
+Opening a Crate
+An impressive acquisition.
+To be added
+Acquiring Aurylene
+Aurylene is a fragment of a shattered universe. This one traveled massive distances to be here, right before us.
+To be added
+Eliminating the Blight
+The Blight no longer threatens the Endfield of today.
+To be added
+Rest
+R&R complete. Team, make ready to continue our operations.
+To be added
+Tactical Use 1
+Patching up. Stay alert.
+To be added
+Tactical Use 2
+Conditions stabilized.
+To be added
+Warning Teammate
+Incoming! Unknown hazard!
+To be added
+Injured
+I'm good... Focus on our objective...
+To be added
+0 HP
+Protect yourself... Endmin...
+To be added
+Team Encouragement 1
+Outstanding technique. Impressive.
+To be added
+Team Encouragement 2
+We are united as one!
+To be added
+Encouragement Response 1
+We did it as a team.
+To be added
+Encouragement Response 2
+This is the power of Endfield.
+To be added
+Combat Begins 1
+Engaging. Stay safe, team.
+To be added
+Combat Begins 2
+All variables within estimates.
+To be added
+Combat Victory 1
+A definitive outcome achieved through strong teamwork.
+To be added
+Combat Victory 2
+Verify and report personal status, team.
+To be added
+Combat Victory 3
+Violence is never our objective. Let's press forward.
+To be added
+Combat Victory 4
+Check all injuries. Assume defensive formation and restore combat readiness.
+To be added
+Combat Defeat
+We won't let this happen again...
+To be added
+Final Strike 1
+Concerto!
+To be added
+Final Strike 2
+Sequence!
+To be added
+Battle Skill 1
+Target locked!
+To be added
+Battle Skill 2
+Strike command!
+To be added
+Battle Skill 3
+Terminate!
+To be added
+Combo Skill Ready 1
+Arts Unit hot!
+To be added
+Combo Skill Ready 2
+Arts support ready!
+To be added
+Combo Casting 1
+Push forward!
+To be added
+Combo Casting 2
+Here's our chance!
+To be added
+Finisher 1
+Now, fugue!
+To be added
+Finisher 2
+Coda and finale!
+To be added
+Ultimate 1
+Commence AL-7 annihilation!
+To be added
+Ultimate 2
+Target locked. Fire!
+To be added
+Ultimate 3
+Sterilize this area!
