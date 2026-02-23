@@ -114,8 +114,8 @@ html {
 /* --- Mascot sprite --- */
 .mascot-sprite {
   position: relative;
-  width: 500px;
-  height: 500px;
+  width: clamp(160px, 20vw, 500px);
+  height: clamp(160px, 20vw, 500px);
   animation: mascot-float 3s ease-in-out infinite;
   transition: transform 0.3s ease;
   filter: drop-shadow(0 4px 16px rgba(0, 180, 216, 0.3));
