@@ -2,9 +2,10 @@
 name: Deploy static content to Pages
 
 on:
-  # Runs on pushes targeting the default branch or lab3 branch
+  # Runs on pushes targeting the default branch
+  # (lab3 content is deployed via the checkout ref below)
   push:
-    branches: ["master", "lab3"]
+    branches: ["master"]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
