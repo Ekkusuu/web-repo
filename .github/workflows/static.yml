@@ -30,10 +30,17 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout lab3 branch
         uses: actions/checkout@v4
         with:
           ref: lab3
+          path: lab3-source
+
+      - name: Checkout lab4 branch
+        uses: actions/checkout@v4
+        with:
+          ref: lab4
+          path: lab4-source
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -41,7 +48,13 @@ jobs:
           node-version: 20
 
       - name: Build lab3 with Vite
-        working-directory: lab3
+        working-directory: lab3-source/lab3
+        run: |
+          npm install
+          npm run build
+
+      - name: Build lab4 with Astro
+        working-directory: lab4-source/lab4
         run: |
           npm install
           npm run build
@@ -50,8 +63,10 @@ jobs:
         run: |
           mkdir -p _site/lab2
           mkdir -p _site/lab3
-          cp -r lab2/. _site/lab2/
-          cp -r lab3/dist/. _site/lab3/
+          mkdir -p _site/lab4
+          cp -r lab3-source/lab2/. _site/lab2/
+          cp -r lab3-source/lab3/dist/. _site/lab3/
+          cp -r lab4-source/lab4/dist/. _site/lab4/
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
