@@ -4,8 +4,8 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
-    "cms": "decap-server",
-    "dev:cms": "concurrently \"astro dev\" \"decap-server\"",
+    "cms": "cd .. && decap-server",
+    "dev:cms": "concurrently \"astro dev\" \"cd .. && decap-server\"",
     "build": "astro build",
     "preview": "astro preview"
   },
