@@ -3,7 +3,7 @@ backend:
   repo: Ekkusuu/web-repo
   branch: lab4
 
-local_backend: true
+# local_backend: true  # uncomment when running npm run dev:cms locally
 
 media_folder: lab4/public/uploads
 public_folder: /uploads
