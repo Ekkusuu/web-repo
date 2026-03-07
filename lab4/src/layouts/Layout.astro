@@ -96,11 +96,11 @@ const {
         <div class="mascot-bubble-arrow"></div>
       </div>
       <div class="mascot-sprite" id="mascotSprite">
-        <img src="/mascot/teeth.png" alt="Perlica — Endfield Industries Supervisor" id="mascotImg" class="mascot-img" draggable="false" />
+        <img src={`${import.meta.env.BASE_URL}mascot/teeth.png`} alt="Perlica — Endfield Industries Supervisor" id="mascotImg" class="mascot-img" draggable="false" />
       </div>
     </div>
 
-    <script>
+    <script define:vars={{ base: import.meta.env.BASE_URL }}>
       // ===== NAV TOGGLE (mobile) =====
       const navToggle = document.getElementById('navToggle');
       const navLinks = document.getElementById('navLinks');
@@ -190,9 +190,9 @@ const {
         };
 
         const expressions: Record<string, string[]> = {
-          teeth: ['/mascot/teeth.png', '/mascot/teeth_half_open.png', '/mascot/teeth_open.png'],
-          smile: ['/mascot/smile.png', '/mascot/smile_half_open.png', '/mascot/smile_open.png'],
-          thinking: ['/mascot/thinking.png', '/mascot/thinking_half_open.png', '/mascot/thinking_open.png'],
+          teeth: [`${base}mascot/teeth.png`, `${base}mascot/teeth_half_open.png`, `${base}mascot/teeth_open.png`],
+          smile: [`${base}mascot/smile.png`, `${base}mascot/smile_half_open.png`, `${base}mascot/smile_open.png`],
+          thinking: [`${base}mascot/thinking.png`, `${base}mascot/thinking_half_open.png`, `${base}mascot/thinking_open.png`],
         };
 
         let currentExpression = 'teeth';
