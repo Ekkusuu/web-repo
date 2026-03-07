@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import site from '../data/site.json';
 
 interface Props {
   title?: string;
@@ -26,7 +27,7 @@ const {
     <nav class="fixed top-0 left-0 w-full z-[1000] bg-primary/[0.92] backdrop-blur-xl border-b border-border" id="navbar">
       <div class="max-w-[1200px] mx-auto px-6 flex items-center justify-between h-16">
         <a href="#" class="text-xl font-bold text-text-primary flex items-center gap-2 hover:text-accent transition-colors">
-          <span class="text-2xl text-accent">⚙</span> Endfield Planner
+          <span class="text-2xl text-accent">{site.siteIcon}</span> {site.siteName}
         </a>
         <button class="flex flex-col gap-[5px] bg-transparent border-none cursor-pointer p-1 md:hidden" id="navToggle" aria-label="Toggle menu">
           <span class="w-6 h-0.5 bg-text-primary transition-all"></span>
@@ -53,7 +54,7 @@ const {
       <div class="max-w-[1200px] mx-auto px-6">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr] gap-10 mb-10">
           <div>
-            <a href="#" class="text-xl font-bold text-text-primary inline-block mb-3">⚙ Endfield Planner</a>
+            <a href="#" class="text-xl font-bold text-text-primary inline-block mb-3">{site.siteIcon} {site.siteName}</a>
             <p class="text-sm text-text-secondary leading-relaxed">The ultimate factory schematic calculator for Arknights: Endfield. Plan, optimize, and build.</p>
           </div>
           <div>
@@ -83,7 +84,7 @@ const {
           </div>
         </div>
         <div class="py-6 border-t border-border text-center">
-          <p class="text-xs text-text-muted">&copy; 2026 Endfield Factory Planner. Not affiliated with Hypergryph.</p>
+          <p class="text-xs text-text-muted">{site.copyright}</p>
         </div>
       </div>
     </footer>

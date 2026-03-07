@@ -1,0 +1,60 @@
+{
+  "heading": "Simple Pricing",
+  "description": "Start for free, upgrade when you need more. No hidden fees.",
+  "plans": [
+    {
+      "name": "Free",
+      "price": "$0",
+      "period": "/ forever",
+      "badge": null,
+      "featured": false,
+      "ctaText": "Get Started",
+      "ctaHref": "#calculator",
+      "features": [
+        { "text": "All 60+ recipes", "included": true },
+        { "text": "Recipe tree viewer", "included": true },
+        { "text": "Building calculator", "included": true },
+        { "text": "Connection schema", "included": true },
+        { "text": "Save/load layouts", "included": false },
+        { "text": "Export to image", "included": false },
+        { "text": "Priority support", "included": false }
+      ]
+    },
+    {
+      "name": "Pro",
+      "price": "$5",
+      "period": "/ month",
+      "badge": "Most Popular",
+      "featured": true,
+      "ctaText": "Upgrade to Pro",
+      "ctaHref": "#contact",
+      "features": [
+        { "text": "Everything in Free", "included": true },
+        { "text": "Save/load layouts", "included": true },
+        { "text": "Export to PNG/SVG", "included": true },
+        { "text": "Multi-product chains", "included": true },
+        { "text": "Priority support", "included": true },
+        { "text": "Team collaboration", "included": false },
+        { "text": "API access", "included": false }
+      ]
+    },
+    {
+      "name": "Team",
+      "price": "$12",
+      "period": "/ month",
+      "badge": null,
+      "featured": false,
+      "ctaText": "Contact Sales",
+      "ctaHref": "#contact",
+      "features": [
+        { "text": "Everything in Pro", "included": true },
+        { "text": "Team collaboration", "included": true },
+        { "text": "Shared layouts", "included": true },
+        { "text": "API access", "included": true },
+        { "text": "Custom branding", "included": true },
+        { "text": "Dedicated support", "included": true },
+        { "text": "Early access to features", "included": true }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "heading": "About Me",
+  "description": "Built by an Endfield player, for Endfield players. Passionate about factory optimization and automation.",
+  "members": [
+    {
+      "name": "Luchian Sava",
+      "role": "Creator & Developer",
+      "initials": "LS",
+      "bio": "Designed, built, and maintains the entire Endfield Factory Planner — from the recipe database and calculation engine to the UI and deployment. Endfield and Factorio enthusiast."
+    }
+  ]
+}

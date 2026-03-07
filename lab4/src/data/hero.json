@@ -1,0 +1,14 @@
+{
+  "headline": "Master Your",
+  "headlineAccent": "Factory Lines",
+  "subheadline": "The ultimate schematic calculator for Arknights: Endfield. Plan recipe trees, calculate optimal building counts, and visualize production flows — all in one place.",
+  "ctaPrimaryText": "Open Calculator",
+  "ctaPrimaryHref": "#calculator",
+  "ctaSecondaryText": "Learn More",
+  "ctaSecondaryHref": "#features",
+  "stats": [
+    { "value": "60+", "label": "Recipes" },
+    { "value": "7", "label": "Building Types" },
+    { "value": "100%", "label": "Free" }
+  ]
+}

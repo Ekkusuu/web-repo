@@ -1,8 +1,521 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import site from '../data/site.json';
+import hero from '../data/hero.json';
+import features from '../data/features.json';
+import testimonials from '../data/testimonials.json';
+import team from '../data/team.json';
+import pricing from '../data/pricing.json';
+import faq from '../data/faq.json';
+import contact from '../data/contact.json';
 ---
 
-<Layout>
+<Layout title={site.title} description={site.description}>
+  <!-- ===== HERO ===== -->
+  <section class="relative min-h-screen flex items-center justify-center text-center pt-[120px] pb-20 overflow-hidden" id="hero">
+    <div class="hero-bg-grid absolute inset-0"></div>
+    <div class="relative z-10 max-w-[1200px] mx-auto px-6">
+      <h1 class="text-[clamp(2.5rem,6vw,4.5rem)] font-extrabold leading-[1.1] mb-6 tracking-tight">
+        {hero.headline} <span class="text-accent">{hero.headlineAccent}</span>
+      </h1>
+      <p class="text-[clamp(1rem,2vw,1.25rem)] text-text-secondary max-w-[640px] mx-auto mb-10 leading-relaxed">
+        {hero.subheadline}
+      </p>
+      <div class="flex gap-4 justify-center flex-wrap mb-16">
+        <a href={hero.ctaPrimaryHref} class="inline-flex items-center gap-2 px-8 py-3.5 rounded-lg text-base font-semibold bg-accent text-black border-2 border-accent hover:bg-accent-dark hover:border-accent-dark hover:shadow-[0_0_20px_rgba(0,180,216,0.25)] transition-all">{hero.ctaPrimaryText}</a>
+        <a href={hero.ctaSecondaryHref} class="inline-flex items-center gap-2 px-8 py-3.5 rounded-lg text-base font-semibold bg-transparent text-accent border-2 border-accent hover:bg-accent hover:text-black transition-all">{hero.ctaSecondaryText}</a>
+      </div>
+      <div class="flex gap-12 justify-center flex-wrap max-sm:gap-8">
+        {hero.stats.map((stat) => (
+          <div class="flex flex-col items-center">
+            <span class="text-3xl font-extrabold text-accent">{stat.value}</span>
+            <span class="text-xs text-text-muted uppercase tracking-wider mt-1">{stat.label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== MOBILE-ONLY: Quick Start Banner ===== -->
+  <section class="block md:hidden bg-accent/10 border-y border-accent/30 py-6 px-6 text-center" id="mobile-quickstart">
+    <div class="max-w-md mx-auto">
+      <h2 class="text-lg font-bold text-accent mb-2">📱 Quick Start Guide</h2>
+      <p class="text-sm text-text-secondary mb-4">New to Endfield factory planning? Tap below for a beginner-friendly walkthrough optimized for mobile.</p>
+      <a href="#calculator" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-semibold bg-accent text-black border-2 border-accent hover:bg-accent-dark transition-all">
+        🚀 Jump to Calculator
+      </a>
+    </div>
+  </section>
+
+  <!-- ===== FEATURES ===== -->
+  <section class="py-24 bg-secondary" id="features">
+    <div class="max-w-[1200px] mx-auto px-6">
+      <h2 class="text-[clamp(1.8rem,4vw,2.8rem)] font-extrabold text-center mb-4 tracking-tight">{features.heading}</h2>
+      <p class="text-center text-text-secondary max-w-[600px] mx-auto mb-12 text-base leading-relaxed">{features.description}</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {features.items.map((feat) => (
+          <div class="bg-card border border-border rounded-2xl p-9 transition-all duration-300 hover:-translate-y-1 hover:border-accent hover:shadow-[0_8px_32px_rgba(0,180,216,0.25)]">
+            <div class="text-4xl mb-4">{feat.icon}</div>
+            <h3 class="text-lg font-bold mb-3 text-text-primary">{feat.title}</h3>
+            <p class="text-text-secondary text-[0.95rem] leading-relaxed">{feat.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CALCULATOR SHOWCASE ===== -->
+  <section class="py-24" id="calculator">
+    <div class="max-w-[1200px] mx-auto px-6">
+      <h2 class="text-[clamp(1.8rem,4vw,2.8rem)] font-extrabold text-center mb-4 tracking-tight">Factory Schematic Calculator</h2>
+      <p class="text-center text-text-secondary max-w-[600px] mx-auto mb-12 text-base leading-relaxed">
+        Select an item, set your desired production rate, and let the planner
+        do the rest. Here's an example for HC Valley Battery.
+      </p>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-16">
+        <!-- Recipe Tree -->
+        <div class="bg-card border border-border rounded-2xl p-7 overflow-x-auto">
+          <h3 class="text-lg font-bold mb-5 text-text-primary">📋 Recipe Tree — HC Valley Battery</h3>
+          <div class="tree">
+            <div class="flex items-center gap-2.5 px-3.5 py-2 bg-primary border border-accent rounded-lg mb-1">
+              <span class="font-semibold text-sm">HC Valley Battery</span>
+              <span class="text-xs px-2.5 py-0.5 rounded bg-yellow-500/15 text-yellow-400 font-semibold whitespace-nowrap">🏭 Assembler</span>
+            </div>
+            <div class="pl-6 border-l-2 border-border ml-3.5">
+              <div class="relative py-0.5 tree-branch">
+                <div class="flex items-center gap-2.5 px-3.5 py-2 bg-primary border border-border rounded-lg mb-1">
+                  <span class="font-semibold text-sm">LC Valley Battery</span>
+                  <span class="text-xs px-2.5 py-0.5 rounded bg-yellow-500/15 text-yellow-400 font-semibold whitespace-nowrap">🏭 Assembler</span>
+                </div>
+                <div class="pl-6 border-l-2 border-border ml-3.5">
+                  <div class="relative py-0.5 tree-branch">
+                    <div class="flex items-center gap-2.5 px-3.5 py-2 bg-primary border border-border rounded-lg mb-1">
+                      <span class="font-semibold text-sm">SC Valley Battery</span>
+                      <span class="text-xs px-2.5 py-0.5 rounded bg-yellow-500/15 text-yellow-400 font-semibold whitespace-nowrap">🏭 Assembler</span>
+                    </div>
+                    <div class="pl-6 border-l-2 border-border ml-3.5">
+                      <div class="relative py-0.5 tree-branch">
+                        <div class="flex items-center gap-2.5 px-3.5 py-2 bg-primary border border-border rounded-lg mb-1">
+                          <span class="font-semibold text-sm">Ferrium Component</span>
+                          <span class="text-xs px-2.5 py-0.5 rounded bg-yellow-500/15 text-yellow-400 font-semibold whitespace-nowrap">🏭 Assembler</span>
+                        </div>
+                      </div>
+                      <div class="relative py-0.5 tree-branch">
+                        <div class="flex items-center gap-2.5 px-3.5 py-2 bg-primary border border-border rounded-lg mb-1">
+                          <span class="font-semibold text-sm">Dense Ferrium Powder</span>
+                          <span class="text-xs px-2.5 py-0.5 rounded bg-cyan-500/15 text-cyan-400 font-semibold whitespace-nowrap">🧪 Mixer</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="relative py-0.5 tree-branch">
+                    <div class="flex items-center gap-2.5 px-3.5 py-2 bg-primary border border-border rounded-lg mb-1">
+                      <span class="font-semibold text-sm">Cryston Component</span>
+                      <span class="text-xs px-2.5 py-0.5 rounded bg-yellow-500/15 text-yellow-400 font-semibold whitespace-nowrap">🏭 Assembler</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="relative py-0.5 tree-branch">
+                <div class="flex items-center gap-2.5 px-3.5 py-2 bg-primary border border-border rounded-lg mb-1">
+                  <span class="font-semibold text-sm">Xiranite Component</span>
+                  <span class="text-xs px-2.5 py-0.5 rounded bg-yellow-500/15 text-yellow-400 font-semibold whitespace-nowrap">🏭 Assembler</span>
+                </div>
+              </div>
+              <div class="relative py-0.5 tree-branch">
+                <div class="flex items-center gap-2.5 px-3.5 py-2 bg-primary border border-border rounded-lg mb-1">
+                  <span class="font-semibold text-sm">Dense Originium Powder</span>
+                  <span class="text-xs px-2.5 py-0.5 rounded bg-cyan-500/15 text-cyan-400 font-semibold whitespace-nowrap">🧪 Mixer</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Required Buildings -->
+        <div class="bg-card border border-border rounded-2xl p-7 overflow-x-auto">
+          <h3 class="text-lg font-bold mb-5 text-text-primary">🏭 Required Buildings</h3>
+          <table class="w-full border-collapse">
+            <thead>
+              <tr>
+                <th class="px-3.5 py-2.5 text-left text-xs uppercase tracking-wider text-text-muted bg-primary border-b border-border">Building</th>
+                <th class="px-3.5 py-2.5 text-left text-xs uppercase tracking-wider text-text-muted bg-primary border-b border-border">Count</th>
+                <th class="px-3.5 py-2.5 text-left text-xs uppercase tracking-wider text-text-muted bg-primary border-b border-border hidden sm:table-cell">Items</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="px-3.5 py-2.5 text-sm text-text-secondary border-b border-border"><span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-yellow-500/10 text-yellow-400 text-xs font-semibold whitespace-nowrap">🏭 Assembler</span></td>
+                <td class="px-3.5 py-2.5 font-mono font-bold text-base text-orange border-b border-border">5</td>
+                <td class="px-3.5 py-2.5 text-sm text-text-secondary border-b border-border hidden sm:table-cell">HC Valley Battery, LC Valley Battery, SC Valley Battery, Ferrium Component, Cryston Component, Xiranite Component</td>
+              </tr>
+              <tr>
+                <td class="px-3.5 py-2.5 text-sm text-text-secondary border-b border-border"><span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-cyan-500/10 text-cyan-400 text-xs font-semibold whitespace-nowrap">🧪 Mixer</span></td>
+                <td class="px-3.5 py-2.5 font-mono font-bold text-base text-orange border-b border-border">2</td>
+                <td class="px-3.5 py-2.5 text-sm text-text-secondary border-b border-border hidden sm:table-cell">Dense Ferrium Powder, Dense Originium Powder</td>
+              </tr>
+              <tr>
+                <td class="px-3.5 py-2.5 text-sm text-text-secondary border-b border-border"><span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-blue-500/10 text-blue-400 text-xs font-semibold whitespace-nowrap">🔧 Workshop</span></td>
+                <td class="px-3.5 py-2.5 font-mono font-bold text-base text-orange border-b border-border">5</td>
+                <td class="px-3.5 py-2.5 text-sm text-text-secondary border-b border-border hidden sm:table-cell">Ferrium Part, Ferrium Bottle, Cryston Part, Cryston Bottle, Cryston Fiber</td>
+              </tr>
+              <tr>
+                <td class="px-3.5 py-2.5 text-sm text-text-secondary border-b border-border"><span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-purple-500/10 text-purple-400 text-xs font-semibold whitespace-nowrap">⚙️ Grinder</span></td>
+                <td class="px-3.5 py-2.5 font-mono font-bold text-base text-orange border-b border-border">3</td>
+                <td class="px-3.5 py-2.5 text-sm text-text-secondary border-b border-border hidden sm:table-cell">Ferrium Powder, Originium Powder, Cryston Powder</td>
+              </tr>
+              <tr>
+                <td class="px-3.5 py-2.5 text-sm text-text-secondary border-b border-border"><span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-orange-500/10 text-orange-400 text-xs font-semibold whitespace-nowrap">🔥 Smelter</span></td>
+                <td class="px-3.5 py-2.5 font-mono font-bold text-base text-orange border-b border-border">1</td>
+                <td class="px-3.5 py-2.5 text-sm text-text-secondary border-b border-border hidden sm:table-cell">Liquid Xiranite</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td class="px-3.5 py-2.5 border-t-2 border-accent bg-primary font-bold text-sm">Total</td>
+                <td class="px-3.5 py-2.5 font-mono font-bold text-base text-orange border-t-2 border-accent bg-primary">16</td>
+                <td class="px-3.5 py-2.5 border-t-2 border-accent bg-primary hidden sm:table-cell"></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Connection Schema -->
+        <div class="bg-card border border-border rounded-2xl p-7 overflow-x-auto lg:col-span-2">
+          <h3 class="text-lg font-bold mb-5 text-text-primary">🔗 Connection Schema</h3>
+          <div class="flex flex-col gap-4">
+            <div class="flex items-center gap-3.5 flex-wrap p-4 bg-primary border border-border rounded-lg max-sm:flex-col max-sm:text-center">
+              <div class="flex flex-col gap-1 min-w-[140px]">
+                <div class="text-sm font-medium px-2.5 py-1 bg-card rounded text-text-muted italic">Ferrium <span class="text-accent font-mono font-bold text-xs">×2</span></div>
+                <div class="text-sm font-medium px-2.5 py-1 bg-card rounded text-text-muted italic">Origocrust <span class="text-accent font-mono font-bold text-xs">×1</span></div>
+              </div>
+              <div class="text-xl text-accent font-bold max-sm:rotate-90">→</div>
+              <div class="flex flex-col items-center gap-1 px-5 py-3.5 border-2 border-purple-400 rounded-2xl min-w-[110px] text-sm font-semibold text-text-secondary shadow-[0_0_12px_rgba(167,139,250,0.2)]">
+                <span class="text-xl">⚙️</span><span>Grinder</span><span class="font-mono font-bold text-orange">×3</span>
+              </div>
+              <div class="text-xl text-accent font-bold max-sm:rotate-90">→</div>
+              <div class="flex flex-col gap-1 min-w-[140px]">
+                <div class="text-sm font-medium px-2.5 py-1 bg-card rounded">Ferrium Powder</div>
+                <div class="text-sm font-medium px-2.5 py-1 bg-card rounded">Originium Powder</div>
+                <div class="text-sm font-medium px-2.5 py-1 bg-card rounded">Cryston Powder</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-3.5 flex-wrap p-4 bg-primary border border-border rounded-lg max-sm:flex-col max-sm:text-center">
+              <div class="flex flex-col gap-1 min-w-[140px]">
+                <div class="text-sm font-medium px-2.5 py-1 bg-card rounded">Ferrium Powder</div>
+                <div class="text-sm font-medium px-2.5 py-1 bg-card rounded">Originium Powder</div>
+              </div>
+              <div class="text-xl text-accent font-bold max-sm:rotate-90">→</div>
+              <div class="flex flex-col items-center gap-1 px-5 py-3.5 border-2 border-cyan-400 rounded-2xl min-w-[110px] text-sm font-semibold text-text-secondary shadow-[0_0_12px_rgba(6,182,212,0.2)]">
+                <span class="text-xl">🧪</span><span>Mixer</span><span class="font-mono font-bold text-orange">×2</span>
+              </div>
+              <div class="text-xl text-accent font-bold max-sm:rotate-90">→</div>
+              <div class="flex flex-col gap-1 min-w-[140px]">
+                <div class="text-sm font-medium px-2.5 py-1 bg-card rounded">Dense Ferrium Powder</div>
+                <div class="text-sm font-medium px-2.5 py-1 bg-card rounded">Dense Originium Powder</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-3.5 flex-wrap p-4 bg-primary border border-border rounded-lg max-sm:flex-col max-sm:text-center">
+              <div class="flex flex-col gap-1 min-w-[140px]">
+                <div class="text-sm font-medium px-2.5 py-1 bg-card rounded">Ferrium Part</div>
+                <div class="text-sm font-medium px-2.5 py-1 bg-card rounded">Ferrium Bottle</div>
+                <div class="text-sm font-medium px-2.5 py-1 bg-card rounded">Cryston Part</div>
+                <div class="text-sm font-medium px-2.5 py-1 bg-card rounded">Cryston Bottle</div>
+                <div class="text-sm font-medium px-2.5 py-1 bg-card rounded">Cryston Fiber</div>
+              </div>
+              <div class="text-xl text-accent font-bold max-sm:rotate-90">→</div>
+              <div class="flex flex-col items-center gap-1 px-5 py-3.5 border-2 border-yellow-400 rounded-2xl min-w-[110px] text-sm font-semibold text-text-secondary shadow-[0_0_12px_rgba(234,179,8,0.2)]">
+                <span class="text-xl">🏭</span><span>Assembler</span><span class="font-mono font-bold text-orange">×5</span>
+              </div>
+              <div class="text-xl text-accent font-bold max-sm:rotate-90">→</div>
+              <div class="flex flex-col gap-1 min-w-[140px]">
+                <div class="text-sm font-medium px-2.5 py-1 bg-card rounded text-orange font-bold">HC Valley Battery</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recipe database preview -->
+      <h3 class="text-2xl font-bold text-center mb-8">Complete Recipe Database</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="bg-card border border-border rounded-lg p-5">
+          <h4 class="text-base font-bold mb-3 text-text-primary">🌱 Greenhouse</h4>
+          <ul class="flex flex-col gap-1">
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Aketine</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Buckflower</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Citrome</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Jincao</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Sandleaf</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Yazhen</li>
+            <li class="text-xs text-text-secondary py-0.5">Bumper-Rich</li>
+          </ul>
+        </div>
+        <div class="bg-card border border-border rounded-lg p-5">
+          <h4 class="text-base font-bold mb-3 text-text-primary">⚙️ Grinder</h4>
+          <ul class="flex flex-col gap-1">
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Ferrium Powder</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Originium Powder</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Origocrust Powder</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Carbon Powder</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Aketine Powder</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Buckflower Powder</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Citrome Powder</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Jincao Powder</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Sandleaf Powder</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Yazhen Powder</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Amethyst Powder</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Cryston Powder</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Ground Buckflower Powder</li>
+            <li class="text-xs text-text-secondary py-0.5">Ground Citrome Powder</li>
+          </ul>
+        </div>
+        <div class="bg-card border border-border rounded-lg p-5">
+          <h4 class="text-base font-bold mb-3 text-text-primary">🔥 Smelter</h4>
+          <ul class="flex flex-col gap-1">
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Steel</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Liquid Xiranite</li>
+            <li class="text-xs text-text-secondary py-0.5">Stabilized Carbon</li>
+          </ul>
+        </div>
+        <div class="bg-card border border-border rounded-lg p-5">
+          <h4 class="text-base font-bold mb-3 text-text-primary">🧪 Mixer</h4>
+          <ul class="flex flex-col gap-1">
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Dense Ferrium Powder</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Dense Originium Powder</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Dense Carbon Powder</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Dense Origocrust Powder</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Jincao Solution</li>
+            <li class="text-xs text-text-secondary py-0.5">Yazhen Solution</li>
+          </ul>
+        </div>
+        <div class="bg-card border border-border rounded-lg p-5">
+          <h4 class="text-base font-bold mb-3 text-text-primary">🔧 Workshop</h4>
+          <ul class="flex flex-col gap-1">
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Ferrium Part</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Steel Part</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Amethyst Part</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Cryston Part</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Ferrium Bottle</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Steel Bottle</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Amethyst Bottle</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Cryston Bottle</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Amethyst Fiber</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Cryston Fiber</li>
+            <li class="text-xs text-text-secondary py-0.5">Packed Origocrust</li>
+          </ul>
+        </div>
+        <div class="bg-card border border-border rounded-lg p-5">
+          <h4 class="text-base font-bold mb-3 text-text-primary">🏭 Assembler</h4>
+          <ul class="flex flex-col gap-1">
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Ferrium Component</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Amethyst Component</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Cryston Component</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Xiranite Component</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">SC Valley Battery</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">LC Valley Battery</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">LC Wuling Battery</li>
+            <li class="text-xs text-text-secondary py-0.5">HC Valley Battery</li>
+          </ul>
+        </div>
+        <div class="bg-card border border-border rounded-lg p-5">
+          <h4 class="text-base font-bold mb-3 text-text-primary">⚗️ Chemical Lab</h4>
+          <ul class="flex flex-col gap-1">
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Buck Capsule [A]</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Buck Capsule [B]</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Buck Capsule [C]</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Canned Citrome [A]</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Canned Citrome [B]</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Canned Citrome [C]</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Jincao Drink</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Yazhen Syringe [C]</li>
+            <li class="text-xs text-text-secondary py-0.5">Industrial Explosive</li>
+          </ul>
+        </div>
+        <div class="bg-card border border-border rounded-lg p-5">
+          <h4 class="text-base font-bold mb-3 text-text-primary">🪨 Raw Materials</h4>
+          <ul class="flex flex-col gap-1">
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Ferrium</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Xiranite</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Origocrust</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Carbon</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Aketine Seed</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Buckflower Seed</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Citrome Seed</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Jincao Seed</li>
+            <li class="text-xs text-text-secondary py-0.5 border-b border-border/50">Sandleaf Seed</li>
+            <li class="text-xs text-text-secondary py-0.5">Yazhen Seed</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TESTIMONIALS ===== -->
+  <section class="py-24 bg-secondary" id="testimonials">
+    <div class="max-w-[1200px] mx-auto px-6">
+      <h2 class="text-[clamp(1.8rem,4vw,2.8rem)] font-extrabold text-center mb-4 tracking-tight">{testimonials.heading}</h2>
+      <p class="text-center text-text-secondary max-w-[600px] mx-auto mb-12 text-base leading-relaxed">{testimonials.description}</p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+        {testimonials.reviews.map((review) => (
+          <div class="bg-card border border-border rounded-2xl p-8 transition-all duration-300 hover:-translate-y-1 hover:border-accent">
+            <div class="text-orange text-lg mb-4 tracking-widest">{"★".repeat(review.rating)}</div>
+            <p class="text-text-secondary text-[0.95rem] leading-relaxed mb-6 italic">"{review.text}"</p>
+            <div class="flex items-center gap-3">
+              <div class="w-11 h-11 rounded-full bg-accent text-black flex items-center justify-center font-bold text-sm">{review.initials}</div>
+              <div>
+                <div class="font-semibold text-[0.95rem] text-text-primary">{review.author}</div>
+                <div class="text-xs text-text-muted">{review.role}</div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div class="flex justify-center gap-12 flex-wrap p-8 bg-card border border-border rounded-2xl max-sm:gap-8">
+        {testimonials.stats.map((stat) => (
+          <div class="flex flex-col items-center gap-1">
+            <span class="text-3xl font-extrabold text-accent">{stat.value}</span>
+            <span class="text-xs text-text-muted uppercase tracking-wider">{stat.label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TEAM ===== -->
+  <section class="py-24" id="team">
+    <div class="max-w-[1200px] mx-auto px-6">
+      <h2 class="text-[clamp(1.8rem,4vw,2.8rem)] font-extrabold text-center mb-4 tracking-tight">{team.heading}</h2>
+      <p class="text-center text-text-secondary max-w-[600px] mx-auto mb-12 text-base leading-relaxed">{team.description}</p>
+      <div class="max-w-[480px] mx-auto">
+        {team.members.map((member) => (
+          <div class="bg-card border border-border rounded-2xl p-8 text-center transition-all duration-300 hover:-translate-y-1 hover:border-accent">
+            <div class="w-[72px] h-[72px] rounded-full bg-accent mx-auto mb-4 flex items-center justify-center">
+              <span class="text-xl font-extrabold text-black">{member.initials}</span>
+            </div>
+            <h3 class="text-lg font-bold mb-1 text-text-primary">{member.name}</h3>
+            <p class="text-xs text-accent uppercase tracking-wider mb-3">{member.role}</p>
+            <p class="text-sm text-text-secondary leading-relaxed">{member.bio}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PRICING ===== -->
+  <section class="py-24 bg-secondary" id="pricing">
+    <div class="max-w-[1200px] mx-auto px-6">
+      <h2 class="text-[clamp(1.8rem,4vw,2.8rem)] font-extrabold text-center mb-4 tracking-tight">{pricing.heading}</h2>
+      <p class="text-center text-text-secondary max-w-[600px] mx-auto mb-12 text-base leading-relaxed">{pricing.description}</p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start max-md:max-w-[400px] max-md:mx-auto">
+        {pricing.plans.map((plan) => (
+          <div class={`bg-card rounded-2xl p-9 text-center relative transition-all duration-300 hover:-translate-y-1 ${plan.featured ? 'border-2 border-accent shadow-[0_0_40px_rgba(0,180,216,0.25)] md:scale-105 hover:md:scale-[1.07]' : 'border border-border hover:border-accent'}`}>
+            {plan.badge && (
+              <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-accent text-black px-5 py-1 rounded-full text-xs font-bold uppercase tracking-wider">{plan.badge}</div>
+            )}
+            <h3 class="text-xl font-bold mb-4 text-text-primary">{plan.name}</h3>
+            <div class="mb-7">
+              <span class="text-5xl font-extrabold text-text-primary">{plan.price}</span>
+              <span class="text-[0.95rem] text-text-muted">{plan.period}</span>
+            </div>
+            <ul class="text-left mb-7 flex flex-col gap-2.5">
+              {plan.features.map((feature) => (
+                <li class={`text-sm ${feature.included ? 'text-text-secondary' : 'text-text-muted opacity-50'}`}>
+                  {feature.included ? '✓' : '✗'} {feature.text}
+                </li>
+              ))}
+            </ul>
+            <a href={plan.ctaHref} class={`w-full inline-flex justify-center items-center gap-2 px-8 py-3.5 rounded-lg text-base font-semibold transition-all ${plan.featured ? 'bg-accent text-black border-2 border-accent hover:bg-accent-dark hover:border-accent-dark hover:shadow-[0_0_20px_rgba(0,180,216,0.25)]' : plan.name === 'Team' ? 'bg-orange text-black border-2 border-orange hover:bg-orange-dark hover:border-orange-dark' : 'bg-transparent text-accent border-2 border-accent hover:bg-accent hover:text-black'}`}>
+              {plan.ctaText}
+            </a>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FAQ ===== -->
+  <section class="py-24" id="faq">
+    <div class="max-w-[1200px] mx-auto px-6">
+      <h2 class="text-[clamp(1.8rem,4vw,2.8rem)] font-extrabold text-center mb-4 tracking-tight">{faq.heading}</h2>
+      <p class="text-center text-text-secondary max-w-[600px] mx-auto mb-12 text-base leading-relaxed">{faq.description}</p>
+      <div class="max-w-3xl mx-auto flex flex-col gap-3">
+        {faq.items.map((item) => (
+          <details class="bg-card border border-border rounded-lg overflow-hidden group open:border-accent transition-colors">
+            <summary class="px-6 py-5 cursor-pointer font-semibold text-base text-text-primary flex items-center justify-between hover:bg-card-hover transition-colors list-none [&::-webkit-details-marker]:hidden">
+              {item.question}
+              <span class="text-accent text-xl font-light group-open:hidden">+</span>
+              <span class="text-accent text-xl font-light hidden group-open:inline">−</span>
+            </summary>
+            <div class="px-6 pb-5"><p class="text-text-secondary text-sm leading-relaxed">{item.answer}</p></div>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CONTACT ===== -->
+  <section class="py-24 bg-secondary" id="contact">
+    <div class="max-w-[1200px] mx-auto px-6">
+      <h2 class="text-[clamp(1.8rem,4vw,2.8rem)] font-extrabold text-center mb-4 tracking-tight">{contact.heading}</h2>
+      <p class="text-center text-text-secondary max-w-[600px] mx-auto mb-12 text-base leading-relaxed">{contact.description}</p>
+      <div class="grid grid-cols-1 md:grid-cols-[1.2fr_0.8fr] gap-8">
+        <form class="flex flex-col gap-5" action="#" method="post">
+          <div class="flex gap-4 max-sm:flex-col max-sm:gap-5">
+            <div class="flex flex-col gap-1.5 flex-1">
+              <label for="name" class="text-xs font-semibold text-text-secondary uppercase tracking-wider">Name</label>
+              <input type="text" id="name" placeholder="Your name" class="px-4 py-3 bg-primary border border-border rounded-lg text-text-primary text-[0.95rem] font-sans focus:outline-none focus:border-accent focus:shadow-[0_0_0_3px_rgba(0,180,216,0.25)] transition-all" />
+            </div>
+            <div class="flex flex-col gap-1.5 flex-1">
+              <label for="email" class="text-xs font-semibold text-text-secondary uppercase tracking-wider">Email</label>
+              <input type="email" id="email" placeholder="you@example.com" class="px-4 py-3 bg-primary border border-border rounded-lg text-text-primary text-[0.95rem] font-sans focus:outline-none focus:border-accent focus:shadow-[0_0_0_3px_rgba(0,180,216,0.25)] transition-all" />
+            </div>
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label for="subject" class="text-xs font-semibold text-text-secondary uppercase tracking-wider">Subject</label>
+            <select id="subject" class="px-4 py-3 bg-primary border border-border rounded-lg text-text-primary text-[0.95rem] font-sans focus:outline-none focus:border-accent focus:shadow-[0_0_0_3px_rgba(0,180,216,0.25)] transition-all">
+              <option value="">Select a topic</option>
+              <option value="bug">Bug Report</option>
+              <option value="feature">Feature Request</option>
+              <option value="recipe">Missing Recipe</option>
+              <option value="pricing">Pricing Question</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label for="message" class="text-xs font-semibold text-text-secondary uppercase tracking-wider">Message</label>
+            <textarea id="message" rows="5" placeholder="Tell us what's on your mind..." class="px-4 py-3 bg-primary border border-border rounded-lg text-text-primary text-[0.95rem] font-sans resize-y focus:outline-none focus:border-accent focus:shadow-[0_0_0_3px_rgba(0,180,216,0.25)] transition-all"></textarea>
+          </div>
+          <button type="submit" class="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-lg text-base font-semibold bg-accent text-black border-2 border-accent hover:bg-accent-dark hover:border-accent-dark hover:shadow-[0_0_20px_rgba(0,180,216,0.25)] transition-all cursor-pointer">Send Message</button>
+        </form>
+        <div class="flex flex-col gap-4">
+          <div class="bg-card border border-border rounded-lg p-6">
+            <h4 class="text-base font-bold mb-2 text-text-primary">📧 Email</h4>
+            <p class="text-sm text-text-secondary leading-relaxed">{contact.email}</p>
+          </div>
+          <div class="bg-card border border-border rounded-lg p-6">
+            <h4 class="text-base font-bold mb-2 text-text-primary">💬 Discord</h4>
+            <p class="text-sm text-text-secondary leading-relaxed mb-3">{contact.discordLabel}</p>
+            <a href={contact.discordUrl} class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold bg-transparent text-accent border-2 border-accent hover:bg-accent hover:text-black transition-all">Join Discord</a>
+          </div>
+          <div class="bg-card border border-border rounded-lg p-6">
+            <h4 class="text-base font-bold mb-2 text-text-primary">🐛 Bug Reports</h4>
+            <p class="text-sm text-text-secondary leading-relaxed mb-3">{contact.githubLabel}</p>
+            <a href={contact.githubUrl} class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold bg-transparent text-accent border-2 border-accent hover:bg-accent hover:text-black transition-all">GitHub Issues</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== MOBILE-ONLY: Floating CTA ===== -->
+  <div class="fixed bottom-4 left-4 right-4 z-[999] md:hidden" id="mobile-cta">
+    <a href="#calculator" class="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl text-sm font-bold bg-accent text-black shadow-[0_4px_24px_rgba(0,180,216,0.4)] hover:bg-accent-dark transition-all">
+      ⚙ Open Calculator
+    </a>
+  </div>
+</Layout>
   <!-- ===== HERO ===== -->
   <section class="relative min-h-screen flex items-center justify-center text-center pt-[120px] pb-20 overflow-hidden" id="hero">
     <div class="hero-bg-grid absolute inset-0"></div>
