@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import site from '../data/site.json';
+const base = import.meta.env.BASE_URL;
 
 interface Props {
   title?: string;
@@ -96,7 +97,7 @@ const {
         <div class="mascot-bubble-arrow"></div>
       </div>
       <div class="mascot-sprite" id="mascotSprite">
-        <img src="/mascot/teeth.png" alt="Perlica — Endfield Industries Supervisor" id="mascotImg" class="mascot-img" draggable="false" />
+        <img src={`${base}mascot/teeth.png`} alt="Perlica — Endfield Industries Supervisor" id="mascotImg" class="mascot-img" draggable="false" data-base={base} />
       </div>
     </div>
 
@@ -189,10 +190,11 @@ const {
           ],
         };
 
+        const b = mascotImg.dataset.base ?? '/';
         const expressions: Record<string, string[]> = {
-          teeth: ['/mascot/teeth.png', '/mascot/teeth_half_open.png', '/mascot/teeth_open.png'],
-          smile: ['/mascot/smile.png', '/mascot/smile_half_open.png', '/mascot/smile_open.png'],
-          thinking: ['/mascot/thinking.png', '/mascot/thinking_half_open.png', '/mascot/thinking_open.png'],
+          teeth: [`${b}mascot/teeth.png`, `${b}mascot/teeth_half_open.png`, `${b}mascot/teeth_open.png`],
+          smile: [`${b}mascot/smile.png`, `${b}mascot/smile_half_open.png`, `${b}mascot/smile_open.png`],
+          thinking: [`${b}mascot/thinking.png`, `${b}mascot/thinking_half_open.png`, `${b}mascot/thinking_open.png`],
         };
 
         let currentExpression = 'teeth';
