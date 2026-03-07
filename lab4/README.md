@@ -90,10 +90,10 @@ lab4/
 ## Screenshots
 
 ### CMS Admin — Collections Overview
-![Decap CMS admin panel showing Site Settings and Page Sections collections](screenshots/cms-admin.png)
+![Decap CMS admin panel showing Site Settings and Page Sections collections](screenshots/admin1.png)
 
 ### CMS Admin — Site Settings Editor
-![Editing Site Info fields in Decap CMS with live preview](screenshots/cms-site-settings.png)
+![Editing Site Info fields in Decap CMS with live preview](screenshots/admin2.png)
 
 ### CMS Admin — Page Section Editor
-![Editing the Testimonials section with reviews and community stats](screenshots/cms-testimonials.png)
+![Editing the Testimonials section with reviews and community stats](screenshots/admin3.png)
