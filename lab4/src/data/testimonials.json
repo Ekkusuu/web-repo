@@ -1,0 +1,33 @@
+{
+  "heading": "Trusted by the Community",
+  "description": "Hear from Doctors who've optimized their factory lines with our planner.",
+  "reviews": [
+    {
+      "text": "I was spending hours trying to figure out ratios for HC Valley Batteries. This tool calculated everything in seconds. My factory runs at 100% now.",
+      "author": "DoctorKnight",
+      "role": "Endfield Beta Tester",
+      "initials": "DK",
+      "rating": 5
+    },
+    {
+      "text": "The connection schema feature is incredible. I just follow the diagram and my production lines are perfectly balanced every time.",
+      "author": "AmiyaLover42",
+      "role": "Factory Enthusiast",
+      "initials": "AL",
+      "rating": 5
+    },
+    {
+      "text": "Coming from Factorio, I needed a tool like this for Endfield. The recipe tree view feels just like home. Absolutely essential.",
+      "author": "FactorioGuru",
+      "role": "Automation Veteran",
+      "initials": "FG",
+      "rating": 5
+    }
+  ],
+  "stats": [
+    { "value": "2,400+", "label": "Active Users" },
+    { "value": "15,000+", "label": "Calculations Made" },
+    { "value": "4.9/5", "label": "User Rating" },
+    { "value": "60+", "label": "Recipes Supported" }
+  ]
+}

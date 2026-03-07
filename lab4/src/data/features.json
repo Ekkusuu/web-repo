@@ -1,0 +1,36 @@
+{
+  "heading": "Why Endfield Planner?",
+  "description": "Stop guessing. Start optimizing. Our calculator handles the complex math so you can focus on building.",
+  "items": [
+    {
+      "icon": "🌲",
+      "title": "Recipe Tree Viewer",
+      "description": "See the full production chain for any item — from raw seeds and ores to final products — displayed as an interactive tree."
+    },
+    {
+      "icon": "🏭",
+      "title": "Building Calculator",
+      "description": "Know exactly how many Greenhouses, Smelters, Grinders, Workshops, Mixers, Assemblers, and Labs you need."
+    },
+    {
+      "icon": "🔗",
+      "title": "Connection Schema",
+      "description": "Get a visual flow diagram showing how buildings should be connected for perfectly balanced production lines."
+    },
+    {
+      "icon": "⚡",
+      "title": "Max Efficiency",
+      "description": "Every calculation targets 100% uptime — no idle machines, no bottlenecks. Ratios keep every belt saturated."
+    },
+    {
+      "icon": "📦",
+      "title": "60+ Recipes",
+      "description": "Complete database covering all crafting chains: batteries, capsules, components, powders, solutions, and more."
+    },
+    {
+      "icon": "🎯",
+      "title": "Zero Setup",
+      "description": "Works right in your browser. No downloads, no accounts, no ads. Just pick an item and get your answer."
+    }
+  ]
+}
