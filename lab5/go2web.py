@@ -3,19 +3,28 @@
 from __future__ import annotations
 
 import argparse
+import base64
+import hashlib
+import json
 import os
 import socket
 import ssl
 import sys
+import time
 from html import unescape
 from html.parser import HTMLParser
+from pathlib import Path
 from typing import Iterable
-from urllib.parse import parse_qs, quote_plus, unquote, urlsplit
+from urllib.parse import parse_qs, quote_plus, unquote, urljoin, urlsplit
 
 
 USER_AGENT = "go2web/1.0"
 DEFAULT_TIMEOUT = 10
+MAX_REDIRECTS = 5
+CACHE_TTL_SECONDS = 600
 SEARCH_ENDPOINT = "https://html.duckduckgo.com/html/?q={query}"
+SCRIPT_DIR = Path(__file__).resolve().parent
+CACHE_DIR = SCRIPT_DIR / ".go2web_cache"
 
 
 class VisibleTextExtractor(HTMLParser):
@@ -144,6 +153,25 @@ def normalize_result_url(url: str) -> str:
     return url
 
 
+def decode_chunked(body: bytes) -> bytes:
+    chunks: list[bytes] = []
+    index = 0
+    while True:
+        line_end = body.find(b"\r\n", index)
+        if line_end == -1:
+            raise ValueError("Malformed chunked body")
+        size_line = body[index:line_end].split(b";", 1)[0]
+        size = int(size_line, 16)
+        index = line_end + 2
+        if size == 0:
+            return b"".join(chunks)
+        chunk = body[index:index + size]
+        if len(chunk) != size:
+            raise ValueError("Truncated chunked body")
+        chunks.append(chunk)
+        index += size + 2
+
+
 def parse_response(raw_response: bytes) -> tuple[dict[str, str], bytes]:
     header_blob, separator, body = raw_response.partition(b"\r\n\r\n")
     if not separator:
@@ -157,7 +185,42 @@ def parse_response(raw_response: bytes) -> tuple[dict[str, str], bytes]:
         key, _, value = line.partition(":")
         headers[key.strip().lower()] = value.strip()
 
+    if headers.get("transfer-encoding", "").lower() == "chunked":
+        body = decode_chunked(body)
+
     return headers, body
+
+
+def cache_key(url: str) -> Path:
+    digest = hashlib.sha256(url.encode("utf-8")).hexdigest()
+    return CACHE_DIR / f"{digest}.json"
+
+
+def load_cached_response(url: str) -> tuple[dict[str, str], bytes] | None:
+    cache_file = cache_key(url)
+    if not cache_file.exists():
+        return None
+    try:
+        payload = json.loads(cache_file.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return None
+    if time.time() - payload.get("timestamp", 0) > CACHE_TTL_SECONDS:
+        return None
+    try:
+        body = base64.b64decode(payload["body"])
+    except (ValueError, KeyError):
+        return None
+    return dict(payload.get("headers", {})), body
+
+
+def save_cached_response(url: str, headers: dict[str, str], body: bytes) -> None:
+    CACHE_DIR.mkdir(exist_ok=True)
+    payload = {
+        "timestamp": time.time(),
+        "headers": headers,
+        "body": base64.b64encode(body).decode("ascii"),
+    }
+    cache_key(url).write_text(json.dumps(payload), encoding="utf-8")
 
 
 def recv_all(stream: socket.socket) -> bytes:
@@ -191,8 +254,14 @@ def ensure_url_scheme(url: str) -> str:
     return url
 
 
-def fetch_url(url: str) -> tuple[str, dict[str, str], bytes]:
+def fetch_url(url: str, *, allow_cache: bool = True, redirect_limit: int = MAX_REDIRECTS) -> tuple[str, dict[str, str], bytes, bool]:
     normalized_url = ensure_url_scheme(url)
+    if allow_cache:
+        cached = load_cached_response(normalized_url)
+        if cached is not None:
+            headers, body = cached
+            return normalized_url, headers, body, True
+
     parsed = urlsplit(normalized_url)
     if parsed.scheme not in {"http", "https"}:
         raise ValueError(f"Unsupported scheme: {parsed.scheme}")
@@ -218,7 +287,22 @@ def fetch_url(url: str) -> tuple[str, dict[str, str], bytes]:
             raw_response = recv_all(stream)
 
     headers, body = parse_response(raw_response)
-    return normalized_url, headers, body
+    status_line = raw_response.split(b"\r\n", 1)[0].decode("iso-8859-1")
+    _, status_code_text, _ = status_line.split(" ", 2)
+    status_code = int(status_code_text)
+
+    if status_code in {301, 302, 303, 307, 308}:
+        if redirect_limit <= 0:
+            raise RuntimeError("Too many redirects")
+        location = headers.get("location")
+        if not location:
+            raise RuntimeError("Redirect response did not include a Location header")
+        redirect_url = urljoin(normalized_url, location)
+        return fetch_url(redirect_url, allow_cache=allow_cache, redirect_limit=redirect_limit - 1)
+
+    if allow_cache and status_code == 200:
+        save_cached_response(normalized_url, headers, body)
+    return normalized_url, headers, body, False
 
 
 def detect_charset(headers: dict[str, str]) -> str:
@@ -245,22 +329,37 @@ def render_html(body: str) -> str:
     return text or "[No visible text content found]"
 
 
-def format_response(url: str, headers: dict[str, str], body: bytes) -> str:
+def render_json(body: str) -> str:
+    data = json.loads(body)
+    return json.dumps(data, indent=2, ensure_ascii=True)
+
+
+def format_response(url: str, headers: dict[str, str], body: bytes, *, from_cache: bool = False) -> str:
     text_body = decode_body(headers, body)
     content_type = headers.get("content-type", "").split(";", 1)[0].strip().lower()
+    source_note = f"[cache] {url}\n" if from_cache else f"{url}\n"
+
+    if content_type == "application/json" or text_body.lstrip().startswith(("{", "[")):
+        try:
+            return source_note + render_json(text_body)
+        except json.JSONDecodeError:
+            pass
 
     if content_type in {"text/html", "application/xhtml+xml"} or "<html" in text_body.lower():
-        return f"{url}\n{render_html(text_body)}"
+        return source_note + render_html(text_body)
 
-    return f"{url}\n{clean_text(text_body.strip())}"
+    if content_type.startswith("text/") or not content_type:
+        return source_note + clean_text(text_body.strip())
+
+    return source_note + f"Binary response: {content_type or 'unknown content type'} ({len(body)} bytes)"
 
 
-def fetch_search_results(query_terms: Iterable[str]) -> list[tuple[str, str]]:
+def fetch_search_results(query_terms: Iterable[str], *, allow_cache: bool = True) -> list[tuple[str, str]]:
     query = " ".join(query_terms).strip()
     if not query:
         raise ValueError("Search term cannot be empty")
     search_url = SEARCH_ENDPOINT.format(query=quote_plus(query))
-    _, headers, body = fetch_url(search_url)
+    _, headers, body, _ = fetch_url(search_url, allow_cache=allow_cache)
     html = decode_body(headers, body)
     parser = SearchResultsParser()
     parser.feed(html)
@@ -293,6 +392,8 @@ def build_parser() -> argparse.ArgumentParser:
         nargs="+",
         help="search the term using DuckDuckGo HTML search and print the top 10 results",
     )
+    parser.add_argument("-o", "--open", dest="open_result", type=int, metavar="N", help="open the Nth search result")
+    parser.add_argument("--no-cache", action="store_true", help="bypass the local 10 minute cache")
     parser.add_argument("-h", "--help", action="help", help="show this help")
     return parser
 
@@ -307,11 +408,22 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         if args.u is not None:
-            url, headers, body = fetch_url(args.u)
-            print(format_response(url, headers, body))
+            if args.open_result is not None:
+                raise ValueError("--open can only be used together with -s")
+            url, headers, body, from_cache = fetch_url(args.u, allow_cache=not args.no_cache)
+            print(format_response(url, headers, body, from_cache=from_cache))
             return 0
 
-        results = fetch_search_results(args.s)
+        results = fetch_search_results(args.s, allow_cache=not args.no_cache)
+        if args.open_result is not None:
+            if not 1 <= args.open_result <= len(results):
+                raise ValueError(f"Search result index must be between 1 and {len(results)}")
+            title, url = results[args.open_result - 1]
+            print(f"Opening result {args.open_result}: {title}\n")
+            resolved_url, headers, body, from_cache = fetch_url(url, allow_cache=not args.no_cache)
+            print(format_response(resolved_url, headers, body, from_cache=from_cache))
+            return 0
+
         print(format_search_results(args.s, results))
         return 0
     except (OSError, ssl.SSLError, socket.timeout, ValueError, RuntimeError) as error:
