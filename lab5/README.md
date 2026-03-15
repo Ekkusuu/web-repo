@@ -1,30 +1,14 @@
 # Go2web — Lab 5: Raw Socket CLI Browser
 
-`go2web` is a small command-line web client for Lab 5. It performs HTTP and HTTPS requests using raw sockets, then prints the result in a readable terminal format.
+`go2web` is a terminal-based mini browser and search client built for Lab 5. The application sends HTTP and HTTPS requests manually through TCP sockets and prints readable output directly in the console.
 
-## What It Does
+## What's New in Lab 5
 
-- `go2web -u <URL>` fetches a page and prints its readable content
-- `go2web -s <search term>` searches DuckDuckGo HTML and prints the top 10 results
-- `go2web -s <search term> --open N` fetches the selected search result directly in the terminal
-- `go2web -h` shows the CLI help
-
-## Extra Features
-
-- Manual redirect handling for common `3xx` responses
-- Local file cache for repeated requests
-- Human-readable formatting for HTML, JSON, and plain text
-
-## How It Works
-
-1. Parse the CLI arguments
-2. Open a TCP connection with `socket`
-3. Wrap the socket with `ssl` for HTTPS
-4. Send a handcrafted HTTP `GET` request
-5. Read and parse the raw response from the server
-6. Follow redirects when needed
-7. Cache successful responses locally
-8. Convert HTML into visible text with `html.parser`
+- **Low-level HTTP client** — requests are made with `socket` and `ssl` instead of standard HTTP libraries
+- **CLI interface** — supports fetching URLs, searching the web, and printing usage help
+- **Readable output** — HTML pages are converted into visible text and JSON responses are formatted for the terminal
+- **Search integration** — DuckDuckGo HTML search is parsed and displayed as the top 10 results
+- **Bonus features** — redirect support, local response caching, and opening a selected search result from the CLI
 
 ## CLI
 
@@ -34,19 +18,29 @@ go2web -s <search-term> # search the term and print top 10 results
 go2web -h               # show this help
 ```
 
-Extra option:
+Bonus option implemented:
 
 ```bash
 go2web -s <search-term> --open <N>
 ```
 
+## How It Works
+
+1. Parse command-line arguments with `argparse`
+2. Open a raw TCP connection to the target server with `socket`
+3. Wrap the socket in TLS using `ssl` for HTTPS requests
+4. Send a handcrafted HTTP `GET` request
+5. Read the raw response bytes and parse headers/body manually
+6. Follow redirects and reuse cached responses when available
+7. Render HTML, JSON, or plain text into a terminal-friendly format
+
 ## Tech Stack
 
 - **Python 3** — application runtime
-- **socket** — raw TCP communication
-- **ssl** — TLS for HTTPS requests
-- **json** — pretty-printing JSON responses and storing cache metadata
-- **html.parser** — readable HTML-to-text conversion
+- **socket** — TCP client implementation
+- **ssl** — HTTPS support
+- **html.parser** — HTML text extraction and search result parsing
+- **json** — JSON formatting and cache metadata storage
 
 ## Project Structure
 
@@ -63,6 +57,8 @@ lab5/
 
 ## Running
 
+From `lab5/`:
+
 ```bash
 ./go2web -h
 ./go2web -u https://example.com
@@ -70,7 +66,7 @@ lab5/
 ./go2web -s raw sockets python --open 1
 ```
 
-On Windows:
+On Windows Command Prompt:
 
 ```bat
 go2web.cmd -h
@@ -80,4 +76,5 @@ go2web.cmd -u https://example.com
 ## Notes
 
 - Cache files are stored in `lab5/.go2web_cache/`
-- Search uses DuckDuckGo's HTML endpoint so results can be parsed in the terminal
+- Search uses DuckDuckGo's HTML endpoint so results can be parsed without a browser
+- The executable entry point is named `go2web`, matching the lab requirement
