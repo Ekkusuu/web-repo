@@ -6,12 +6,64 @@ import argparse
 import socket
 import ssl
 import sys
+from html import unescape
+from html.parser import HTMLParser
 from urllib.parse import urljoin, urlsplit
 
 
 USER_AGENT = "go2web/1.0"
 DEFAULT_TIMEOUT = 10
 MAX_REDIRECTS = 5
+
+
+class VisibleTextExtractor(HTMLParser):
+    BLOCK_TAGS = {
+        "address", "article", "aside", "blockquote", "br", "div", "dl",
+        "fieldset", "figcaption", "figure", "footer", "form",
+        "h1", "h2", "h3", "h4", "h5", "h6", "header", "hr", "li",
+        "main", "nav", "ol", "p", "pre", "section", "table", "tr", "ul",
+    }
+    HIDDEN_TAGS = {"head", "noscript", "script", "style", "svg", "title"}
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.parts: list[str] = []
+        self.hidden_depth = 0
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag in self.HIDDEN_TAGS:
+            self.hidden_depth += 1
+        elif tag in self.BLOCK_TAGS:
+            self.parts.append("\n")
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag in self.HIDDEN_TAGS and self.hidden_depth:
+            self.hidden_depth -= 1
+        elif tag in self.BLOCK_TAGS:
+            self.parts.append("\n")
+
+    def handle_data(self, data: str) -> None:
+        if self.hidden_depth:
+            return
+        text = normalize_whitespace(unescape(data))
+        if text.strip():
+            self.parts.append(text)
+
+    def get_text(self) -> str:
+        merged = "".join(self.parts)
+        lines = [normalize_whitespace(line) for line in merged.splitlines()]
+        return "\n".join(line for line in lines if line.strip())
+
+
+def normalize_whitespace(value: str) -> str:
+    return " ".join(value.split())
+
+
+def render_html(body: str) -> str:
+    parser = VisibleTextExtractor()
+    parser.feed(body)
+    text = parser.get_text()
+    return text or "[No visible text content found]"
 
 
 def decode_chunked(body: bytes) -> bytes:
@@ -127,10 +179,16 @@ def fetch_url(url: str, *, redirect_limit: int = MAX_REDIRECTS) -> tuple[str, di
 
 
 def format_response(headers: dict[str, str], body: bytes) -> str:
-    try:
-        return body.decode("utf-8", errors="replace").strip()
-    except Exception:
-        return f"Binary response ({len(body)} bytes)"
+    text_body = body.decode("utf-8", errors="replace")
+    content_type = headers.get("content-type", "").split(";", 1)[0].strip().lower()
+
+    if content_type in {"text/html", "application/xhtml+xml"} or "<html" in text_body.lower():
+        return render_html(text_body)
+
+    if content_type.startswith("text/") or not content_type:
+        return text_body.strip()
+
+    return f"Binary response: {content_type or 'unknown content type'} ({len(body)} bytes)"
 
 
 def build_parser() -> argparse.ArgumentParser:
