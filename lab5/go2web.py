@@ -6,11 +6,31 @@ import argparse
 import socket
 import ssl
 import sys
-from urllib.parse import urlsplit
+from urllib.parse import urljoin, urlsplit
 
 
 USER_AGENT = "go2web/1.0"
 DEFAULT_TIMEOUT = 10
+MAX_REDIRECTS = 5
+
+
+def decode_chunked(body: bytes) -> bytes:
+    chunks: list[bytes] = []
+    index = 0
+    while True:
+        line_end = body.find(b"\r\n", index)
+        if line_end == -1:
+            raise ValueError("Malformed chunked body")
+        size_line = body[index:line_end].split(b";", 1)[0]
+        size = int(size_line, 16)
+        index = line_end + 2
+        if size == 0:
+            return b"".join(chunks)
+        chunk = body[index:index + size]
+        if len(chunk) != size:
+            raise ValueError("Truncated chunked body")
+        chunks.append(chunk)
+        index += size + 2
 
 
 def recv_all(stream: socket.socket) -> bytes:
@@ -50,6 +70,9 @@ def parse_response(raw_response: bytes) -> tuple[dict[str, str], bytes]:
         key, _, value = line.partition(":")
         headers[key.strip().lower()] = value.strip()
 
+    if headers.get("transfer-encoding", "").lower() == "chunked":
+        body = decode_chunked(body)
+
     return headers, body
 
 
@@ -59,7 +82,7 @@ def ensure_url_scheme(url: str) -> str:
     return url
 
 
-def fetch_url(url: str) -> tuple[str, dict[str, str], bytes]:
+def fetch_url(url: str, *, redirect_limit: int = MAX_REDIRECTS) -> tuple[str, dict[str, str], bytes]:
     normalized_url = ensure_url_scheme(url)
     parsed = urlsplit(normalized_url)
 
@@ -87,6 +110,19 @@ def fetch_url(url: str) -> tuple[str, dict[str, str], bytes]:
             raw_response = recv_all(stream)
 
     headers, body = parse_response(raw_response)
+    status_line = raw_response.split(b"\r\n", 1)[0].decode("iso-8859-1")
+    _, status_code_text, _ = status_line.split(" ", 2)
+    status_code = int(status_code_text)
+
+    if status_code in {301, 302, 303, 307, 308}:
+        if redirect_limit <= 0:
+            raise RuntimeError("Too many redirects")
+        location = headers.get("location")
+        if not location:
+            raise RuntimeError("Redirect response did not include a Location header")
+        redirect_url = urljoin(normalized_url, location)
+        return fetch_url(redirect_url, redirect_limit=redirect_limit - 1)
+
     return normalized_url, headers, body
 
 
