@@ -9,12 +9,90 @@ import ssl
 import sys
 from html import unescape
 from html.parser import HTMLParser
-from urllib.parse import urljoin, urlsplit
+from typing import Iterable
+from urllib.parse import parse_qs, quote_plus, unquote, urljoin, urlsplit
 
 
 USER_AGENT = "go2web/1.0"
 DEFAULT_TIMEOUT = 10
 MAX_REDIRECTS = 5
+SEARCH_ENDPOINT = "https://html.duckduckgo.com/html/?q={query}"
+
+
+class SearchResultsParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self.results: list[tuple[str, str]] = []
+        self._capture_href: str | None = None
+        self._capture_text: list[str] = []
+        self._seen_urls: set[str] = set()
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag != "a":
+            return
+        attr_map = {key.lower(): (value or "") for key, value in attrs}
+        href = attr_map.get("href", "").strip()
+        if not href:
+            return
+        normalized_href = normalize_result_url(href)
+        if not normalized_href.startswith(("http://", "https://")):
+            return
+        if normalized_href in self._seen_urls:
+            return
+        self._capture_href = normalized_href
+        self._capture_text = []
+
+    def handle_data(self, data: str) -> None:
+        if self._capture_href is not None:
+            text = normalize_whitespace(unescape(data))
+            if text.strip():
+                self._capture_text.append(text)
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag != "a" or self._capture_href is None:
+            return
+        title = normalize_whitespace(" ".join(self._capture_text))
+        if title:
+            self._seen_urls.add(self._capture_href)
+            self.results.append((title, self._capture_href))
+        self._capture_href = None
+        self._capture_text = []
+
+
+def normalize_result_url(url: str) -> str:
+    if url.startswith("//"):
+        url = f"https:{url}"
+    parsed = urlsplit(url)
+    if parsed.netloc.endswith("duckduckgo.com"):
+        query = parse_qs(parsed.query)
+        target = query.get("uddg")
+        if target:
+            return unquote(target[0])
+        return ""
+    return url
+
+
+def fetch_search_results(query_terms: Iterable[str]) -> list[tuple[str, str]]:
+    query = " ".join(query_terms).strip()
+    if not query:
+        raise ValueError("Search term cannot be empty")
+    search_url = SEARCH_ENDPOINT.format(query=quote_plus(query))
+    _, headers, body = fetch_url(search_url)
+    html = body.decode("utf-8", errors="replace")
+    parser = SearchResultsParser()
+    parser.feed(html)
+    return parser.results[:10]
+
+
+def format_search_results(query_terms: Iterable[str], results: list[tuple[str, str]]) -> str:
+    query = " ".join(query_terms).strip()
+    if not results:
+        return f'No results found for "{query}".'
+    lines = [f'Top {len(results)} results for "{query}":']
+    for index, (title, url) in enumerate(results, start=1):
+        lines.append(f"{index}. {title}")
+        lines.append(f"   {url}")
+    return "\n".join(lines)
 
 
 class VisibleTextExtractor(HTMLParser):
@@ -237,8 +315,9 @@ def main(argv: list[str] | None = None) -> int:
             print(format_response(headers, body))
             return 0
 
-        print("Search is not yet implemented.")
-        return 1
+        results = fetch_search_results(args.s)
+        print(format_search_results(args.s, results))
+        return 0
 
     except (OSError, socket.timeout, ValueError, RuntimeError) as error:
         print(f"Error: {error}", file=sys.stderr)
