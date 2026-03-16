@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import socket
+import ssl
 import sys
 from urllib.parse import urlsplit
 
@@ -54,7 +55,7 @@ def parse_response(raw_response: bytes) -> tuple[dict[str, str], bytes]:
 
 def ensure_url_scheme(url: str) -> str:
     if "://" not in url:
-        return f"http://{url}"
+        return f"https://{url}"
     return url
 
 
@@ -62,20 +63,28 @@ def fetch_url(url: str) -> tuple[str, dict[str, str], bytes]:
     normalized_url = ensure_url_scheme(url)
     parsed = urlsplit(normalized_url)
 
-    if parsed.scheme != "http":
-        raise ValueError(f"Only HTTP is supported: {parsed.scheme}")
+    if parsed.scheme not in {"http", "https"}:
+        raise ValueError(f"Unsupported scheme: {parsed.scheme}")
     if not parsed.hostname:
         raise ValueError("URL must include a hostname")
 
-    port = parsed.port or 80
+    port = parsed.port or (443 if parsed.scheme == "https" else 80)
     path = parsed.path or "/"
     if parsed.query:
         path = f"{path}?{parsed.query}"
 
     with socket.create_connection((parsed.hostname, port), timeout=DEFAULT_TIMEOUT) as sock:
         sock.settimeout(DEFAULT_TIMEOUT)
-        sock.sendall(build_request(parsed.hostname, path))
-        raw_response = recv_all(sock)
+        stream: socket.socket | ssl.SSLSocket
+        if parsed.scheme == "https":
+            context = ssl.create_default_context()
+            stream = context.wrap_socket(sock, server_hostname=parsed.hostname)
+        else:
+            stream = sock
+        with stream:
+            host_header = parsed.hostname if parsed.port is None else parsed.netloc
+            stream.sendall(build_request(host_header, path))
+            raw_response = recv_all(stream)
 
     headers, body = parse_response(raw_response)
     return normalized_url, headers, body
