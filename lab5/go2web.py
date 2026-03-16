@@ -344,6 +344,7 @@ def build_parser() -> argparse.ArgumentParser:
         nargs="+",
         help="search the term and print top 10 results",
     )
+    parser.add_argument("-o", "--open", dest="open_result", type=int, metavar="N", help="open the Nth search result")
     parser.add_argument("--no-cache", action="store_true", help="bypass the local 10 minute cache")
     parser.add_argument("-h", "--help", action="help", help="show this help")
     return parser
@@ -359,11 +360,22 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         if args.u is not None:
+            if args.open_result is not None:
+                raise ValueError("--open can only be used together with -s")
             url, headers, body = fetch_url(args.u, allow_cache=not args.no_cache)
             print(format_response(headers, body))
             return 0
 
         results = fetch_search_results(args.s, allow_cache=not args.no_cache)
+        if args.open_result is not None:
+            if not 1 <= args.open_result <= len(results):
+                raise ValueError(f"Search result index must be between 1 and {len(results)}")
+            title, url = results[args.open_result - 1]
+            print(f"Opening result {args.open_result}: {title}\n")
+            resolved_url, headers, body = fetch_url(url, allow_cache=not args.no_cache)
+            print(format_response(headers, body))
+            return 0
+
         print(format_search_results(args.s, results))
         return 0
 
