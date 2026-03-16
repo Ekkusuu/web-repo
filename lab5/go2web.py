@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import socket
 import ssl
 import sys
@@ -100,7 +101,8 @@ def build_request(host: str, path: str) -> bytes:
         f"GET {path} HTTP/1.1",
         f"Host: {host}",
         f"User-Agent: {USER_AGENT}",
-        "Accept: text/html, text/plain, */*",
+        "Accept: text/html, application/json;q=0.9, text/plain;q=0.8, */*;q=0.5",
+        "Accept-Language: en-US,en;q=0.8",
         "Accept-Encoding: identity",
         "Connection: close",
         "",
@@ -178,9 +180,20 @@ def fetch_url(url: str, *, redirect_limit: int = MAX_REDIRECTS) -> tuple[str, di
     return normalized_url, headers, body
 
 
+def render_json(body: str) -> str:
+    data = json.loads(body)
+    return json.dumps(data, indent=2, ensure_ascii=True)
+
+
 def format_response(headers: dict[str, str], body: bytes) -> str:
     text_body = body.decode("utf-8", errors="replace")
     content_type = headers.get("content-type", "").split(";", 1)[0].strip().lower()
+
+    if content_type == "application/json" or text_body.lstrip().startswith(("{", "[")):
+        try:
+            return render_json(text_body)
+        except json.JSONDecodeError:
+            pass
 
     if content_type in {"text/html", "application/xhtml+xml"} or "<html" in text_body.lower():
         return render_html(text_body)
