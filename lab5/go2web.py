@@ -27,11 +27,13 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 CACHE_DIR = SCRIPT_DIR / ".go2web_cache"
 
 
+# Build the cache filename for a URL.
 def cache_key(url: str) -> Path:
     digest = hashlib.sha256(url.encode("utf-8")).hexdigest()
     return CACHE_DIR / f"{digest}.json"
 
 
+# Load a cached response when it is still fresh.
 def load_cached_response(url: str) -> tuple[dict[str, str], bytes] | None:
     cache_file = cache_key(url)
     if not cache_file.exists():
@@ -49,6 +51,7 @@ def load_cached_response(url: str) -> tuple[dict[str, str], bytes] | None:
     return dict(payload.get("headers", {})), body
 
 
+# Save a response to the local cache.
 def save_cached_response(url: str, headers: dict[str, str], body: bytes) -> None:
     CACHE_DIR.mkdir(exist_ok=True)
     payload = {
@@ -60,6 +63,7 @@ def save_cached_response(url: str, headers: dict[str, str], body: bytes) -> None
 
 
 class SearchResultsParser(HTMLParser):
+    # Initialize search result collection state.
     def __init__(self) -> None:
         super().__init__()
         self.results: list[tuple[str, str]] = []
@@ -67,6 +71,7 @@ class SearchResultsParser(HTMLParser):
         self._capture_text: list[str] = []
         self._seen_urls: set[str] = set()
 
+    # Start capturing eligible search result links.
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         if tag != "a":
             return
@@ -82,12 +87,14 @@ class SearchResultsParser(HTMLParser):
         self._capture_href = normalized_href
         self._capture_text = []
 
+    # Collect visible text for the current link.
     def handle_data(self, data: str) -> None:
         if self._capture_href is not None:
             text = normalize_whitespace(unescape(data))
             if text.strip():
                 self._capture_text.append(text)
 
+    # Finalize a captured link and store it.
     def handle_endtag(self, tag: str) -> None:
         if tag != "a" or self._capture_href is None:
             return
@@ -99,6 +106,7 @@ class SearchResultsParser(HTMLParser):
         self._capture_text = []
 
 
+# Normalize DuckDuckGo result links to direct URLs.
 def normalize_result_url(url: str) -> str:
     if url.startswith("//"):
         url = f"https:{url}"
@@ -112,6 +120,7 @@ def normalize_result_url(url: str) -> str:
     return url
 
 
+# Fetch and parse search results for a query.
 def fetch_search_results(query_terms: Iterable[str], *, allow_cache: bool = True) -> list[tuple[str, str]]:
     query = " ".join(query_terms).strip()
     if not query:
@@ -124,6 +133,7 @@ def fetch_search_results(query_terms: Iterable[str], *, allow_cache: bool = True
     return parser.results[:10]
 
 
+# Format search results for terminal output.
 def format_search_results(query_terms: Iterable[str], results: list[tuple[str, str]]) -> str:
     query = " ".join(query_terms).strip()
     if not results:
@@ -144,23 +154,27 @@ class VisibleTextExtractor(HTMLParser):
     }
     HIDDEN_TAGS = {"head", "noscript", "script", "style", "svg", "title"}
 
+    # Initialize visible text extraction state.
     def __init__(self) -> None:
         super().__init__()
         self.parts: list[str] = []
         self.hidden_depth = 0
 
+    # Track block and hidden elements on entry.
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         if tag in self.HIDDEN_TAGS:
             self.hidden_depth += 1
         elif tag in self.BLOCK_TAGS:
             self.parts.append("\n")
 
+    # Track block and hidden elements on exit.
     def handle_endtag(self, tag: str) -> None:
         if tag in self.HIDDEN_TAGS and self.hidden_depth:
             self.hidden_depth -= 1
         elif tag in self.BLOCK_TAGS:
             self.parts.append("\n")
 
+    # Collect visible text content from the page.
     def handle_data(self, data: str) -> None:
         if self.hidden_depth:
             return
@@ -168,16 +182,19 @@ class VisibleTextExtractor(HTMLParser):
         if text.strip():
             self.parts.append(text)
 
+    # Return the cleaned visible text.
     def get_text(self) -> str:
         merged = "".join(self.parts)
         lines = [normalize_whitespace(line) for line in merged.splitlines()]
         return "\n".join(line for line in lines if line.strip())
 
 
+# Collapse repeated whitespace into single spaces.
 def normalize_whitespace(value: str) -> str:
     return " ".join(value.split())
 
 
+# Render HTML into plain visible text.
 def render_html(body: str) -> str:
     parser = VisibleTextExtractor()
     parser.feed(body)
@@ -185,6 +202,7 @@ def render_html(body: str) -> str:
     return text or "[No visible text content found]"
 
 
+# Decode an HTTP chunked transfer body.
 def decode_chunked(body: bytes) -> bytes:
     chunks: list[bytes] = []
     index = 0
@@ -204,6 +222,7 @@ def decode_chunked(body: bytes) -> bytes:
         index += size + 2
 
 
+# Read all bytes from a socket stream.
 def recv_all(stream: socket.socket) -> bytes:
     chunks: list[bytes] = []
     while True:
@@ -214,6 +233,7 @@ def recv_all(stream: socket.socket) -> bytes:
     return b"".join(chunks)
 
 
+# Build a raw HTTP GET request.
 def build_request(host: str, path: str) -> bytes:
     headers = [
         f"GET {path} HTTP/1.1",
@@ -229,6 +249,7 @@ def build_request(host: str, path: str) -> bytes:
     return "\r\n".join(headers).encode("ascii")
 
 
+# Parse HTTP headers and body from a response.
 def parse_response(raw_response: bytes) -> tuple[dict[str, str], bytes]:
     header_blob, separator, body = raw_response.partition(b"\r\n\r\n")
     if not separator:
@@ -248,12 +269,14 @@ def parse_response(raw_response: bytes) -> tuple[dict[str, str], bytes]:
     return headers, body
 
 
+# Add https when a URL has no scheme.
 def ensure_url_scheme(url: str) -> str:
     if "://" not in url:
         return f"https://{url}"
     return url
 
 
+# Fetch a URL, following redirects and using cache.
 def fetch_url(url: str, *, allow_cache: bool = True, redirect_limit: int = MAX_REDIRECTS) -> tuple[str, dict[str, str], bytes]:
     normalized_url = ensure_url_scheme(url)
     if allow_cache:
@@ -305,11 +328,13 @@ def fetch_url(url: str, *, allow_cache: bool = True, redirect_limit: int = MAX_R
     return normalized_url, headers, body
 
 
+# Pretty-print a JSON response body.
 def render_json(body: str) -> str:
     data = json.loads(body)
     return json.dumps(data, indent=2, ensure_ascii=True)
 
 
+# Choose how to display a response body.
 def format_response(headers: dict[str, str], body: bytes) -> str:
     text_body = body.decode("utf-8", errors="replace")
     content_type = headers.get("content-type", "").split(";", 1)[0].strip().lower()
@@ -329,6 +354,7 @@ def format_response(headers: dict[str, str], body: bytes) -> str:
     return f"Binary response: {content_type or 'unknown content type'} ({len(body)} bytes)"
 
 
+# Build the command-line argument parser.
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="go2web",
@@ -350,6 +376,7 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+# Run the CLI workflow and return an exit code.
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
