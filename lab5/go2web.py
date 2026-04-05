@@ -21,7 +21,7 @@ from urllib.parse import parse_qs, quote_plus, unquote, urljoin, urlsplit
 USER_AGENT = "go2web/1.0"
 DEFAULT_TIMEOUT = 10
 MAX_REDIRECTS = 5
-CACHE_TTL_SECONDS = 600
+CACHE_TTL_SECONDS = 300
 SEARCH_ENDPOINT = "https://html.duckduckgo.com/html/?q={query}"
 SCRIPT_DIR = Path(__file__).resolve().parent
 CACHE_DIR = SCRIPT_DIR / ".go2web_cache"
@@ -43,6 +43,10 @@ def load_cached_response(url: str) -> tuple[dict[str, str], bytes] | None:
     except (json.JSONDecodeError, OSError):
         return None
     if time.time() - payload.get("timestamp", 0) > CACHE_TTL_SECONDS:
+        try:
+            cache_file.unlink()
+        except OSError:
+            pass
         return None
     try:
         body = base64.b64decode(payload["body"])
