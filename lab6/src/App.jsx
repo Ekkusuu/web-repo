@@ -85,6 +85,13 @@ export default function App() {
     return matchesKind && matchesSource && matchesLiked && matchesQuery
   })
 
+  const stats = [
+    ['anime', library.filter((entry) => entry.kind === 'anime').length],
+    ['manga', library.filter((entry) => entry.kind === 'manga').length],
+    ['liked', library.filter((entry) => entry.liked).length],
+    ['mal', library.filter((entry) => entry.source === 'mal').length],
+  ]
+
   function toggleTheme() {
     setTheme((current) => (current === 'dark' ? 'light' : 'dark'))
   }
@@ -312,6 +319,18 @@ export default function App() {
             <div><dt>session</dt><dd>{profile?.name || (session ? 'authenticated' : 'offline')}</dd></div>
             <div><dt>titles</dt><dd>{String(library.length).padStart(4, '0')}</dd></div>
           </dl>
+        </section>
+
+        <section className="sidebar-panel">
+          <p className="section-title">counts</p>
+          <div className="stat-lines">
+            {stats.map(([label, value]) => (
+              <p key={label} className="stat-line">
+                <span>{label}</span>
+                <strong>{String(value).padStart(4, '0')}</strong>
+              </p>
+            ))}
+          </div>
         </section>
       </aside>
 

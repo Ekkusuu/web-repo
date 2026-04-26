@@ -102,7 +102,8 @@ a {
 .ascii-mark,
 .line-item p,
 .card-copy,
-.card-kicker {
+.card-kicker,
+.stat-line {
   color: var(--muted);
 }
 
@@ -187,6 +188,8 @@ a {
 
 .meta-list,
 .meta-list div,
+.stat-lines,
+.stat-line,
 .panel-header,
 .line-item,
 .command-actions,
@@ -205,6 +208,7 @@ a {
 }
 
 .meta-list div,
+.stat-line,
 .line-item {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
@@ -212,9 +216,14 @@ a {
 
 .meta-list dt,
 .meta-list dd,
+.stat-line,
 .line-item p,
 .panel-copy {
   margin: 0;
+}
+
+.stat-line strong {
+  color: var(--text);
 }
 
 .workspace {
@@ -339,6 +348,11 @@ a {
   }
 
   .command-actions {
+    grid-auto-flow: row;
+    grid-auto-columns: auto;
+  }
+
+  .inline-actions {
     grid-auto-flow: row;
     grid-auto-columns: auto;
   }
