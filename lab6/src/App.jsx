@@ -1,11 +1,16 @@
 import { useEffect, useState } from 'react'
 import {
   STORAGE_KEYS,
+  beginMalLogin,
   createEmptyResults,
   fetchSeasonalAnime,
   fetchTopManga,
+  fetchViewerProfile,
+  finalizeMalLogin,
   getMalClientId,
+  getMalRedirectUri,
   readStoredValue,
+  refreshMalSession,
   searchCatalog,
   writeStoredValue,
 } from './lib/mal'
@@ -25,7 +30,7 @@ export default function App() {
   const [kindFilter, setKindFilter] = useState('all')
   const [sourceFilter, setSourceFilter] = useState('all')
   const [likedOnly, setLikedOnly] = useState(false)
-  const [session] = useState(() => readStoredValue(STORAGE_KEYS.session, null))
+  const [session, setSession] = useState(() => readStoredValue(STORAGE_KEYS.session, null))
   const [results, setResults] = useState(() => createEmptyResults())
   const [discoverStatus, setDiscoverStatus] = useState('idle')
   const [discoverMessage, setDiscoverMessage] = useState('discover_idle')
@@ -34,8 +39,12 @@ export default function App() {
   const [searchResults, setSearchResults] = useState([])
   const [searchStatus, setSearchStatus] = useState('idle')
   const [searchMessage, setSearchMessage] = useState('search_idle')
+  const [profile, setProfile] = useState(() => readStoredValue('anilog.profile', null))
+  const [syncStatus, setSyncStatus] = useState('idle')
+  const [syncMessage, setSyncMessage] = useState('sign_in_with_mal_to_import_lists')
 
   const malClientId = getMalClientId()
+  const malRedirectUri = getMalRedirectUri()
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
@@ -47,12 +56,24 @@ export default function App() {
   }, [library])
 
   useEffect(() => {
+    writeStoredValue(STORAGE_KEYS.session, session)
+  }, [session])
+
+  useEffect(() => {
+    writeStoredValue('anilog.profile', profile)
+  }, [profile])
+
+  useEffect(() => {
     if (!malClientId) {
       return
     }
 
     void loadDiscover()
   }, [malClientId])
+
+  useEffect(() => {
+    void restoreSessionFromUrl()
+  }, [])
 
   const filteredLibrary = library.filter((entry) => {
     const matchesKind = kindFilter === 'all' || entry.kind === kindFilter
@@ -152,6 +173,82 @@ export default function App() {
     }
   }
 
+  async function restoreSessionFromUrl() {
+    const searchParams = new URLSearchParams(window.location.search)
+    const hasAuthCallback = searchParams.has('code') || searchParams.has('error')
+
+    if (searchParams.get('error')) {
+      setSyncStatus('error')
+      setSyncMessage(searchParams.get('error_description') || searchParams.get('error') || 'mal_login_failed')
+      window.history.replaceState({}, '', malRedirectUri)
+      return
+    }
+
+    if (hasAuthCallback) {
+      setActiveView('sync')
+      setSyncStatus('loading')
+      setSyncMessage('exchanging_mal_authorization_code')
+
+      try {
+        const nextSession = await finalizeMalLogin(searchParams)
+        setSession(nextSession)
+        await loadProfile(nextSession)
+        setSyncStatus('ready')
+        setSyncMessage('mal_login_complete')
+      } catch (error) {
+        setSyncStatus('error')
+        setSyncMessage(error.message || 'mal_login_failed')
+      } finally {
+        window.history.replaceState({}, '', malRedirectUri)
+      }
+
+      return
+    }
+
+    if (!session?.accessToken) {
+      return
+    }
+
+    try {
+      const nextSession = await refreshMalSession(session)
+      if (nextSession !== session) {
+        setSession(nextSession)
+      }
+      await loadProfile(nextSession)
+      setSyncStatus('ready')
+      setSyncMessage('cached_mal_session_restored')
+    } catch (error) {
+      setSession(null)
+      setProfile(null)
+      setSyncStatus('error')
+      setSyncMessage(error.message || 'cached_mal_session_invalid')
+    }
+  }
+
+  async function loadProfile(activeSession) {
+    const nextProfile = await fetchViewerProfile(activeSession.accessToken)
+    setProfile(nextProfile)
+    return nextProfile
+  }
+
+  function handleMalLogin() {
+    try {
+      setSyncStatus('loading')
+      setSyncMessage('redirecting_to_mal_authorization')
+      beginMalLogin()
+    } catch (error) {
+      setSyncStatus('error')
+      setSyncMessage(error.message || 'mal_login_failed')
+    }
+  }
+
+  function handleLogout() {
+    setSession(null)
+    setProfile(null)
+    setSyncStatus('idle')
+    setSyncMessage('mal_session_cleared')
+  }
+
   return (
     <main className="app-shell">
       <aside className="sidebar">
@@ -184,7 +281,7 @@ export default function App() {
           <dl className="meta-list">
             <div><dt>theme</dt><dd>{theme}</dd></div>
             <div><dt>source</dt><dd>myanimelist</dd></div>
-            <div><dt>session</dt><dd>{session ? 'cached' : 'offline'}</dd></div>
+            <div><dt>session</dt><dd>{profile?.name || (session ? 'authenticated' : 'offline')}</dd></div>
             <div><dt>titles</dt><dd>{String(library.length).padStart(4, '0')}</dd></div>
           </dl>
         </section>
@@ -207,6 +304,7 @@ export default function App() {
           <span>{malClientId ? 'mal: client_ready' : 'mal: client_missing'}</span>
           <span>{`discover: ${discoverMessage}`}</span>
           <span>{`search: ${searchMessage}`}</span>
+          <span>{`sync: ${syncMessage}`}</span>
           <span>{`library: ${String(library.length).padStart(4, '0')} items`}</span>
         </section>
 
@@ -423,18 +521,51 @@ export default function App() {
             <div className="panel-header">
               <div>
                 <p className="section-title">sync.session</p>
-                <p className="panel-copy">OAuth and list import will be wired in the next stage</p>
+                <p className="panel-copy">sign in with MyAnimeList and prepare list import</p>
               </div>
             </div>
 
             <div className="line-list">
               <article className="line-item">
                 <div>
-                  <strong>discover cache</strong>
-                  <p>{`${results.anime.length + results.manga.length} result slots ready`}</p>
+                  <strong>oauth config</strong>
+                  <p>{malClientId ? 'client_id_loaded' : 'set VITE_MAL_CLIENT_ID in lab6/.env'}</p>
                 </div>
-                <span className="tag">standby</span>
+                <span className="tag">{malClientId ? 'ready' : 'missing'}</span>
               </article>
+
+              <article className="line-item">
+                <div>
+                  <strong>redirect uri</strong>
+                  <p>{malRedirectUri}</p>
+                </div>
+                <span className="tag">pkce</span>
+              </article>
+
+              <article className="line-item profile-line-item">
+                <div>
+                  <strong>session</strong>
+                  <p>{syncMessage}</p>
+                </div>
+                <div className="inline-actions">
+                  <button className="inline-button" type="button" onClick={handleMalLogin} disabled={!malClientId || syncStatus === 'loading'}>
+                    log in
+                  </button>
+                  <button className="inline-button" type="button" onClick={handleLogout} disabled={!session}>
+                    log out
+                  </button>
+                </div>
+              </article>
+
+              {profile ? (
+                <article className="line-item profile-line-item">
+                  <div>
+                    <strong>{profile.name}</strong>
+                    <p>{`watching: ${profile.anime_statistics?.num_items_watching || 0} | completed: ${profile.anime_statistics?.num_items_completed || 0}`}</p>
+                  </div>
+                  <span className="tag">authenticated</span>
+                </article>
+              ) : null}
             </div>
           </section>
         ) : null}
