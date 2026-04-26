@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   STORAGE_KEYS,
   createEmptyResults,
   fetchSeasonalAnime,
   fetchTopManga,
+  fetchTopNovels,
   readStoredValue,
   searchCatalog,
   writeStoredValue,
@@ -17,10 +18,10 @@ const VIEWS = [
 ]
 
 const ASCII_MARK = [
-  '   _          _ _                ',
-  '  / \\   _ __ (_) | ___   __ _   ',
-  ' / _ \\ | \'_ \\| | |/ _ \\ / _` |  ',
-  '/ ___ \\| | | | | | (_) | (_| |  ',
+  '    _          _ _                ',
+  '   / \\   _ __ (_) | ___   __ _   ',
+  '  / _ \\ | \'_ \\| | |/ _ \\ / _` |  ',
+  ' / ___ \\| | | | | | (_) | (_| |  ',
   '/_/   \\_\\_| |_|_|_|\\___/ \\__, |  ',
   '                         |___/   ',
 ].join('\n')
@@ -34,12 +35,18 @@ export default function App() {
   const [sourceFilter, setSourceFilter] = useState('all')
   const [likedOnly, setLikedOnly] = useState(false)
   const [results, setResults] = useState(() => createEmptyResults())
+  const [discoverPages, setDiscoverPages] = useState({ anime: 1, manga: 1, novels: 1 })
+  const [discoverHasMore, setDiscoverHasMore] = useState({ anime: true, manga: true, novels: true })
   const [discoverStatus, setDiscoverStatus] = useState('idle')
-  const [discoverMessage, setDiscoverMessage] = useState('discover_idle')
+  const [discoverMessage, setDiscoverMessage] = useState('')
+  const [discoverLoadingMore, setDiscoverLoadingMore] = useState(false)
+  const [discoverKind, setDiscoverKind] = useState('anime')
   const [searchKind, setSearchKind] = useState('anime')
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState([])
-  const [searchMessage, setSearchMessage] = useState('search_idle')
+  const [searchMessage, setSearchMessage] = useState('')
+  const [expandedKeys, setExpandedKeys] = useState([])
+  const discoverLoadMoreRef = useRef(null)
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
@@ -53,6 +60,41 @@ export default function App() {
   useEffect(() => {
     void loadDiscover()
   }, [])
+
+  useEffect(() => {
+    setExpandedKeys([])
+  }, [discoverKind])
+
+  useEffect(() => {
+    if (activeView !== 'discover') {
+      return
+    }
+
+    function maybeLoadMore() {
+      const sentinel = discoverLoadMoreRef.current
+      if (!sentinel) {
+        return
+      }
+
+      if (discoverStatus !== 'ready' || discoverLoadingMore || !discoverHasMore[discoverKind]) {
+        return
+      }
+
+      const rect = sentinel.getBoundingClientRect()
+      if (rect.top <= window.innerHeight + 320) {
+        void loadMoreDiscover(discoverKind)
+      }
+    }
+
+    maybeLoadMore()
+    window.addEventListener('scroll', maybeLoadMore, { passive: true })
+    window.addEventListener('resize', maybeLoadMore)
+
+    return () => {
+      window.removeEventListener('scroll', maybeLoadMore)
+      window.removeEventListener('resize', maybeLoadMore)
+    }
+  }, [activeView, discoverHasMore, discoverKind, discoverLoadingMore, discoverStatus])
 
   const filteredLibrary = library.filter((entry) => {
     const matchesKind = kindFilter === 'all' || entry.kind === kindFilter
@@ -70,6 +112,8 @@ export default function App() {
     ['saved', library.length],
   ]
 
+  const discoverItems = results[discoverKind] || []
+
   function toggleTheme() {
     setTheme((current) => (current === 'dark' ? 'light' : 'dark'))
   }
@@ -80,6 +124,13 @@ export default function App() {
     setKindFilter('all')
     setSourceFilter('all')
     setLikedOnly(false)
+    setExpandedKeys([])
+  }
+
+  function toggleExpanded(entryKey) {
+    setExpandedKeys((current) =>
+      current.includes(entryKey) ? current.filter((key) => key !== entryKey) : [...current, entryKey],
+    )
   }
 
   function isSaved(entryKey) {
@@ -126,13 +177,46 @@ export default function App() {
     setDiscoverMessage('loading_public_discovery_feeds')
 
     try {
-      const [anime, manga] = await Promise.all([fetchSeasonalAnime(), fetchTopManga()])
-      setResults({ anime, manga })
+      const [anime, manga, novels] = await Promise.all([
+        fetchSeasonalAnime(),
+        fetchTopManga(),
+        fetchTopNovels(),
+      ])
+      setResults({ anime: anime.items, manga: manga.items, novels: novels.items })
+      setDiscoverPages({ anime: 1, manga: 1, novels: 1 })
+      setDiscoverHasMore({
+        anime: anime.hasNextPage,
+        manga: manga.hasNextPage,
+        novels: novels.hasNextPage,
+      })
       setDiscoverStatus('ready')
-      setDiscoverMessage(`discover_ready ${anime.length} anime ${manga.length} manga`)
+      setDiscoverMessage(`discover_ready ${anime.items.length} anime ${manga.items.length} manga ${novels.items.length} novels`)
     } catch (error) {
       setDiscoverStatus('error')
       setDiscoverMessage(error.message || 'discover_failed')
+    }
+  }
+
+  async function loadMoreDiscover(kind) {
+    if (discoverLoadingMore || !discoverHasMore[kind]) {
+      return
+    }
+
+    setDiscoverLoadingMore(true)
+
+    try {
+      const nextPage = discoverPages[kind] + 1
+      const nextBatch = await fetchDiscoverBatch(kind, nextPage)
+      setResults((current) => ({
+        ...current,
+        [kind]: dedupeEntries([...current[kind], ...nextBatch.items]),
+      }))
+      setDiscoverPages((current) => ({ ...current, [kind]: nextPage }))
+      setDiscoverHasMore((current) => ({ ...current, [kind]: nextBatch.hasNextPage }))
+    } catch (error) {
+      setDiscoverMessage(error.message || 'Could not load more entries.')
+    } finally {
+      setDiscoverLoadingMore(false)
     }
   }
 
@@ -202,7 +286,7 @@ export default function App() {
 
       <section className="workspace">
         <header className="command-bar">
-          <span>{`$ anilog --view ${activeView}`}</span>
+          <span>{`anilog / ${activeView}`}</span>
           <div className="command-actions">
             <button className="command-button" type="button" onClick={loadDiscover}>
               refresh
@@ -212,41 +296,37 @@ export default function App() {
           </div>
         </header>
 
-        <section className="status-strip">
-          <span>boot: shell_ready</span>
-          <span>{`discover: ${discoverMessage}`}</span>
-          <span>{`search: ${searchMessage}`}</span>
-          <span>{`library: ${String(library.length).padStart(4, '0')} items`}</span>
-        </section>
-
         {activeView === 'discover' ? (
           <section className="panel panel-fill">
             <div className="panel-header">
               <div>
                 <p className="section-title">discover.queue</p>
-                <p className="panel-copy">current season anime and top manga from a public API</p>
+                <p className="panel-copy">public discovery feed for anime, manga, and novels</p>
+              </div>
+
+              <div className="discover-tabs" role="tablist" aria-label="Discovery kind">
+                {['anime', 'manga', 'novels'].map((kind) => (
+                  <button
+                    key={kind}
+                    className={`menu-button discover-tab ${discoverKind === kind ? 'menu-button-active' : ''}`}
+                    type="button"
+                    onClick={() => setDiscoverKind(kind)}
+                  >
+                    {kind}
+                  </button>
+                ))}
               </div>
             </div>
 
-            <div className="split-layout">
-              <section className="subpanel">
-                <p className="section-title">anime.feed</p>
-                {results.anime.length ? renderEntryGrid(results.anime, isSaved, saveEntry, removeEntry) : (
-                  <p className="empty-line">
-                    {discoverStatus === 'loading' ? 'loading_seasonal_anime' : 'seasonal_anime_not_loaded'}
-                  </p>
-                )}
-              </section>
-
-              <section className="subpanel">
-                <p className="section-title">manga.feed</p>
-                {results.manga.length ? renderEntryGrid(results.manga, isSaved, saveEntry, removeEntry) : (
-                  <p className="empty-line">
-                    {discoverStatus === 'loading' ? 'loading_top_manga' : 'top_manga_not_loaded'}
-                  </p>
-                )}
-              </section>
-            </div>
+            <section className="subpanel">
+              <p className="section-title">{`${discoverKind}.feed`}</p>
+              {discoverItems.length ? renderEntryGrid(discoverItems, expandedKeys, toggleExpanded, isSaved, saveEntry, removeEntry, discoverKind) : (
+                <p className="empty-line">{getDiscoverEmptyMessage(discoverKind, discoverStatus, discoverMessage)}</p>
+              )}
+              {discoverItems.length && discoverLoadingMore ? <p className="empty-line">Loading more...</p> : null}
+              {discoverItems.length && !discoverHasMore[discoverKind] ? <p className="empty-line">End of feed.</p> : null}
+              <div ref={discoverLoadMoreRef} className="load-more-sentinel" aria-hidden="true" />
+            </section>
           </section>
         ) : null}
 
@@ -275,8 +355,8 @@ export default function App() {
               </form>
             </div>
 
-            {searchResults.length ? renderEntryGrid(searchResults, isSaved, saveEntry, removeEntry) : (
-              <p className="empty-line">run_search_to_load_results</p>
+            {searchResults.length ? renderEntryGrid(searchResults, expandedKeys, toggleExpanded, isSaved, saveEntry, removeEntry) : (
+              <p className="empty-line">{searchMessage || 'Run a search to load results.'}</p>
             )}
           </section>
         ) : null}
@@ -317,21 +397,34 @@ export default function App() {
             {filteredLibrary.length ? (
               <div className="card-grid">
                 {filteredLibrary.map((entry) => (
-                  <article key={entry.key} className="media-card">
+                  <article
+                    key={entry.key}
+                    className={`media-card media-entry media-library ${expandedKeys.includes(entry.key) ? 'media-card-open' : ''}`}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => toggleExpanded(entry.key)}
+                    onKeyDown={(event) => handleEntryKeyDown(event, entry.key, toggleExpanded)}
+                  >
+                    {entry.image ? <img className="card-image" src={entry.image} alt="" /> : null}
                     <div>
                       <p className="card-kicker">{entry.kind}</p>
                       <h2 className="card-title">{entry.title}</h2>
-                      <p className="card-copy">{entry.note || 'local entry saved in browser storage'}</p>
+                      <p className="card-copy">
+                        {expandedKeys.includes(entry.key)
+                          ? entry.synopsis || entry.note || 'No synopsis available.'
+                          : entry.note || 'local entry saved in browser storage'}
+                      </p>
+                      {expandedKeys.includes(entry.key) ? <TagList tags={entry.tags} /> : null}
                     </div>
                     <div className="inline-actions">
                       <span className="tag">{entry.source}</span>
-                      <button className="inline-button" type="button" onClick={() => toggleLike(entry.key)}>
+                      <button className="inline-button" type="button" onClick={(event) => handleActionClick(event, () => toggleLike(entry.key))}>
                         {entry.liked ? 'unlike' : 'like'}
                       </button>
-                      <button className="inline-button" type="button" onClick={() => removeEntry(entry.key)}>
+                      <button className="inline-button" type="button" onClick={(event) => handleActionClick(event, () => removeEntry(entry.key))}>
                         remove
                       </button>
-                      <a className="inline-link" href={entry.url} target="_blank" rel="noreferrer">
+                      <a className="inline-link" href={entry.url} target="_blank" rel="noreferrer" onClick={stopTogglePropagation}>
                         open
                       </a>
                     </div>
@@ -383,27 +476,39 @@ export default function App() {
   )
 }
 
-function renderEntryGrid(entries, isSaved, saveEntry, removeEntry) {
+function renderEntryGrid(entries, expandedKeys, toggleExpanded, isSaved, saveEntry, removeEntry, listKey = 'entries') {
   return (
-    <div className="card-grid stacked-grid">
+    <div key={listKey} className="entry-list">
       {entries.map((entry) => (
-        <article key={entry.key} className="media-card">
+        <article
+          key={entry.key}
+          className={`media-card media-entry ${expandedKeys.includes(entry.key) ? 'media-card-open' : ''}`}
+          role="button"
+          tabIndex={0}
+          onClick={() => toggleExpanded(entry.key)}
+          onKeyDown={(event) => handleEntryKeyDown(event, entry.key, toggleExpanded)}
+        >
           {entry.image ? <img className="card-image" src={entry.image} alt="" /> : null}
           <div>
             <p className="card-kicker">{entry.mediaType || entry.kind}</p>
             <h2 className="card-title">{entry.title}</h2>
-            <p className="card-copy">{truncateText(entry.synopsis, 160)}</p>
+            <p className="card-copy">
+              {expandedKeys.includes(entry.key) ? entry.synopsis || 'No synopsis available.' : truncateText(entry.synopsis, 160)}
+            </p>
+            <TagList tags={entry.tags} />
           </div>
           <div className="inline-actions">
             <span className="tag">{entry.score ? `score:${entry.score}` : 'score:na'}</span>
             <button
               className="inline-button"
               type="button"
-              onClick={() => (isSaved(entry.key) ? removeEntry(entry.key) : saveEntry(entry))}
+              onClick={(event) =>
+                handleActionClick(event, () => (isSaved(entry.key) ? removeEntry(entry.key) : saveEntry(entry)))
+              }
             >
               {isSaved(entry.key) ? 'remove' : 'save'}
             </button>
-            <a className="inline-link" href={entry.url} target="_blank" rel="noreferrer">
+            <a className="inline-link" href={entry.url} target="_blank" rel="noreferrer" onClick={stopTogglePropagation}>
               open
             </a>
           </div>
@@ -411,6 +516,42 @@ function renderEntryGrid(entries, isSaved, saveEntry, removeEntry) {
       ))}
     </div>
   )
+}
+
+function TagList({ tags }) {
+  if (!tags?.length) {
+    return null
+  }
+
+  return (
+    <div className="detail-tags">
+      <div className="tag-list">
+        {tags.map((tag) => (
+          <span key={tag} className="tag">
+            {tag}
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function handleActionClick(event, action) {
+  event.stopPropagation()
+  action()
+}
+
+function stopTogglePropagation(event) {
+  event.stopPropagation()
+}
+
+function handleEntryKeyDown(event, entryKey, toggleExpanded) {
+  if (event.key !== 'Enter' && event.key !== ' ') {
+    return
+  }
+
+  event.preventDefault()
+  toggleExpanded(entryKey)
 }
 
 function truncateText(value, maxLength) {
@@ -435,4 +576,36 @@ function buildSourceNote(source) {
   }
 
   return 'saved in the local terminal vault'
+}
+
+function getDiscoverEmptyMessage(kind, status, message) {
+  if (status === 'loading') {
+    if (kind === 'anime') return 'Loading seasonal anime...'
+    if (kind === 'manga') return 'Loading top manga...'
+    return 'Loading top novels...'
+  }
+
+  if (status === 'error') {
+    return message || `Could not load ${kind}.`
+  }
+
+  if (kind === 'anime') return 'Seasonal anime will appear here.'
+  if (kind === 'manga') return 'Top manga will appear here.'
+  return 'Top novels will appear here.'
+}
+
+async function fetchDiscoverBatch(kind, page) {
+  if (kind === 'anime') {
+    return fetchSeasonalAnime(page)
+  }
+
+  if (kind === 'manga') {
+    return fetchTopManga(page)
+  }
+
+  return fetchTopNovels(page)
+}
+
+function dedupeEntries(entries) {
+  return Array.from(new Map(entries.map((entry) => [entry.key, entry])).values())
 }

@@ -22,17 +22,23 @@ export function createEmptyResults() {
   return {
     anime: [],
     manga: [],
+    novels: [],
   }
 }
 
-export async function fetchSeasonalAnime() {
-  const response = await fetch(`${API_BASE}/seasons/now?limit=8`)
+export async function fetchSeasonalAnime(page = 1) {
+  const response = await fetch(`${API_BASE}/seasons/now?limit=8&page=${page}`)
   return normalizeListResponse(await readApiResponse(response), 'anime', 'seasonal')
 }
 
-export async function fetchTopManga() {
-  const response = await fetch(`${API_BASE}/top/manga?limit=8`)
+export async function fetchTopManga(page = 1) {
+  const response = await fetch(`${API_BASE}/top/manga?limit=8&page=${page}`)
   return normalizeListResponse(await readApiResponse(response), 'manga', 'ranking')
+}
+
+export async function fetchTopNovels(page = 1) {
+  const response = await fetch(`${API_BASE}/top/manga?type=novel&limit=8&page=${page}`)
+  return normalizeListResponse(await readApiResponse(response), 'novel', 'novel')
 }
 
 export async function searchCatalog(kind, query) {
@@ -51,6 +57,7 @@ function normalizeTitleNode(node, kind, source) {
     synopsis: node.synopsis || '',
     score: node.score || null,
     mediaType: node.type || '',
+    tags: extractTags(node),
     source,
     url: node.url || `https://myanimelist.net/${kind}/${node.mal_id}`,
   }
@@ -66,5 +73,22 @@ async function readApiResponse(response) {
 }
 
 function normalizeListResponse(payload, kind, source) {
-  return (payload.data || []).map((entry) => normalizeTitleNode(entry, kind, source))
+  const normalized = (payload.data || []).map((entry) => normalizeTitleNode(entry, kind, source))
+  return {
+    items: dedupeEntries(normalized),
+    hasNextPage: Boolean(payload.pagination?.has_next_page),
+  }
+}
+
+function dedupeEntries(entries) {
+  return Array.from(new Map(entries.map((entry) => [entry.key, entry])).values())
+}
+
+function extractTags(node) {
+  return [
+    ...(node.genres || []).map((item) => item.name),
+    ...(node.explicit_genres || []).map((item) => item.name),
+    ...(node.themes || []).map((item) => item.name),
+    ...(node.demographics || []).map((item) => item.name),
+  ].filter(Boolean)
 }
