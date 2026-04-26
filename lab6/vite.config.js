@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   plugins: [react()],
-  base: '/web-repo/lab6/',
-})
+  base: command === 'serve' ? '/' : '/web-repo/lab6/',
+}))

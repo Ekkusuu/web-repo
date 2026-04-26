@@ -1,17 +1,10 @@
 import { useEffect, useState } from 'react'
 import {
   STORAGE_KEYS,
-  beginMalLogin,
   createEmptyResults,
   fetchSeasonalAnime,
   fetchTopManga,
-  fetchUserCollection,
-  fetchViewerProfile,
-  finalizeMalLogin,
-  getMalClientId,
-  getMalRedirectUri,
   readStoredValue,
-  refreshMalSession,
   searchCatalog,
   writeStoredValue,
 } from './lib/mal'
@@ -20,8 +13,17 @@ const VIEWS = [
   { id: 'discover', label: 'discover' },
   { id: 'search', label: 'search' },
   { id: 'library', label: 'library' },
-  { id: 'sync', label: 'sync' },
+  { id: 'source', label: 'source' },
 ]
+
+const ASCII_MARK = [
+  '   _          _ _                ',
+  '  / \\   _ __ (_) | ___   __ _   ',
+  ' / _ \\ | \'_ \\| | |/ _ \\ / _` |  ',
+  '/ ___ \\| | | | | | (_) | (_| |  ',
+  '/_/   \\_\\_| |_|_|_|\\___/ \\__, |  ',
+  '                         |___/   ',
+].join('\n')
 
 export default function App() {
   const [theme, setTheme] = useState(() => readStoredValue(STORAGE_KEYS.theme, 'dark'))
@@ -31,21 +33,13 @@ export default function App() {
   const [kindFilter, setKindFilter] = useState('all')
   const [sourceFilter, setSourceFilter] = useState('all')
   const [likedOnly, setLikedOnly] = useState(false)
-  const [session, setSession] = useState(() => readStoredValue(STORAGE_KEYS.session, null))
   const [results, setResults] = useState(() => createEmptyResults())
   const [discoverStatus, setDiscoverStatus] = useState('idle')
   const [discoverMessage, setDiscoverMessage] = useState('discover_idle')
   const [searchKind, setSearchKind] = useState('anime')
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState([])
-  const [searchStatus, setSearchStatus] = useState('idle')
   const [searchMessage, setSearchMessage] = useState('search_idle')
-  const [profile, setProfile] = useState(() => readStoredValue('anilog.profile', null))
-  const [syncStatus, setSyncStatus] = useState('idle')
-  const [syncMessage, setSyncMessage] = useState('sign_in_with_mal_to_import_lists')
-
-  const malClientId = getMalClientId()
-  const malRedirectUri = getMalRedirectUri()
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
@@ -57,23 +51,7 @@ export default function App() {
   }, [library])
 
   useEffect(() => {
-    writeStoredValue(STORAGE_KEYS.session, session)
-  }, [session])
-
-  useEffect(() => {
-    writeStoredValue('anilog.profile', profile)
-  }, [profile])
-
-  useEffect(() => {
-    if (!malClientId) {
-      return
-    }
-
     void loadDiscover()
-  }, [malClientId])
-
-  useEffect(() => {
-    void restoreSessionFromUrl()
   }, [])
 
   const filteredLibrary = library.filter((entry) => {
@@ -89,7 +67,7 @@ export default function App() {
     ['anime', library.filter((entry) => entry.kind === 'anime').length],
     ['manga', library.filter((entry) => entry.kind === 'manga').length],
     ['liked', library.filter((entry) => entry.liked).length],
-    ['mal', library.filter((entry) => entry.source === 'mal').length],
+    ['saved', library.length],
   ]
 
   function toggleTheme() {
@@ -145,7 +123,7 @@ export default function App() {
 
   async function loadDiscover() {
     setDiscoverStatus('loading')
-    setDiscoverMessage('loading_mal_discovery_feeds')
+    setDiscoverMessage('loading_public_discovery_feeds')
 
     try {
       const [anime, manga] = await Promise.all([fetchSeasonalAnime(), fetchTopManga()])
@@ -162,125 +140,18 @@ export default function App() {
     event.preventDefault()
     if (!searchQuery.trim()) {
       setSearchResults([])
-      setSearchStatus('idle')
       setSearchMessage('search_idle')
       return
     }
 
-    setSearchStatus('loading')
     setSearchMessage(`searching_${searchKind}`)
 
     try {
       const nextResults = await searchCatalog(searchKind, searchQuery.trim())
       setSearchResults(nextResults)
-      setSearchStatus('ready')
       setSearchMessage(`search_ready ${nextResults.length} results`)
     } catch (error) {
-      setSearchStatus('error')
       setSearchMessage(error.message || 'search_failed')
-    }
-  }
-
-  async function restoreSessionFromUrl() {
-    const searchParams = new URLSearchParams(window.location.search)
-    const hasAuthCallback = searchParams.has('code') || searchParams.has('error')
-
-    if (searchParams.get('error')) {
-      setSyncStatus('error')
-      setSyncMessage(searchParams.get('error_description') || searchParams.get('error') || 'mal_login_failed')
-      window.history.replaceState({}, '', malRedirectUri)
-      return
-    }
-
-    if (hasAuthCallback) {
-      setActiveView('sync')
-      setSyncStatus('loading')
-      setSyncMessage('exchanging_mal_authorization_code')
-
-      try {
-        const nextSession = await finalizeMalLogin(searchParams)
-        setSession(nextSession)
-        await loadProfile(nextSession)
-        setSyncStatus('ready')
-        setSyncMessage('mal_login_complete')
-      } catch (error) {
-        setSyncStatus('error')
-        setSyncMessage(error.message || 'mal_login_failed')
-      } finally {
-        window.history.replaceState({}, '', malRedirectUri)
-      }
-
-      return
-    }
-
-    if (!session?.accessToken) {
-      return
-    }
-
-    try {
-      const nextSession = await refreshMalSession(session)
-      if (nextSession !== session) {
-        setSession(nextSession)
-      }
-      await loadProfile(nextSession)
-      setSyncStatus('ready')
-      setSyncMessage('cached_mal_session_restored')
-    } catch (error) {
-      setSession(null)
-      setProfile(null)
-      setSyncStatus('error')
-      setSyncMessage(error.message || 'cached_mal_session_invalid')
-    }
-  }
-
-  async function loadProfile(activeSession) {
-    const nextProfile = await fetchViewerProfile(activeSession.accessToken)
-    setProfile(nextProfile)
-    return nextProfile
-  }
-
-  function handleMalLogin() {
-    try {
-      setSyncStatus('loading')
-      setSyncMessage('redirecting_to_mal_authorization')
-      beginMalLogin()
-    } catch (error) {
-      setSyncStatus('error')
-      setSyncMessage(error.message || 'mal_login_failed')
-    }
-  }
-
-  function handleLogout() {
-    setSession(null)
-    setProfile(null)
-    setSyncStatus('idle')
-    setSyncMessage('mal_session_cleared')
-  }
-
-  async function importMalCollection(kind) {
-    if (!session) {
-      setSyncStatus('error')
-      setSyncMessage('log_in_before_importing_lists')
-      return
-    }
-
-    setSyncStatus('loading')
-    setSyncMessage(`importing_mal_${kind}_list`)
-
-    try {
-      const activeSession = await refreshMalSession(session)
-      if (activeSession !== session) {
-        setSession(activeSession)
-      }
-
-      const importedEntries = await fetchUserCollection(kind, activeSession.accessToken)
-      setLibrary((current) => mergeImportedEntries(current, importedEntries))
-      setActiveView('library')
-      setSyncStatus('ready')
-      setSyncMessage(`imported_${importedEntries.length}_${kind}_entries`)
-    } catch (error) {
-      setSyncStatus('error')
-      setSyncMessage(error.message || `import_${kind}_failed`)
     }
   }
 
@@ -288,14 +159,9 @@ export default function App() {
     <main className="app-shell">
       <aside className="sidebar">
         <section className="brand-block">
-          <pre className="ascii-mark">{String.raw`   _          _ _                
-  / \   _ __ (_) | ___   __ _   
- / _ \ | '_ \| | |/ _ \ / _\` |  
-/ ___ \| | | | | | (_) | (_| |  
-/_/   \_\_| |_|_|_|\___/ \__, |  
-                         |___/   `}</pre>
+          <pre className="ascii-mark">{ASCII_MARK}</pre>
           <h1 className="brand-title">AniLog Terminal</h1>
-          <p className="panel-copy">MAL-powered anime and manga tracker</p>
+          <p className="panel-copy">public anime and manga discovery vault</p>
         </section>
 
         <nav className="menu-list" aria-label="Views">
@@ -315,8 +181,8 @@ export default function App() {
           <p className="section-title">status</p>
           <dl className="meta-list">
             <div><dt>theme</dt><dd>{theme}</dd></div>
-            <div><dt>source</dt><dd>myanimelist</dd></div>
-            <div><dt>session</dt><dd>{profile?.name || (session ? 'authenticated' : 'offline')}</dd></div>
+            <div><dt>source</dt><dd>jikan_public_api</dd></div>
+            <div><dt>session</dt><dd>none</dd></div>
             <div><dt>titles</dt><dd>{String(library.length).padStart(4, '0')}</dd></div>
           </dl>
         </section>
@@ -338,7 +204,7 @@ export default function App() {
         <header className="command-bar">
           <span>{`$ anilog --view ${activeView}`}</span>
           <div className="command-actions">
-            <button className="command-button" type="button" onClick={loadDiscover} disabled={!malClientId}>
+            <button className="command-button" type="button" onClick={loadDiscover}>
               refresh
             </button>
             <button className="command-button" type="button" onClick={toggleTheme}>theme</button>
@@ -348,10 +214,8 @@ export default function App() {
 
         <section className="status-strip">
           <span>boot: shell_ready</span>
-          <span>{malClientId ? 'mal: client_ready' : 'mal: client_missing'}</span>
           <span>{`discover: ${discoverMessage}`}</span>
           <span>{`search: ${searchMessage}`}</span>
-          <span>{`sync: ${syncMessage}`}</span>
           <span>{`library: ${String(library.length).padStart(4, '0')} items`}</span>
         </section>
 
@@ -360,81 +224,25 @@ export default function App() {
             <div className="panel-header">
               <div>
                 <p className="section-title">discover.queue</p>
-                <p className="panel-copy">MAL feeds will land here next</p>
+                <p className="panel-copy">current season anime and top manga from a public API</p>
               </div>
             </div>
 
             <div className="split-layout">
               <section className="subpanel">
                 <p className="section-title">anime.feed</p>
-                {results.anime.length ? (
-                  <div className="card-grid stacked-grid">
-                    {results.anime.map((entry) => (
-                      <article key={entry.key} className="media-card">
-                        {entry.image ? <img className="card-image" src={entry.image} alt="" /> : null}
-                        <div>
-                          <p className="card-kicker">{entry.mediaType || 'anime'}</p>
-                          <h2 className="card-title">{entry.title}</h2>
-                          <p className="card-copy">{truncateText(entry.synopsis, 160)}</p>
-                        </div>
-                        <div className="inline-actions">
-                          <span className="tag">{entry.score ? `score:${entry.score}` : 'score:na'}</span>
-                          <button
-                            className="inline-button"
-                            type="button"
-                            onClick={() => (isSaved(entry.key) ? removeEntry(entry.key) : saveEntry(entry))}
-                          >
-                            {isSaved(entry.key) ? 'remove' : 'save'}
-                          </button>
-                          <a className="inline-link" href={entry.url} target="_blank" rel="noreferrer">
-                            open
-                          </a>
-                        </div>
-                      </article>
-                    ))}
-                  </div>
-                ) : (
+                {results.anime.length ? renderEntryGrid(results.anime, isSaved, saveEntry, removeEntry) : (
                   <p className="empty-line">
-                    {malClientId
-                      ? discoverStatus === 'loading'
-                        ? 'loading_seasonal_anime'
-                        : 'seasonal_anime_not_loaded'
-                      : 'set VITE_MAL_CLIENT_ID in lab6/.env'}
+                    {discoverStatus === 'loading' ? 'loading_seasonal_anime' : 'seasonal_anime_not_loaded'}
                   </p>
                 )}
               </section>
 
               <section className="subpanel">
                 <p className="section-title">manga.feed</p>
-                {results.manga.length ? (
-                  <div className="card-grid stacked-grid">
-                    {results.manga.map((entry) => (
-                      <article key={entry.key} className="media-card">
-                        {entry.image ? <img className="card-image" src={entry.image} alt="" /> : null}
-                        <div>
-                          <p className="card-kicker">{entry.mediaType || 'manga'}</p>
-                          <h2 className="card-title">{entry.title}</h2>
-                          <p className="card-copy">{truncateText(entry.synopsis, 160)}</p>
-                        </div>
-                        <div className="inline-actions">
-                          <span className="tag">{entry.score ? `score:${entry.score}` : 'score:na'}</span>
-                          <button
-                            className="inline-button"
-                            type="button"
-                            onClick={() => (isSaved(entry.key) ? removeEntry(entry.key) : saveEntry(entry))}
-                          >
-                            {isSaved(entry.key) ? 'remove' : 'save'}
-                          </button>
-                          <a className="inline-link" href={entry.url} target="_blank" rel="noreferrer">
-                            open
-                          </a>
-                        </div>
-                      </article>
-                    ))}
-                  </div>
-                ) : (
+                {results.manga.length ? renderEntryGrid(results.manga, isSaved, saveEntry, removeEntry) : (
                   <p className="empty-line">
-                    {malClientId ? (discoverStatus === 'loading' ? 'loading_top_manga' : 'top_manga_not_loaded') : 'set VITE_MAL_CLIENT_ID in lab6/.env'}
+                    {discoverStatus === 'loading' ? 'loading_top_manga' : 'top_manga_not_loaded'}
                   </p>
                 )}
               </section>
@@ -447,8 +255,8 @@ export default function App() {
             <div className="panel-header">
               <form className="search-form" onSubmit={handleSearch}>
                 <p className="section-title">search.shell</p>
-                <p className="panel-copy">search the MAL anime or manga catalog</p>
-                <div className="filter-grid compact-grid">
+                <p className="panel-copy">search the public anime or manga catalog</p>
+                <div className="filter-grid compact-grid search-grid">
                   <input
                     className="field"
                     type="search"
@@ -460,41 +268,15 @@ export default function App() {
                     <option value="anime">kind:anime</option>
                     <option value="manga">kind:manga</option>
                   </select>
-                  <button className="command-button" type="submit" disabled={!malClientId}>
+                  <button className="command-button" type="submit">
                     run search
                   </button>
                 </div>
               </form>
             </div>
 
-            {searchResults.length ? (
-              <div className="card-grid">
-                {searchResults.map((entry) => (
-                  <article key={entry.key} className="media-card">
-                    {entry.image ? <img className="card-image" src={entry.image} alt="" /> : null}
-                    <div>
-                      <p className="card-kicker">{entry.kind}</p>
-                      <h2 className="card-title">{entry.title}</h2>
-                      <p className="card-copy">{truncateText(entry.synopsis, 170)}</p>
-                    </div>
-                    <div className="inline-actions">
-                      <span className="tag">{entry.score ? `score:${entry.score}` : 'score:na'}</span>
-                      <button
-                        className="inline-button"
-                        type="button"
-                        onClick={() => (isSaved(entry.key) ? removeEntry(entry.key) : saveEntry(entry))}
-                      >
-                        {isSaved(entry.key) ? 'remove' : 'save'}
-                      </button>
-                      <a className="inline-link" href={entry.url} target="_blank" rel="noreferrer">
-                        open
-                      </a>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            ) : (
-              <p className="empty-line">{malClientId ? 'run_search_to_load_results' : 'set VITE_MAL_CLIENT_ID in lab6/.env'}</p>
+            {searchResults.length ? renderEntryGrid(searchResults, isSaved, saveEntry, removeEntry) : (
+              <p className="empty-line">run_search_to_load_results</p>
             )}
           </section>
         ) : null}
@@ -507,7 +289,7 @@ export default function App() {
                 <p className="panel-copy">local runtime state with browser persistence</p>
               </div>
 
-              <div className="filter-grid compact-grid">
+              <div className="filter-grid compact-grid library-grid">
                 <input
                   className="field"
                   type="search"
@@ -525,7 +307,6 @@ export default function App() {
                   <option value="seasonal">source:seasonal</option>
                   <option value="ranking">source:ranking</option>
                   <option value="search">source:search</option>
-                  <option value="mal">source:mal</option>
                 </select>
                 <button className="command-button" type="button" onClick={() => setLikedOnly((current) => !current)}>
                   {likedOnly ? 'liked:on' : 'liked:off'}
@@ -563,67 +344,72 @@ export default function App() {
           </section>
         ) : null}
 
-        {activeView === 'sync' ? (
+        {activeView === 'source' ? (
           <section className="panel panel-fill">
             <div className="panel-header">
               <div>
-                <p className="section-title">sync.session</p>
-                <p className="panel-copy">sign in with MyAnimeList and prepare list import</p>
+                <p className="section-title">source.status</p>
+                <p className="panel-copy">public data mode only, with no account login or remote user state</p>
               </div>
             </div>
 
             <div className="line-list">
               <article className="line-item">
                 <div>
-                  <strong>oauth config</strong>
-                  <p>{malClientId ? 'client_id_loaded' : 'set VITE_MAL_CLIENT_ID in lab6/.env'}</p>
+                  <strong>api mode</strong>
+                  <p>jikan public endpoints with no auth required</p>
                 </div>
-                <span className="tag">{malClientId ? 'ready' : 'missing'}</span>
+                <span className="tag">public</span>
               </article>
-
               <article className="line-item">
                 <div>
-                  <strong>redirect uri</strong>
-                  <p>{malRedirectUri}</p>
+                  <strong>app state</strong>
+                  <p>all saved titles, filters, and likes are stored locally in the browser</p>
                 </div>
-                <span className="tag">pkce</span>
+                <span className="tag">local</span>
               </article>
-
-              <article className="line-item profile-line-item">
+              <article className="line-item">
                 <div>
-                  <strong>session</strong>
-                  <p>{syncMessage}</p>
+                  <strong>catalog links</strong>
+                  <p>entries open their original MyAnimeList detail pages in a new tab</p>
                 </div>
-                <div className="inline-actions">
-                  <button className="inline-button" type="button" onClick={handleMalLogin} disabled={!malClientId || syncStatus === 'loading'}>
-                    log in
-                  </button>
-                  <button className="inline-button" type="button" onClick={handleLogout} disabled={!session}>
-                    log out
-                  </button>
-                  <button className="inline-button" type="button" onClick={() => importMalCollection('anime')} disabled={!session || syncStatus === 'loading'}>
-                    import anime
-                  </button>
-                  <button className="inline-button" type="button" onClick={() => importMalCollection('manga')} disabled={!session || syncStatus === 'loading'}>
-                    import manga
-                  </button>
-                </div>
+                <span className="tag">mal</span>
               </article>
-
-              {profile ? (
-                <article className="line-item profile-line-item">
-                  <div>
-                    <strong>{profile.name}</strong>
-                    <p>{`watching: ${profile.anime_statistics?.num_items_watching || 0} | completed: ${profile.anime_statistics?.num_items_completed || 0}`}</p>
-                  </div>
-                  <span className="tag">authenticated</span>
-                </article>
-              ) : null}
             </div>
           </section>
         ) : null}
       </section>
     </main>
+  )
+}
+
+function renderEntryGrid(entries, isSaved, saveEntry, removeEntry) {
+  return (
+    <div className="card-grid stacked-grid">
+      {entries.map((entry) => (
+        <article key={entry.key} className="media-card">
+          {entry.image ? <img className="card-image" src={entry.image} alt="" /> : null}
+          <div>
+            <p className="card-kicker">{entry.mediaType || entry.kind}</p>
+            <h2 className="card-title">{entry.title}</h2>
+            <p className="card-copy">{truncateText(entry.synopsis, 160)}</p>
+          </div>
+          <div className="inline-actions">
+            <span className="tag">{entry.score ? `score:${entry.score}` : 'score:na'}</span>
+            <button
+              className="inline-button"
+              type="button"
+              onClick={() => (isSaved(entry.key) ? removeEntry(entry.key) : saveEntry(entry))}
+            >
+              {isSaved(entry.key) ? 'remove' : 'save'}
+            </button>
+            <a className="inline-link" href={entry.url} target="_blank" rel="noreferrer">
+              open
+            </a>
+          </div>
+        </article>
+      ))}
+    </div>
   )
 }
 
@@ -637,7 +423,7 @@ function truncateText(value, maxLength) {
 
 function buildSourceNote(source) {
   if (source === 'seasonal') {
-    return 'saved from the seasonal anime feed'
+    return 'saved from the current season feed'
   }
 
   if (source === 'ranking') {
@@ -648,31 +434,5 @@ function buildSourceNote(source) {
     return 'saved from catalog search results'
   }
 
-  if (source === 'mal') {
-    return 'imported from the authenticated MAL account'
-  }
-
   return 'saved in the local terminal vault'
-}
-
-function mergeImportedEntries(currentEntries, importedEntries) {
-  const entryMap = new Map(currentEntries.map((entry) => [entry.key, entry]))
-
-  for (const importedEntry of importedEntries) {
-    const existingEntry = entryMap.get(importedEntry.key)
-    entryMap.set(importedEntry.key, {
-      ...importedEntry,
-      liked: existingEntry?.liked || false,
-      addedAt: existingEntry?.addedAt || new Date().toISOString(),
-      note: buildMalNote(importedEntry),
-    })
-  }
-
-  return Array.from(entryMap.values()).sort((left, right) =>
-    String(right.addedAt || '').localeCompare(String(left.addedAt || '')),
-  )
-}
-
-function buildMalNote(entry) {
-  return entry.listStatus ? `imported from MAL list with status ${entry.listStatus}` : 'imported from the authenticated MAL account'
 }
