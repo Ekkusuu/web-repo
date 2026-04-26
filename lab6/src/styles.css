@@ -96,10 +96,13 @@ a {
 }
 
 .panel-copy,
+.empty-line,
 .status-strip,
 .meta-list,
 .ascii-mark,
-.line-item p {
+.line-item p,
+.card-copy,
+.card-kicker {
   color: var(--muted);
 }
 
@@ -132,7 +135,8 @@ a {
 
 .menu-button,
 .command-button,
-.tag {
+.tag,
+.field {
   min-height: 40px;
   padding: 0 12px;
   border: 1px solid var(--line);
@@ -143,8 +147,13 @@ a {
 }
 
 .menu-button,
-.command-button {
+.command-button,
+.field {
   cursor: pointer;
+}
+
+.field {
+  width: 100%;
 }
 
 .menu-button {
@@ -160,7 +169,12 @@ a {
 .meta-list div,
 .panel-header,
 .line-item,
-.command-actions {
+.command-actions,
+.filter-grid,
+.split-layout,
+.card-grid,
+.media-card,
+.inline-actions {
   display: grid;
   gap: 10px;
 }
@@ -220,6 +234,40 @@ a {
   margin-bottom: 16px;
 }
 
+.split-layout {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.subpanel,
+.media-card {
+  padding: 16px;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+}
+
+.compact-grid {
+  grid-template-columns: minmax(0, 1.5fr) minmax(180px, 220px) auto;
+}
+
+.card-grid {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.card-title {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.card-kicker,
+.card-copy {
+  margin: 0 0 8px;
+}
+
+.inline-actions {
+  grid-auto-flow: column;
+  grid-auto-columns: max-content;
+}
+
 .line-item {
   padding: 12px;
   border: 1px solid var(--line);
@@ -238,6 +286,11 @@ a {
 
   .panel-fill {
     min-height: auto;
+  }
+
+  .split-layout,
+  .compact-grid {
+    grid-template-columns: 1fr;
   }
 }
 
