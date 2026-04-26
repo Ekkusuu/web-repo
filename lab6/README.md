@@ -102,8 +102,8 @@ npm run build
 
 ## Public URL
 
-- Repo URL: `https://github.com/Ekkusuu/web-repo`
-- Live URL: `https://ekkusuu.github.io/web-repo/lab6/`
+- Repo URL: [https://github.com/Ekkusuu/web-repo](https://github.com/Ekkusuu/web-repo)
+- Live URL: [https://ekkusuu.github.io/web-repo/lab6/](https://ekkusuu.github.io/web-repo/lab6/)
 
 ## Deployment
 
