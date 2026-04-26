@@ -23,6 +23,7 @@ export default function App() {
   const [library, setLibrary] = useState(() => readStoredValue(STORAGE_KEYS.library, []))
   const [libraryQuery, setLibraryQuery] = useState('')
   const [kindFilter, setKindFilter] = useState('all')
+  const [sourceFilter, setSourceFilter] = useState('all')
   const [likedOnly, setLikedOnly] = useState(false)
   const [session] = useState(() => readStoredValue(STORAGE_KEYS.session, null))
   const [results, setResults] = useState(() => createEmptyResults())
@@ -55,10 +56,11 @@ export default function App() {
 
   const filteredLibrary = library.filter((entry) => {
     const matchesKind = kindFilter === 'all' || entry.kind === kindFilter
+    const matchesSource = sourceFilter === 'all' || entry.source === sourceFilter
     const matchesLiked = !likedOnly || entry.liked
-    const searchText = `${entry.title} ${entry.kind} ${entry.note || ''}`.toLowerCase()
+    const searchText = `${entry.title} ${entry.kind} ${entry.note || ''} ${entry.source}`.toLowerCase()
     const matchesQuery = !libraryQuery || searchText.includes(libraryQuery.toLowerCase())
-    return matchesKind && matchesLiked && matchesQuery
+    return matchesKind && matchesSource && matchesLiked && matchesQuery
   })
 
   function toggleTheme() {
@@ -69,7 +71,47 @@ export default function App() {
     setLibrary([])
     setLibraryQuery('')
     setKindFilter('all')
+    setSourceFilter('all')
     setLikedOnly(false)
+  }
+
+  function isSaved(entryKey) {
+    return library.some((entry) => entry.key === entryKey)
+  }
+
+  function saveEntry(entry) {
+    setLibrary((current) => {
+      if (current.some((item) => item.key === entry.key)) {
+        return current
+      }
+
+      return [
+        {
+          ...entry,
+          liked: false,
+          note: buildSourceNote(entry.source),
+          addedAt: new Date().toISOString(),
+        },
+        ...current,
+      ]
+    })
+  }
+
+  function removeEntry(entryKey) {
+    setLibrary((current) => current.filter((entry) => entry.key !== entryKey))
+  }
+
+  function toggleLike(entryKey) {
+    setLibrary((current) =>
+      current.map((entry) =>
+        entry.key === entryKey
+          ? {
+              ...entry,
+              liked: !entry.liked,
+            }
+          : entry,
+      ),
+    )
   }
 
   async function loadDiscover() {
@@ -192,6 +234,13 @@ export default function App() {
                         </div>
                         <div className="inline-actions">
                           <span className="tag">{entry.score ? `score:${entry.score}` : 'score:na'}</span>
+                          <button
+                            className="inline-button"
+                            type="button"
+                            onClick={() => (isSaved(entry.key) ? removeEntry(entry.key) : saveEntry(entry))}
+                          >
+                            {isSaved(entry.key) ? 'remove' : 'save'}
+                          </button>
                           <a className="inline-link" href={entry.url} target="_blank" rel="noreferrer">
                             open
                           </a>
@@ -224,6 +273,13 @@ export default function App() {
                         </div>
                         <div className="inline-actions">
                           <span className="tag">{entry.score ? `score:${entry.score}` : 'score:na'}</span>
+                          <button
+                            className="inline-button"
+                            type="button"
+                            onClick={() => (isSaved(entry.key) ? removeEntry(entry.key) : saveEntry(entry))}
+                          >
+                            {isSaved(entry.key) ? 'remove' : 'save'}
+                          </button>
                           <a className="inline-link" href={entry.url} target="_blank" rel="noreferrer">
                             open
                           </a>
@@ -278,6 +334,13 @@ export default function App() {
                     </div>
                     <div className="inline-actions">
                       <span className="tag">{entry.score ? `score:${entry.score}` : 'score:na'}</span>
+                      <button
+                        className="inline-button"
+                        type="button"
+                        onClick={() => (isSaved(entry.key) ? removeEntry(entry.key) : saveEntry(entry))}
+                      >
+                        {isSaved(entry.key) ? 'remove' : 'save'}
+                      </button>
                       <a className="inline-link" href={entry.url} target="_blank" rel="noreferrer">
                         open
                       </a>
@@ -312,6 +375,13 @@ export default function App() {
                   <option value="anime">kind:anime</option>
                   <option value="manga">kind:manga</option>
                 </select>
+                <select className="field" value={sourceFilter} onChange={(event) => setSourceFilter(event.target.value)}>
+                  <option value="all">source:all</option>
+                  <option value="seasonal">source:seasonal</option>
+                  <option value="ranking">source:ranking</option>
+                  <option value="search">source:search</option>
+                  <option value="mal">source:mal</option>
+                </select>
                 <button className="command-button" type="button" onClick={() => setLikedOnly((current) => !current)}>
                   {likedOnly ? 'liked:on' : 'liked:off'}
                 </button>
@@ -328,7 +398,16 @@ export default function App() {
                       <p className="card-copy">{entry.note || 'local entry saved in browser storage'}</p>
                     </div>
                     <div className="inline-actions">
-                      <span className="tag">{entry.liked ? 'liked' : 'saved'}</span>
+                      <span className="tag">{entry.source}</span>
+                      <button className="inline-button" type="button" onClick={() => toggleLike(entry.key)}>
+                        {entry.liked ? 'unlike' : 'like'}
+                      </button>
+                      <button className="inline-button" type="button" onClick={() => removeEntry(entry.key)}>
+                        remove
+                      </button>
+                      <a className="inline-link" href={entry.url} target="_blank" rel="noreferrer">
+                        open
+                      </a>
                     </div>
                   </article>
                 ))}
@@ -370,4 +449,24 @@ function truncateText(value, maxLength) {
   }
 
   return value.length > maxLength ? `${value.slice(0, maxLength - 3)}...` : value
+}
+
+function buildSourceNote(source) {
+  if (source === 'seasonal') {
+    return 'saved from the seasonal anime feed'
+  }
+
+  if (source === 'ranking') {
+    return 'saved from the top manga ranking'
+  }
+
+  if (source === 'search') {
+    return 'saved from catalog search results'
+  }
+
+  if (source === 'mal') {
+    return 'imported from the authenticated MAL account'
+  }
+
+  return 'saved in the local terminal vault'
 }

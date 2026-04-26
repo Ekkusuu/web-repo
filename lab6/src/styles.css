@@ -148,7 +148,8 @@ a {
 
 .menu-button,
 .command-button,
-.field {
+.field,
+.inline-button {
   cursor: pointer;
 }
 
@@ -161,6 +162,14 @@ a {
   text-decoration: none;
   display: inline-flex;
   align-items: center;
+}
+
+.inline-button {
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  color: var(--text);
 }
 
 .field {
@@ -258,7 +267,7 @@ a {
 }
 
 .compact-grid {
-  grid-template-columns: minmax(0, 1.5fr) minmax(180px, 220px) auto;
+  grid-template-columns: minmax(0, 1.5fr) repeat(2, minmax(180px, 220px)) auto;
 }
 
 .card-grid {
