@@ -152,6 +152,17 @@ a {
   cursor: pointer;
 }
 
+.inline-link {
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  color: var(--text);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
 .field {
   width: 100%;
 }
@@ -174,7 +185,8 @@ a {
 .split-layout,
 .card-grid,
 .media-card,
-.inline-actions {
+.inline-actions,
+.search-form {
   display: grid;
   gap: 10px;
 }
@@ -258,9 +270,21 @@ a {
   font-size: 1rem;
 }
 
+.card-image {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border: 1px solid var(--line);
+  background: var(--bg);
+}
+
 .card-kicker,
 .card-copy {
   margin: 0 0 8px;
+}
+
+.stacked-grid {
+  grid-template-columns: 1fr;
 }
 
 .inline-actions {
