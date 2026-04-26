@@ -215,6 +215,22 @@ export async function fetchViewerProfile(accessToken) {
   return readApiResponse(response)
 }
 
+export async function fetchUserCollection(kind, accessToken) {
+  const safeKind = kind === 'manga' ? 'manga' : 'anime'
+  const listPath = safeKind === 'anime' ? 'animelist' : 'mangalist'
+  const fields = 'list_status,synopsis,mean,main_picture,media_type'
+  const response = await fetch(
+    `${API_BASE}/users/@me/${listPath}?limit=20&sort=list_updated_at&fields=${fields}`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  )
+
+  return normalizeListResponse(await readApiResponse(response), safeKind, 'mal')
+}
+
 async function readApiResponse(response) {
   const payload = await response.json().catch(() => ({}))
   if (!response.ok) {

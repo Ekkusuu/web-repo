@@ -5,6 +5,7 @@ import {
   createEmptyResults,
   fetchSeasonalAnime,
   fetchTopManga,
+  fetchUserCollection,
   fetchViewerProfile,
   finalizeMalLogin,
   getMalClientId,
@@ -247,6 +248,33 @@ export default function App() {
     setProfile(null)
     setSyncStatus('idle')
     setSyncMessage('mal_session_cleared')
+  }
+
+  async function importMalCollection(kind) {
+    if (!session) {
+      setSyncStatus('error')
+      setSyncMessage('log_in_before_importing_lists')
+      return
+    }
+
+    setSyncStatus('loading')
+    setSyncMessage(`importing_mal_${kind}_list`)
+
+    try {
+      const activeSession = await refreshMalSession(session)
+      if (activeSession !== session) {
+        setSession(activeSession)
+      }
+
+      const importedEntries = await fetchUserCollection(kind, activeSession.accessToken)
+      setLibrary((current) => mergeImportedEntries(current, importedEntries))
+      setActiveView('library')
+      setSyncStatus('ready')
+      setSyncMessage(`imported_${importedEntries.length}_${kind}_entries`)
+    } catch (error) {
+      setSyncStatus('error')
+      setSyncMessage(error.message || `import_${kind}_failed`)
+    }
   }
 
   return (
@@ -554,6 +582,12 @@ export default function App() {
                   <button className="inline-button" type="button" onClick={handleLogout} disabled={!session}>
                     log out
                   </button>
+                  <button className="inline-button" type="button" onClick={() => importMalCollection('anime')} disabled={!session || syncStatus === 'loading'}>
+                    import anime
+                  </button>
+                  <button className="inline-button" type="button" onClick={() => importMalCollection('manga')} disabled={!session || syncStatus === 'loading'}>
+                    import manga
+                  </button>
                 </div>
               </article>
 
@@ -600,4 +634,26 @@ function buildSourceNote(source) {
   }
 
   return 'saved in the local terminal vault'
+}
+
+function mergeImportedEntries(currentEntries, importedEntries) {
+  const entryMap = new Map(currentEntries.map((entry) => [entry.key, entry]))
+
+  for (const importedEntry of importedEntries) {
+    const existingEntry = entryMap.get(importedEntry.key)
+    entryMap.set(importedEntry.key, {
+      ...importedEntry,
+      liked: existingEntry?.liked || false,
+      addedAt: existingEntry?.addedAt || new Date().toISOString(),
+      note: buildMalNote(importedEntry),
+    })
+  }
+
+  return Array.from(entryMap.values()).sort((left, right) =>
+    String(right.addedAt || '').localeCompare(String(left.addedAt || '')),
+  )
+}
+
+function buildMalNote(entry) {
+  return entry.listStatus ? `imported from MAL list with status ${entry.listStatus}` : 'imported from the authenticated MAL account'
 }
