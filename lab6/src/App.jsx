@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import asciiLogo from './logo.txt?raw'
 import {
   STORAGE_KEYS,
   createEmptyResults,
@@ -16,15 +17,6 @@ const VIEWS = [
   { id: 'library', label: 'library' },
   { id: 'source', label: 'source' },
 ]
-
-const ASCII_MARK = [
-  '    _          _ _                ',
-  '   / \\   _ __ (_) | ___   __ _   ',
-  '  / _ \\ | \'_ \\| | |/ _ \\ / _` |  ',
-  ' / ___ \\| | | | | | (_) | (_| |  ',
-  '/_/   \\_\\_| |_|_|_|\\___/ \\__, |  ',
-  '                         |___/   ',
-].join('\n')
 
 export default function App() {
   const [theme, setTheme] = useState(() => readStoredValue(STORAGE_KEYS.theme, 'dark'))
@@ -243,7 +235,7 @@ export default function App() {
     <main className="app-shell">
       <aside className="sidebar">
         <section className="brand-block">
-          <pre className="ascii-mark">{ASCII_MARK}</pre>
+          <pre className="ascii-mark">{asciiLogo}</pre>
           <h1 className="brand-title">AniLog Terminal</h1>
           <p className="panel-copy">public anime and manga discovery vault</p>
         </section>
