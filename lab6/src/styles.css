@@ -180,6 +180,22 @@ a {
   cursor: pointer;
 }
 
+.command-button,
+.inline-button,
+.inline-link {
+  transition: letter-spacing 140ms ease, transform 140ms ease, background-color 140ms ease;
+}
+
+.command-button:hover,
+.command-button:focus-visible,
+.inline-button:hover,
+.inline-button:focus-visible,
+.inline-link:hover,
+.inline-link:focus-visible {
+  letter-spacing: 0.04em;
+  transform: translateX(1px);
+}
+
 .inline-link {
   min-height: 40px;
   padding: 0 12px;
@@ -203,13 +219,88 @@ a {
   width: 100%;
 }
 
+.select-shell {
+  position: relative;
+  min-width: 0;
+}
+
+.select-trigger {
+  justify-content: space-between;
+  gap: 12px;
+  text-align: left;
+}
+
+.select-caret {
+  color: var(--muted);
+  flex: none;
+}
+
+.select-shell-open .select-caret {
+  color: var(--text);
+}
+
+.select-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  padding: 6px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  display: grid;
+  gap: 6px;
+}
+
+.select-option {
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+}
+
+.select-option:hover,
+.select-option:focus-visible,
+.select-option-active {
+  border-color: var(--line);
+  background: var(--panel-2);
+}
+
 .menu-button {
   justify-content: flex-start;
   background: transparent;
+  position: relative;
+  padding-left: 34px;
+  transition: color 140ms ease, background-color 140ms ease, letter-spacing 140ms ease, padding-left 140ms ease;
+}
+
+.menu-button::before {
+  content: '. ';
+  position: absolute;
+  left: 12px;
+  transition: transform 140ms ease;
+}
+
+.menu-button:hover,
+.menu-button:focus-visible {
+  letter-spacing: 0.04em;
+  padding-left: 38px;
+}
+
+.menu-button:hover::before,
+.menu-button:focus-visible::before {
+  content: '> ';
+  transform: translateX(1px);
 }
 
 .menu-button-active {
   background: var(--panel-2);
+}
+
+.menu-button-active::before {
+  content: '> ';
 }
 
 .meta-list,

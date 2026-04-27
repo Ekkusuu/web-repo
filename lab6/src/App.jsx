@@ -18,6 +18,24 @@ const VIEWS = [
   { id: 'source', label: 'source' },
 ]
 
+const SEARCH_KIND_OPTIONS = [
+  { value: 'anime', label: 'kind:anime' },
+  { value: 'manga', label: 'kind:manga' },
+]
+
+const LIBRARY_KIND_OPTIONS = [
+  { value: 'all', label: 'kind:all' },
+  { value: 'anime', label: 'kind:anime' },
+  { value: 'manga', label: 'kind:manga' },
+]
+
+const SOURCE_FILTER_OPTIONS = [
+  { value: 'all', label: 'source:all' },
+  { value: 'seasonal', label: 'source:seasonal' },
+  { value: 'ranking', label: 'source:ranking' },
+  { value: 'search', label: 'source:search' },
+]
+
 export default function App() {
   const [theme, setTheme] = useState(() => readStoredValue(STORAGE_KEYS.theme, 'dark'))
   const [activeView, setActiveView] = useState('discover')
@@ -251,7 +269,7 @@ export default function App() {
               type="button"
               onClick={() => setActiveView(item.id)}
             >
-              {`> ${item.label}`}
+              {item.label}
             </button>
           ))}
         </nav>
@@ -339,10 +357,7 @@ export default function App() {
                     value={searchQuery}
                     onChange={(event) => setSearchQuery(event.target.value)}
                   />
-                  <select className="field" value={searchKind} onChange={(event) => setSearchKind(event.target.value)}>
-                    <option value="anime">kind:anime</option>
-                    <option value="manga">kind:manga</option>
-                  </select>
+                  <CustomSelect value={searchKind} options={SEARCH_KIND_OPTIONS} onChange={setSearchKind} />
                   <button className="command-button" type="submit">
                     run search
                   </button>
@@ -372,17 +387,8 @@ export default function App() {
                   value={libraryQuery}
                   onChange={(event) => setLibraryQuery(event.target.value)}
                 />
-                <select className="field" value={kindFilter} onChange={(event) => setKindFilter(event.target.value)}>
-                  <option value="all">kind:all</option>
-                  <option value="anime">kind:anime</option>
-                  <option value="manga">kind:manga</option>
-                </select>
-                <select className="field" value={sourceFilter} onChange={(event) => setSourceFilter(event.target.value)}>
-                  <option value="all">source:all</option>
-                  <option value="seasonal">source:seasonal</option>
-                  <option value="ranking">source:ranking</option>
-                  <option value="search">source:search</option>
-                </select>
+                <CustomSelect value={kindFilter} options={LIBRARY_KIND_OPTIONS} onChange={setKindFilter} />
+                <CustomSelect value={sourceFilter} options={SOURCE_FILTER_OPTIONS} onChange={setSourceFilter} />
                 <button className="command-button" type="button" onClick={() => setLikedOnly((current) => !current)}>
                   {likedOnly ? 'liked:on' : 'liked:off'}
                 </button>
@@ -527,6 +533,69 @@ function TagList({ tags }) {
           </span>
         ))}
       </div>
+    </div>
+  )
+}
+
+function CustomSelect({ value, options, onChange }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const selectRef = useRef(null)
+  const activeOption = options.find((option) => option.value === value) || options[0]
+
+  useEffect(() => {
+    function handlePointerDown(event) {
+      if (!selectRef.current?.contains(event.target)) {
+        setIsOpen(false)
+      }
+    }
+
+    function handleEscape(event) {
+      if (event.key === 'Escape') {
+        setIsOpen(false)
+      }
+    }
+
+    document.addEventListener('pointerdown', handlePointerDown)
+    document.addEventListener('keydown', handleEscape)
+
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown)
+      document.removeEventListener('keydown', handleEscape)
+    }
+  }, [])
+
+  return (
+    <div ref={selectRef} className={`select-shell ${isOpen ? 'select-shell-open' : ''}`}>
+      <button
+        className="field select-trigger"
+        type="button"
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+        onClick={() => setIsOpen((current) => !current)}
+      >
+        <span>{activeOption?.label}</span>
+        <span className="select-caret" aria-hidden="true">▾</span>
+      </button>
+
+      {isOpen ? (
+        <div className="select-menu" role="listbox">
+          {options.map((option) => (
+            <button
+              key={option.value}
+              className={`select-option ${option.value === value ? 'select-option-active' : ''}`}
+              type="button"
+              role="option"
+              aria-selected={option.value === value}
+              onClick={() => {
+                onChange(option.value)
+                setIsOpen(false)
+              }}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      ) : null}
     </div>
   )
 }
