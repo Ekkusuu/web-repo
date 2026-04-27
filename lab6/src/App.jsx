@@ -224,9 +224,10 @@ export default function App() {
 
     try {
       const nextResults = await searchCatalog(searchKind, searchQuery.trim())
-      setSearchResults(nextResults)
-      setSearchMessage(`search_ready ${nextResults.length} results`)
+      setSearchResults(nextResults.items)
+      setSearchMessage(`search_ready ${nextResults.items.length} results`)
     } catch (error) {
+      setSearchResults([])
       setSearchMessage(error.message || 'search_failed')
     }
   }
@@ -236,8 +237,10 @@ export default function App() {
       <aside className="sidebar">
         <section className="brand-block">
           <pre className="ascii-mark">{asciiLogo}</pre>
-          <h1 className="brand-title">AniLog Terminal</h1>
-          <p className="panel-copy">public anime and manga discovery vault</p>
+          <div className="brand-copy-block">
+            <h1 className="brand-title">AniLog Terminal</h1>
+            <p className="panel-copy">public anime and manga discovery vault</p>
+          </div>
         </section>
 
         <nav className="menu-list" aria-label="Views">
@@ -481,13 +484,12 @@ function renderEntryGrid(entries, expandedKeys, toggleExpanded, isSaved, saveEnt
           onKeyDown={(event) => handleEntryKeyDown(event, entry.key, toggleExpanded)}
         >
           {entry.image ? <img className="card-image" src={entry.image} alt="" /> : null}
-          <div>
+          <div className="media-copy-block">
             <p className="card-kicker">{entry.mediaType || entry.kind}</p>
             <h2 className="card-title">{entry.title}</h2>
             <p className="card-copy">
               {expandedKeys.includes(entry.key) ? entry.synopsis || 'No synopsis available.' : truncateText(entry.synopsis, 160)}
             </p>
-            <TagList tags={entry.tags} />
           </div>
           <div className="inline-actions">
             <span className="tag">{entry.score ? `score:${entry.score}` : 'score:na'}</span>
@@ -504,6 +506,7 @@ function renderEntryGrid(entries, expandedKeys, toggleExpanded, isSaved, saveEnt
               open
             </a>
           </div>
+          <TagList tags={entry.tags} />
         </article>
       ))}
     </div>
