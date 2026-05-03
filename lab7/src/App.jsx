@@ -422,6 +422,8 @@ export default function App() {
             <div><dt>theme</dt><dd>{theme}</dd></div>
             <div><dt>role</dt><dd>{tokenState?.role || 'none'}</dd></div>
             <div><dt>token</dt><dd>{tokenState ? (isTokenExpired(tokenState) ? 'expired' : 'ready') : 'missing'}</dd></div>
+            <div><dt>perms</dt><dd>{tokenState?.permissions?.join('|') || 'none'}</dd></div>
+            <div><dt>expires</dt><dd>{tokenState ? formatExpiry(tokenState.expiresAt) : 'n/a'}</dd></div>
             <div><dt>entries</dt><dd>{String(libraryMeta.total).padStart(4, '0')}</dd></div>
           </dl>
         </section>
@@ -881,4 +883,12 @@ function splitCatalogKey(key) {
     kind,
     id: Number(rawId),
   }
+}
+
+function formatExpiry(expiresAt) {
+  if (!expiresAt) {
+    return 'n/a'
+  }
+
+  return new Date(expiresAt).toLocaleTimeString()
 }
