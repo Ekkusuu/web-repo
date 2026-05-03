@@ -1,6 +1,8 @@
 import express from 'express'
 import cors from 'cors'
+import swaggerUi from 'swagger-ui-express'
 import { authenticateToken, authorizePermissions, issueToken } from './lib/auth.js'
+import { openApiDocument } from './lib/openapi.js'
 import { readEntries, writeEntries } from './lib/store.js'
 
 const app = express()
@@ -8,6 +10,12 @@ const port = 3001
 
 app.use(cors())
 app.use(express.json())
+
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(openApiDocument))
+
+app.get('/openapi.json', (_request, response) => {
+  response.status(200).json(openApiDocument)
+})
 
 app.get('/health', (_request, response) => {
   response.status(200).json({ status: 'ok', message: 'lab7 api scaffold ready' })
