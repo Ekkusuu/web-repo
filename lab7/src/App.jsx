@@ -10,6 +10,11 @@ import {
   searchCatalog,
   writeStoredValue,
 } from './lib/publicCatalog'
+import { createEntry, deleteEntry, fetchEntries, requestToken, updateEntry } from './lib/api'
+
+const API_DOCS_URL = 'http://localhost:3001/docs'
+const OPENAPI_URL = 'http://localhost:3001/openapi.json'
+const PAGE_SIZE = 12
 
 const VIEWS = [
   { id: 'discover', label: 'discover' },
@@ -37,8 +42,20 @@ const SOURCE_FILTER_OPTIONS = [
   { value: 'search', label: 'source:search' },
 ]
 
+const ROLE_OPTIONS = [
+  { value: 'VISITOR', label: 'role:visitor' },
+  { value: 'WRITER', label: 'role:writer' },
+  { value: 'ADMIN', label: 'role:admin' },
+]
+
+const PERMISSION_OPTIONS = ['READ', 'WRITE', 'DELETE']
+
 export default function App() {
   const [theme, setTheme] = useState(() => readStoredValue(STORAGE_KEYS.theme, 'dark'))
+  const [tokenState, setTokenState] = useState(() => readStoredValue(STORAGE_KEYS.token, null))
+  const [authConfig, setAuthConfig] = useState(() =>
+    readStoredValue(STORAGE_KEYS.auth, { role: 'WRITER', permissions: ['READ', 'WRITE'] }),
+  )
   const [activeView, setActiveView] = useState('discover')
   const [results, setResults] = useState(() => createEmptyResults())
   const [discoverPages, setDiscoverPages] = useState({ anime: 1, manga: 1, novels: 1 })
@@ -52,11 +69,15 @@ export default function App() {
   const [searchResults, setSearchResults] = useState([])
   const [searchMessage, setSearchMessage] = useState('')
   const [expandedKeys, setExpandedKeys] = useState([])
-  const [library, setLibrary] = useState([])
+  const [libraryItems, setLibraryItems] = useState([])
+  const [libraryMeta, setLibraryMeta] = useState({ total: 0, limit: PAGE_SIZE, offset: 0, hasMore: false })
+  const [libraryLoading, setLibraryLoading] = useState(false)
+  const [libraryMessage, setLibraryMessage] = useState('Issue a token with READ permission to load entries.')
   const [libraryQuery, setLibraryQuery] = useState('')
   const [kindFilter, setKindFilter] = useState('all')
   const [sourceFilter, setSourceFilter] = useState('all')
   const [likedOnly, setLikedOnly] = useState(false)
+  const [apiMessage, setApiMessage] = useState('Request a token to unlock the CRUD API.')
   const discoverLoadMoreRef = useRef(null)
 
   useEffect(() => {
@@ -65,12 +86,26 @@ export default function App() {
   }, [theme])
 
   useEffect(() => {
+    writeStoredValue(STORAGE_KEYS.token, tokenState)
+  }, [tokenState])
+
+  useEffect(() => {
+    writeStoredValue(STORAGE_KEYS.auth, authConfig)
+  }, [authConfig])
+
+  useEffect(() => {
+    if (tokenState && isTokenExpired(tokenState)) {
+      clearTokenState('Saved token expired. Request a fresh JWT.')
+    }
+  }, [])
+
+  useEffect(() => {
     void loadDiscover()
   }, [])
 
   useEffect(() => {
     setExpandedKeys([])
-  }, [discoverKind])
+  }, [discoverKind, activeView])
 
   useEffect(() => {
     if (activeView !== 'discover') {
@@ -103,20 +138,26 @@ export default function App() {
     }
   }, [activeView, discoverHasMore, discoverKind, discoverLoadingMore, discoverStatus])
 
-  const filteredLibrary = library.filter((entry) => {
-    const matchesKind = kindFilter === 'all' || entry.kind === kindFilter
-    const matchesSource = sourceFilter === 'all' || entry.source === sourceFilter
-    const matchesLiked = !likedOnly || entry.liked
-    const searchText = `${entry.title} ${entry.kind} ${entry.note || ''} ${entry.source}`.toLowerCase()
-    const matchesQuery = !libraryQuery || searchText.includes(libraryQuery.toLowerCase())
-    return matchesKind && matchesSource && matchesLiked && matchesQuery
-  })
+  useEffect(() => {
+    if (activeView !== 'library') {
+      return
+    }
+
+    if (!hasPermission('READ')) {
+      setLibraryItems([])
+      setLibraryMeta({ total: 0, limit: PAGE_SIZE, offset: 0, hasMore: false })
+      setLibraryMessage('Issue a token with READ permission to load entries.')
+      return
+    }
+
+    void loadLibrary({ reset: true })
+  }, [activeView, tokenState, libraryQuery, kindFilter, sourceFilter, likedOnly])
 
   const stats = [
-    ['anime', library.filter((entry) => entry.kind === 'anime').length],
-    ['manga', library.filter((entry) => entry.kind === 'manga').length],
-    ['liked', library.filter((entry) => entry.liked).length],
-    ['saved', library.length],
+    ['saved', libraryMeta.total],
+    ['loaded', libraryItems.length],
+    ['liked', libraryItems.filter((entry) => entry.liked).length],
+    ['token', tokenState ? 'live' : 'none'],
   ]
 
   const discoverItems = results[discoverKind] || []
@@ -125,13 +166,15 @@ export default function App() {
     setTheme((current) => (current === 'dark' ? 'light' : 'dark'))
   }
 
-  function clearLibrary() {
-    setLibrary([])
+  function resetClientState() {
+    setExpandedKeys([])
     setLibraryQuery('')
     setKindFilter('all')
     setSourceFilter('all')
     setLikedOnly(false)
-    setExpandedKeys([])
+    setSearchQuery('')
+    setSearchResults([])
+    setSearchMessage('')
   }
 
   function toggleExpanded(entryKey) {
@@ -140,43 +183,44 @@ export default function App() {
     )
   }
 
-  function isSaved(entryKey) {
-    return library.some((entry) => entry.key === entryKey)
+  function hasPermission(permission) {
+    if (!tokenState || isTokenExpired(tokenState)) {
+      return false
+    }
+
+    return (tokenState.permissions || []).includes(permission)
   }
 
-  function saveEntry(entry) {
-    setLibrary((current) => {
-      if (current.some((item) => item.key === entry.key)) {
-        return current
-      }
-
-      return [
-        {
-          ...entry,
-          liked: false,
-          note: buildSourceNote(entry.source),
-          addedAt: new Date().toISOString(),
-        },
-        ...current,
-      ]
-    })
-  }
-
-  function removeEntry(entryKey) {
-    setLibrary((current) => current.filter((entry) => entry.key !== entryKey))
-  }
-
-  function toggleLike(entryKey) {
-    setLibrary((current) =>
-      current.map((entry) =>
-        entry.key === entryKey
-          ? {
-              ...entry,
-              liked: !entry.liked,
-            }
-          : entry,
-      ),
+  function findSavedEntry(entry) {
+    return libraryItems.find(
+      (savedEntry) =>
+        savedEntry.kind === entry.kind &&
+        ((savedEntry.malId && entry.id && savedEntry.malId === entry.id) || savedEntry.url === entry.url),
     )
+  }
+
+  function isSaved(entryKey) {
+    return Boolean(findSavedEntry({ key: entryKey, ...splitCatalogKey(entryKey) }))
+  }
+
+  async function requestApiToken() {
+    try {
+      const tokenResponse = await requestToken(authConfig)
+      const nextTokenState = {
+        ...tokenResponse,
+        expiresAt: Date.now() + tokenResponse.expiresIn * 1000,
+      }
+      setTokenState(nextTokenState)
+      setApiMessage(`token_ready role:${tokenResponse.role} perms:${tokenResponse.permissions.join(',')}`)
+      setLibraryMessage('Token ready. Open library to load paginated entries.')
+    } catch (error) {
+      setApiMessage(error.message || 'token_request_failed')
+    }
+  }
+
+  function clearTokenState(message = 'Token cleared.') {
+    setTokenState(null)
+    setApiMessage(message)
   }
 
   async function loadDiscover() {
@@ -247,6 +291,107 @@ export default function App() {
     }
   }
 
+  async function loadLibrary({ reset }) {
+    const activeToken = getActiveTokenOrThrow()
+    const offset = reset ? 0 : libraryMeta.offset + libraryMeta.limit
+    const params = {
+      limit: PAGE_SIZE,
+      offset,
+      q: libraryQuery || undefined,
+      kind: kindFilter === 'all' ? undefined : kindFilter,
+      source: sourceFilter === 'all' ? undefined : sourceFilter,
+      liked: likedOnly ? true : undefined,
+    }
+
+    setLibraryLoading(true)
+    setLibraryMessage(reset ? 'Loading entries...' : 'Loading more entries...')
+
+    try {
+      const response = await fetchEntries(activeToken, params)
+      const normalizedItems = response.items.map(normalizeApiEntry)
+      setLibraryItems((current) => (reset ? normalizedItems : dedupeEntries([...current, ...normalizedItems])))
+      setLibraryMeta({
+        total: response.total,
+        limit: response.limit,
+        offset: response.offset,
+        hasMore: response.hasMore,
+      })
+      setLibraryMessage(response.total ? `${response.total} entries available via API.` : 'No entries matched the current API filter.')
+    } catch (error) {
+      setLibraryItems(reset ? [] : libraryItems)
+      setLibraryMessage(error.message || 'library_load_failed')
+    } finally {
+      setLibraryLoading(false)
+    }
+  }
+
+  async function saveEntryToApi(entry) {
+    if (!hasPermission('WRITE')) {
+      setApiMessage('WRITE permission is required to create entries.')
+      return
+    }
+
+    try {
+      const activeToken = getActiveTokenOrThrow()
+      await createEntry(activeToken, toApiEntryPayload(entry))
+      setApiMessage(`entry_saved ${entry.title}`)
+      if (activeView === 'library' || hasPermission('READ')) {
+        await loadLibrary({ reset: true })
+      }
+    } catch (error) {
+      setApiMessage(error.message || 'entry_create_failed')
+    }
+  }
+
+  async function toggleLike(entry) {
+    if (!hasPermission('WRITE')) {
+      setApiMessage('WRITE permission is required to update entries.')
+      return
+    }
+
+    try {
+      const activeToken = getActiveTokenOrThrow()
+      const updatedEntry = await updateEntry(activeToken, entry.id, { ...entry, liked: !entry.liked })
+      setLibraryItems((current) => current.map((item) => (item.id === entry.id ? normalizeApiEntry(updatedEntry) : item)))
+      setApiMessage(`entry_updated ${entry.title}`)
+    } catch (error) {
+      setApiMessage(error.message || 'entry_update_failed')
+    }
+  }
+
+  async function removeEntryFromApi(entry) {
+    if (!hasPermission('DELETE')) {
+      setApiMessage('DELETE permission is required to remove entries.')
+      return
+    }
+
+    try {
+      const activeToken = getActiveTokenOrThrow()
+      await deleteEntry(activeToken, entry.id)
+      setLibraryItems((current) => current.filter((item) => item.id !== entry.id))
+      setLibraryMeta((current) => ({
+        ...current,
+        total: Math.max(0, current.total - 1),
+      }))
+      setApiMessage(`entry_deleted ${entry.title}`)
+    } catch (error) {
+      setApiMessage(error.message || 'entry_delete_failed')
+    }
+  }
+
+  function getActiveTokenOrThrow() {
+    if (!tokenState) {
+      throw new Error('request_a_token_first')
+    }
+
+    if (isTokenExpired(tokenState)) {
+      clearTokenState('Saved token expired. Request a fresh JWT.')
+      throw new Error('saved_token_expired')
+    }
+
+    return tokenState.token
+  }
+
   return (
     <main className="app-shell">
       <aside className="sidebar">
@@ -254,7 +399,7 @@ export default function App() {
           <pre className="ascii-mark">{asciiLogo}</pre>
           <div className="brand-copy-block">
             <h1 className="brand-title">AniLog API</h1>
-            <p className="panel-copy">lab7 scaffold copied from lab6 before API integration</p>
+            <p className="panel-copy">lab7 anime and manga vault with JWT-protected CRUD</p>
           </div>
         </section>
 
@@ -275,9 +420,9 @@ export default function App() {
           <p className="section-title">status</p>
           <dl className="meta-list">
             <div><dt>theme</dt><dd>{theme}</dd></div>
-            <div><dt>source</dt><dd>jikan + pending api</dd></div>
-            <div><dt>mode</dt><dd>lab7 scaffold</dd></div>
-            <div><dt>titles</dt><dd>{String(library.length).padStart(4, '0')}</dd></div>
+            <div><dt>role</dt><dd>{tokenState?.role || 'none'}</dd></div>
+            <div><dt>token</dt><dd>{tokenState ? (isTokenExpired(tokenState) ? 'expired' : 'ready') : 'missing'}</dd></div>
+            <div><dt>entries</dt><dd>{String(libraryMeta.total).padStart(4, '0')}</dd></div>
           </dl>
         </section>
 
@@ -298,9 +443,9 @@ export default function App() {
         <header className="command-bar">
           <span>{`anilog-api / ${activeView}`}</span>
           <div className="command-actions">
-            <button className="command-button" type="button" onClick={loadDiscover}>refresh</button>
+            <button className="command-button" type="button" onClick={loadDiscover}>refresh discovery</button>
             <button className="command-button" type="button" onClick={toggleTheme}>theme</button>
-            <button className="command-button" type="button" onClick={clearLibrary}>clear local</button>
+            <button className="command-button" type="button" onClick={resetClientState}>reset ui</button>
           </div>
         </header>
 
@@ -327,7 +472,9 @@ export default function App() {
 
             <section className="subpanel">
               <p className="section-title">{`${discoverKind}.feed`}</p>
-              {discoverItems.length ? renderEntryGrid(discoverItems, expandedKeys, toggleExpanded, isSaved, saveEntry, removeEntry, discoverKind) : (
+              {discoverItems.length ? (
+                renderCatalogGrid(discoverItems, expandedKeys, toggleExpanded, findSavedEntry, saveEntryToApi)
+              ) : (
                 <p className="empty-line">{getDiscoverEmptyMessage(discoverKind, discoverStatus, discoverMessage)}</p>
               )}
               {discoverItems.length && discoverLoadingMore ? <p className="empty-line">Loading more...</p> : null}
@@ -357,7 +504,9 @@ export default function App() {
               </form>
             </div>
 
-            {searchResults.length ? renderEntryGrid(searchResults, expandedKeys, toggleExpanded, isSaved, saveEntry, removeEntry, 'search') : (
+            {searchResults.length ? (
+              renderCatalogGrid(searchResults, expandedKeys, toggleExpanded, findSavedEntry, saveEntryToApi)
+            ) : (
               <p className="empty-line">{searchMessage || 'Run a search to load results.'}</p>
             )}
           </section>
@@ -367,8 +516,8 @@ export default function App() {
           <section className="panel panel-fill">
             <div className="panel-header">
               <div>
-                <p className="section-title">library.vault</p>
-                <p className="panel-copy">local copy of lab6 vault before backend CRUD wiring</p>
+                <p className="section-title">library.api</p>
+                <p className="panel-copy">API-backed saved entries with pagination and JWT permissions</p>
               </div>
 
               <div className="filter-grid library-grid">
@@ -387,35 +536,37 @@ export default function App() {
               </div>
             </div>
 
-            {filteredLibrary.length ? (
+            <p className="form-help">{libraryMessage}</p>
+
+            {libraryItems.length ? (
               <div className="entry-list">
-                {filteredLibrary.map((entry) => (
+                {libraryItems.map((entry) => (
                   <article
-                    key={entry.key}
-                    className={`media-card media-entry media-library ${expandedKeys.includes(entry.key) ? 'media-card-open' : ''}`}
+                    key={entry.id}
+                    className={`media-card media-entry media-library ${expandedKeys.includes(entry.id) ? 'media-card-open' : ''}`}
                     role="button"
                     tabIndex={0}
-                    onClick={() => toggleExpanded(entry.key)}
-                    onKeyDown={(event) => handleEntryKeyDown(event, entry.key, toggleExpanded)}
+                    onClick={() => toggleExpanded(entry.id)}
+                    onKeyDown={(event) => handleEntryKeyDown(event, entry.id, toggleExpanded)}
                   >
                     {entry.image ? <img className="card-image" src={entry.image} alt="" /> : null}
                     <div>
                       <p className="card-kicker">{entry.kind}</p>
                       <h2 className="card-title">{entry.title}</h2>
                       <p className="card-copy">
-                        {expandedKeys.includes(entry.key)
+                        {expandedKeys.includes(entry.id)
                           ? entry.synopsis || entry.note || 'No synopsis available.'
-                          : entry.note || 'local entry saved in browser storage'}
+                          : entry.note || truncateText(entry.synopsis, 160)}
                       </p>
                       <TagList tags={entry.tags} />
                     </div>
                     <div className="inline-actions">
                       <span className="tag">{entry.source}</span>
-                      <button className="inline-button" type="button" onClick={(event) => handleActionClick(event, () => toggleLike(entry.key))}>
+                      <button className="inline-button" type="button" onClick={(event) => handleActionClick(event, () => toggleLike(entry))}>
                         {entry.liked ? 'unlike' : 'like'}
                       </button>
-                      <button className="inline-button" type="button" onClick={(event) => handleActionClick(event, () => removeEntry(entry.key))}>
-                        remove
+                      <button className="inline-button" type="button" onClick={(event) => handleActionClick(event, () => removeEntryFromApi(entry))}>
+                        delete
                       </button>
                       <a className="inline-link" href={entry.url} target="_blank" rel="noreferrer" onClick={stopTogglePropagation}>
                         open
@@ -425,8 +576,14 @@ export default function App() {
                 ))}
               </div>
             ) : (
-              <p className="empty-line">library_empty_add_titles_from_discover_or_search</p>
+              <p className="empty-line">{hasPermission('READ') ? 'No API entries loaded yet.' : 'READ permission is required to browse saved entries.'}</p>
             )}
+
+            {libraryMeta.hasMore ? (
+              <button className="command-button" type="button" onClick={() => loadLibrary({ reset: false })} disabled={libraryLoading}>
+                {libraryLoading ? 'loading...' : 'load more'}
+              </button>
+            ) : null}
           </section>
         ) : null}
 
@@ -434,34 +591,101 @@ export default function App() {
           <section className="panel panel-fill">
             <div className="panel-header">
               <div>
-                <p className="section-title">api.backlog</p>
-                <p className="panel-copy">the next commits will replace local vault state with a JWT-protected CRUD API</p>
+                <p className="section-title">api.control</p>
+                <p className="panel-copy">request a one-minute JWT, inspect permissions, and use the documented API</p>
               </div>
             </div>
 
-            <div className="api-table">
-              <article className="api-row">
-                <div>
-                  <h3>/token</h3>
-                  <p>issue a short-lived JWT with role and permissions</p>
+            <section className="subpanel">
+              <p className="section-title">token.request</p>
+              <div className="auth-grid">
+                <div className="form-grid">
+                  <SelectField value={authConfig.role} options={ROLE_OPTIONS} onChange={(role) => setAuthConfig((current) => ({ ...current, role }))} />
+                  <div className="toggle-list">
+                    {PERMISSION_OPTIONS.map((permission) => {
+                      const selected = authConfig.permissions.includes(permission)
+                      return (
+                        <button
+                          key={permission}
+                          className={`toggle-chip ${selected ? 'toggle-chip-active' : ''}`}
+                          type="button"
+                          onClick={() => setAuthConfig((current) => ({
+                            ...current,
+                            permissions: togglePermission(current.permissions, permission),
+                          }))}
+                        >
+                          {permission}
+                        </button>
+                      )
+                    })}
+                  </div>
+                  <div className="inline-actions">
+                    <button className="command-button" type="button" onClick={requestApiToken}>request token</button>
+                    <button className="command-button" type="button" onClick={() => clearTokenState('Token cleared manually.')}>clear token</button>
+                  </div>
+                  <p className="form-help">{apiMessage}</p>
                 </div>
-                <span className="tag">pending</span>
-              </article>
-              <article className="api-row">
-                <div>
-                  <h3>/api/entries</h3>
-                  <p>create, read, update, and delete saved vault entries with pagination</p>
+
+                <div className="stack-list">
+                  <div className="media-card">
+                    <p className="section-title">token.info</p>
+                    <p className="token-preview">
+                      {tokenState
+                        ? `role=${tokenState.role}\npermissions=${tokenState.permissions.join(', ')}\nexpires_at=${new Date(tokenState.expiresAt).toLocaleTimeString()}`
+                        : 'No token issued yet.'}
+                    </p>
+                  </div>
+                  <div className="media-card">
+                    <p className="section-title">api.links</p>
+                    <div className="line-list">
+                      <a className="inline-link" href={API_DOCS_URL} target="_blank" rel="noreferrer">open swagger ui</a>
+                      <a className="inline-link" href={OPENAPI_URL} target="_blank" rel="noreferrer">open openapi json</a>
+                    </div>
+                  </div>
                 </div>
-                <span className="tag">pending</span>
-              </article>
-              <article className="api-row">
-                <div>
-                  <h3>/docs</h3>
-                  <p>swagger ui for backend documentation</p>
-                </div>
-                <span className="tag">pending</span>
-              </article>
-            </div>
+              </div>
+            </section>
+
+            <section className="subpanel">
+              <p className="section-title">api.endpoints</p>
+              <div className="api-table">
+                <article className="api-row">
+                  <div>
+                    <h3>POST /token</h3>
+                    <p>returns a short-lived JWT that stores role and permissions</p>
+                  </div>
+                  <span className="tag">public</span>
+                </article>
+                <article className="api-row">
+                  <div>
+                    <h3>GET /api/entries</h3>
+                    <p>paginated read with limit, offset, q, kind, source, and liked filters</p>
+                  </div>
+                  <span className="tag">READ</span>
+                </article>
+                <article className="api-row">
+                  <div>
+                    <h3>POST /api/entries</h3>
+                    <p>create a saved entry from discovery or search results</p>
+                  </div>
+                  <span className="tag">WRITE</span>
+                </article>
+                <article className="api-row">
+                  <div>
+                    <h3>PUT /api/entries/:id</h3>
+                    <p>update note, liked state, and other stored entry fields</p>
+                  </div>
+                  <span className="tag">WRITE</span>
+                </article>
+                <article className="api-row">
+                  <div>
+                    <h3>DELETE /api/entries/:id</h3>
+                    <p>remove an entry from the saved vault</p>
+                  </div>
+                  <span className="tag">DELETE</span>
+                </article>
+              </div>
+            </section>
           </section>
         ) : null}
       </section>
@@ -481,42 +705,42 @@ function SelectField({ value, options, onChange }) {
   )
 }
 
-function renderEntryGrid(entries, expandedKeys, toggleExpanded, isSaved, saveEntry, removeEntry, listKey = 'entries') {
+function renderCatalogGrid(entries, expandedKeys, toggleExpanded, findSavedEntry, saveEntryToApi) {
   return (
-    <div key={listKey} className="entry-list">
-      {entries.map((entry) => (
-        <article
-          key={entry.key}
-          className={`media-card media-entry ${expandedKeys.includes(entry.key) ? 'media-card-open' : ''}`}
-          role="button"
-          tabIndex={0}
-          onClick={() => toggleExpanded(entry.key)}
-          onKeyDown={(event) => handleEntryKeyDown(event, entry.key, toggleExpanded)}
-        >
-          {entry.image ? <img className="card-image" src={entry.image} alt="" /> : null}
-          <div>
-            <p className="card-kicker">{entry.mediaType || entry.kind}</p>
-            <h2 className="card-title">{entry.title}</h2>
-            <p className="card-copy">
-              {expandedKeys.includes(entry.key) ? entry.synopsis || 'No synopsis available.' : truncateText(entry.synopsis, 160)}
-            </p>
-            <TagList tags={entry.tags} />
-          </div>
-          <div className="inline-actions">
-            <span className="tag">{entry.score ? `score:${entry.score}` : 'score:na'}</span>
-            <button
-              className="inline-button"
-              type="button"
-              onClick={(event) => handleActionClick(event, () => (isSaved(entry.key) ? removeEntry(entry.key) : saveEntry(entry)))}
-            >
-              {isSaved(entry.key) ? 'remove' : 'save'}
-            </button>
-            <a className="inline-link" href={entry.url} target="_blank" rel="noreferrer" onClick={stopTogglePropagation}>
-              open
-            </a>
-          </div>
-        </article>
-      ))}
+    <div className="entry-list">
+      {entries.map((entry) => {
+        const savedEntry = findSavedEntry(entry)
+
+        return (
+          <article
+            key={entry.key}
+            className={`media-card media-entry ${expandedKeys.includes(entry.key) ? 'media-card-open' : ''}`}
+            role="button"
+            tabIndex={0}
+            onClick={() => toggleExpanded(entry.key)}
+            onKeyDown={(event) => handleEntryKeyDown(event, entry.key, toggleExpanded)}
+          >
+            {entry.image ? <img className="card-image" src={entry.image} alt="" /> : null}
+            <div>
+              <p className="card-kicker">{entry.mediaType || entry.kind}</p>
+              <h2 className="card-title">{entry.title}</h2>
+              <p className="card-copy">
+                {expandedKeys.includes(entry.key) ? entry.synopsis || 'No synopsis available.' : truncateText(entry.synopsis, 160)}
+              </p>
+              <TagList tags={entry.tags} />
+            </div>
+            <div className="inline-actions">
+              <span className="tag">{entry.score ? `score:${entry.score}` : 'score:na'}</span>
+              <button className="inline-button" type="button" onClick={(event) => handleActionClick(event, () => !savedEntry && saveEntryToApi(entry))}>
+                {savedEntry ? 'saved' : 'save'}
+              </button>
+              <a className="inline-link" href={entry.url} target="_blank" rel="noreferrer" onClick={stopTogglePropagation}>
+                open
+              </a>
+            </div>
+          </article>
+        )
+      })}
     </div>
   )
 }
@@ -557,6 +781,40 @@ function handleEntryKeyDown(event, entryKey, toggleExpanded) {
   toggleExpanded(entryKey)
 }
 
+function normalizeApiEntry(entry) {
+  return {
+    ...entry,
+    key: entry.id,
+  }
+}
+
+function toApiEntryPayload(entry) {
+  return {
+    title: entry.title,
+    kind: entry.kind,
+    image: entry.image,
+    synopsis: entry.synopsis,
+    score: entry.score,
+    mediaType: entry.mediaType,
+    tags: entry.tags,
+    source: entry.source,
+    liked: false,
+    note: buildSourceNote(entry.source),
+    url: entry.url,
+    malId: entry.id,
+  }
+}
+
+function isTokenExpired(tokenState) {
+  return !tokenState?.expiresAt || tokenState.expiresAt <= Date.now()
+}
+
+function togglePermission(currentPermissions, permission) {
+  return currentPermissions.includes(permission)
+    ? currentPermissions.filter((item) => item !== permission)
+    : [...currentPermissions, permission]
+}
+
 function truncateText(value, maxLength) {
   if (!value) {
     return 'no_synopsis_available'
@@ -582,7 +840,7 @@ function buildSourceNote(source) {
     return 'saved from catalog search results'
   }
 
-  return 'saved in the local terminal vault'
+  return 'saved in the API vault'
 }
 
 function getDiscoverEmptyMessage(kind, status, message) {
@@ -615,4 +873,12 @@ async function fetchDiscoverBatch(kind, page) {
 
 function dedupeEntries(entries) {
   return Array.from(new Map(entries.map((entry) => [entry.key, entry])).values())
+}
+
+function splitCatalogKey(key) {
+  const [kind, rawId] = String(key).split('-')
+  return {
+    kind,
+    id: Number(rawId),
+  }
 }
