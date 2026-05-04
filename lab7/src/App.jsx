@@ -398,8 +398,8 @@ export default function App() {
         <section className="brand-block">
           <pre className="ascii-mark">{asciiLogo}</pre>
           <div className="brand-copy-block">
-            <h1 className="brand-title">AniLog API</h1>
-            <p className="panel-copy">lab7 anime and manga vault with JWT-protected CRUD</p>
+            <h1 className="brand-title">AniLog Terminal</h1>
+            <p className="panel-copy">public anime and manga discovery vault</p>
           </div>
         </section>
 
